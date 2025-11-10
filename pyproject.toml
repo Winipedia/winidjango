@@ -8,7 +8,7 @@ authors = [
 license = "MIT"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = ["winipedia-utils", "django"]
+dynamic = ["dependencies"]
 
 
 [build-system]
@@ -33,6 +33,10 @@ types-defusedxml = "*"
 bandit = "*"
 types-networkx = "*"
 
+
+[tool.poetry.dependencies]
+winipedia-utils = "*"
+django = "*"
 [tool.ruff]
 exclude = [".*", "**/migrations/*.py"]
 
