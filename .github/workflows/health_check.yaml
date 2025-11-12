@@ -60,6 +60,9 @@ jobs:
       run: poetry run pre-commit run --all-files --verbose
       env:
         REPO_TOKEN: ${{ secrets.REPO_TOKEN }}
+    - name: Run Tests
+      id: run_tests
+      run: poetry run pytest --log-cli-level=INFO
   health_check:
     needs:
     - health_check_matrix
