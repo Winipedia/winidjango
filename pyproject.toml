@@ -33,8 +33,10 @@ types-defusedxml = "*"
 bandit = "*"
 types-networkx = "*"
 pytest-django = "*"
+types-pyinstaller = "*"
+pyinstaller = {version = "*", python = "<3.15"}
 
-
+python = "*"
 [tool.poetry.dependencies]
 winipedia-utils = "*"
 django = "*"
