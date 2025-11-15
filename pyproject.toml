@@ -12,7 +12,7 @@ dynamic = ["dependencies"]
 
 
 [project.scripts]
-winipedia-django = "winipedia_django.dev.cli.cli:main"
+winipedia-django = "winipedia_utils.dev.cli.cli:main"
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"

@@ -19,12 +19,6 @@ repos:
     language: system
     always_run: true
     pass_filenames: false
-  - id: create-project-root
-    name: create-project-root
-    entry: poetry run winipedia-utils create-root
-    language: system
-    always_run: true
-    pass_filenames: false
   - id: lint-code
     name: lint-code
     entry: poetry run ruff check --fix
