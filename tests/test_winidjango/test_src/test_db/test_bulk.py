@@ -1,16 +1,16 @@
-"""Tests for winipedia_django.bulk module."""
+"""Tests for winidjango.bulk module."""
 
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 from django.db import models
-from winipedia_utils.utils.modules.module import make_obj_importpath
-from winipedia_utils.utils.testing.assertions import assert_with_msg
+from pyrig.src.modules.module import make_obj_importpath
+from pyrig.src.testing.assertions import assert_with_msg
 
 from tests.models import ModelA, ModelB
-from winipedia_django.utils.db import bulk
-from winipedia_django.utils.db.bulk import (
+from winidjango.src.db import bulk
+from winidjango.src.db.bulk import (
     MODE_CREATE,
     MODE_DELETE,
     MODE_UPDATE,
@@ -28,7 +28,7 @@ from winipedia_django.utils.db.bulk import (
     multi_simulate_bulk_deletion,
     simulate_bulk_deletion,
 )
-from winipedia_django.utils.db.fields import get_fields
+from winidjango.src.db.fields import get_fields
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

@@ -1,9 +1,9 @@
 """Tests module."""
 
 from django.db import models
-from winipedia_utils.utils.testing.assertions import assert_with_msg
+from pyrig.src.testing.assertions import assert_with_msg
 
-from winipedia_django.utils.db.fields import get_field_names, get_fields, get_model_meta
+from winidjango.src.db.fields import get_field_names, get_fields, get_model_meta
 
 
 class CustomContentType(models.Model):

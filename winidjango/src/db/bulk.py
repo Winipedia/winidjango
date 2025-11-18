@@ -18,10 +18,9 @@ from django.db.models import (
     QuerySet,
 )
 from django.db.models.deletion import Collector
-from winipedia_utils.utils.iterating.concurrent.multithreading import multithread_loop
-from winipedia_utils.utils.logging.logger import get_logger
+from winiutils.src.iterating.concurrent.multithreading import multithread_loop
 
-from winipedia_django.utils.db.models import (
+from winidjango.src.db.models import (
     hash_model_instance,
     topological_sort_models,
 )
@@ -30,7 +29,9 @@ if TYPE_CHECKING:
     from django.contrib.contenttypes.fields import GenericForeignKey
     from django.db.models.fields.related import ForeignObjectRel
 
-logger = get_logger(__name__)
+import logging
+
+logger = logging.getLogger(__name__)
 
 MODE_TYPES = Literal["create", "update", "delete"]
 MODES = get_args(MODE_TYPES)

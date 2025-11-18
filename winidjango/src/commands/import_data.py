@@ -3,18 +3,18 @@
 A base class for importing data from a source to the database.
 """
 
+import logging
 from abc import abstractmethod
 from collections.abc import Iterable
 
 import polars as pl
 from django.db.models import Model
-from winipedia_utils.utils.data.dataframe.cleaning import CleaningDF
-from winipedia_utils.utils.logging.logger import get_logger
+from winiutils.src.data.dataframe.cleaning import CleaningDF
 
-from winipedia_django.utils.commands.base.base import ABCBaseCommand
-from winipedia_django.utils.db.bulk import bulk_create_bulks_in_steps
+from winidjango.src.commands.base.base import ABCBaseCommand
+from winidjango.src.db.bulk import bulk_create_bulks_in_steps
 
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class ImportDataBaseCommand(ABCBaseCommand):
@@ -37,7 +37,7 @@ class ImportDataBaseCommand(ABCBaseCommand):
         """You will define a child of a cleaning df cls and return it.
 
         The cleaning df cls is responsible for cleaning the data.
-        See: winipedia_utils.utils.data.dataframe.cleaning.CleaningDF
+        See: winiutils.src.data.dataframe.cleaning.CleaningDF
         """
 
     @abstractmethod

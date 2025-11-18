@@ -1,10 +1,10 @@
-"""Tests for winipedia_django.database module."""
+"""Tests for winidjango.database module."""
 
 from django.db import models
-from winipedia_utils.utils.testing.assertions import assert_with_msg
+from pyrig.src.testing.assertions import assert_with_msg
 
-from winipedia_django.utils.db.fields import get_fields
-from winipedia_django.utils.db.models import (
+from winidjango.src.db.fields import get_fields
+from winidjango.src.db.models import (
     BaseModel,
     hash_model_instance,
     topological_sort_models,

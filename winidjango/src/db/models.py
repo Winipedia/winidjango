@@ -12,15 +12,16 @@ from typing import TYPE_CHECKING, Any, Self, cast
 from django.db.models import DateTimeField, Field, Model
 from django.db.models.fields.related import ForeignKey, ForeignObjectRel
 from django.forms.models import model_to_dict
-from winipedia_utils.utils.logging.logger import get_logger
 
-from winipedia_django.utils.db.fields import get_field_names, get_fields
+from winidjango.src.db.fields import get_field_names, get_fields
 
 if TYPE_CHECKING:
     from django.contrib.contenttypes.fields import GenericForeignKey
     from django.db.models.options import Options
 
-logger = get_logger(__name__)
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def topological_sort_models[TModel: Model](

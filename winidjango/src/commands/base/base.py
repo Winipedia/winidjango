@@ -11,7 +11,7 @@ from argparse import ArgumentParser
 from typing import Any
 
 from django.core.management import BaseCommand
-from winipedia_utils.utils.oop.mixins.mixin import ABCLoggingMixin
+from winiutils.src.oop.mixins.mixin import ABCLoggingMixin
 
 logger = logging.getLogger(__name__)
 

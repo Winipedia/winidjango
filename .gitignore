@@ -243,7 +243,9 @@ activemq-data/
 # Streamlit
 .streamlit/secrets.toml
 # vscode stuff
-# winipedia_utils stuff
+# winiutils stuff
 # for walk_os_skipping_gitignore_patterns func
 # for executing experimental code
 /experiment.py
+# pyrig stuff
+# for secrets used locally

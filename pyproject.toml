@@ -1,6 +1,6 @@
 [project]
-name = "winipedia-django"
-version = "0.2.43"
+name = "winidjango"
+version = "0.2.44"
 description = "A utils package for django"
 authors = [
     {name = "Winipedia",email = "win.steveker@gmx.de"}
@@ -12,14 +12,15 @@ dynamic = ["dependencies"]
 
 
 [project.scripts]
-winipedia-django = "winipedia_utils.dev.cli.cli:main"
+winidjango = "pyrig.dev.cli.cli:main"
+
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 
 [[tool.poetry.packages]]
-include = "winipedia_django"
+include = "winidjango"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "*"
@@ -40,8 +41,9 @@ pyinstaller = {version = "*", python = "<3.15"}
 
 python = "*"
 [tool.poetry.dependencies]
-winipedia-utils = "*"
 django = "*"
+winiutils = "*"
+pyrig = "*"
 [tool.ruff]
 exclude = [".*", "**/migrations/*.py"]
 
@@ -53,6 +55,8 @@ fixable = ["ALL"]
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101"]
 [tool.mypy]
 strict = true
 warn_unreachable = true
@@ -64,3 +68,6 @@ testpaths = ["tests"]
 
 [tool.bandit]
 exclude_dirs = ["./experiment.py"]
+
+[tool.bandit.assert_used]
+skips = ["*test_*.py"]

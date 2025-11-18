@@ -1,11 +1,12 @@
 """__init__ module."""
 
+import logging
+
 import django
 import django_stubs_ext
 from django.conf import settings
-from winipedia_utils.utils.logging.logger import get_logger
 
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 django_stubs_ext.monkeypatch()
 logger.info("Monkeypatched django-stubs")

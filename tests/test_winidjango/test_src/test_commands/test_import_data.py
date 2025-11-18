@@ -7,12 +7,12 @@ from typing import Any
 import polars as pl
 import pytest
 from django.db.models import Model
+from pyrig.src.testing.assertions import assert_with_msg
 from pytest_mock import MockerFixture
-from winipedia_utils.utils.data.dataframe.cleaning import CleaningDF
-from winipedia_utils.utils.testing.assertions import assert_with_msg
+from winiutils.src.data.dataframe.cleaning import CleaningDF
 
 from tests.models import ModelA, ModelB
-from winipedia_django.utils.commands.import_data import ImportDataBaseCommand
+from winidjango.src.commands.import_data import ImportDataBaseCommand
 
 
 class MyCleaningDF(CleaningDF):

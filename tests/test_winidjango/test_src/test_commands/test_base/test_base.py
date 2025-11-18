@@ -1,12 +1,12 @@
-"""Tests for winipedia_django.command module."""
+"""Tests for winidjango.command module."""
 
 from argparse import ArgumentParser
 from typing import Any, final
 
 from django.core.management import call_command
-from winipedia_utils.utils.testing.assertions import assert_with_msg
+from pyrig.src.testing.assertions import assert_with_msg
 
-from winipedia_django.utils.commands.base.base import ABCBaseCommand
+from winidjango.src.commands.base.base import ABCBaseCommand
 
 
 class TestABCBaseCommand:

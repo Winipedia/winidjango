@@ -1,9 +1,9 @@
 """Test module for sql.py."""
 
 import pytest
-from winipedia_utils.utils.testing.assertions import assert_with_msg
+from pyrig.src.testing.assertions import assert_with_msg
 
-from winipedia_django.utils.db.sql import execute_sql
+from winidjango.src.db.sql import execute_sql
 
 
 @pytest.mark.django_db
