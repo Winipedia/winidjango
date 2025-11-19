@@ -2,7 +2,6 @@
 
 (This project uses [pyrig](https://github.com/Winipedia/pyrig))
 
-
 ## Overview
 
 **winidjango** is a production-ready Django utilities library that simplifies complex database operations and provides structured patterns for data management tasks. Built with type safety and performance in mind, it leverages modern Python features and integrates seamlessly with Django's ORM.
