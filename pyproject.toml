@@ -43,7 +43,7 @@ python = "*"
 [tool.poetry.dependencies]
 django = "*"
 winiutils = "*"
-pyrig = "*"
+
 [tool.ruff]
 exclude = [".*", "**/migrations/*.py"]
 
