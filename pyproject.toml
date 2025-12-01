@@ -21,7 +21,6 @@ winidjango = "pyrig.dev.cli.cli:main"
 dev = [
     "bandit",
     "django-stubs",
-    "keyrings.alt",
     "mypy",
     "pre-commit",
     "pyinstaller",
