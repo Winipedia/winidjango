@@ -10,12 +10,12 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "django",
+    "django-stubs-ext",
     "winiutils",
 ]
 
 [project.scripts]
 winidjango = "pyrig.dev.cli.cli:main"
-
 
 [dependency-groups]
 dev = [

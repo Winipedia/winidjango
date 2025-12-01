@@ -1305,6 +1305,7 @@ version = "2.0.1"
 source = { editable = "." }
 dependencies = [
     { name = "django" },
+    { name = "django-stubs-ext" },
     { name = "winiutils" },
 ]
 
@@ -1331,6 +1332,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "django" },
+    { name = "django-stubs-ext", specifier = ">=5.2.8" },
     { name = "winiutils" },
 ]
 
