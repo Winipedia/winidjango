@@ -9,6 +9,6 @@ class TestPyprojectConfigFile:
     def test_get_standard_dev_dependencies(self) -> None:
         """Test method."""
         deps = PyprojectConfigFile.get_standard_dev_dependencies()
-        assert isinstance(deps, dict)
+        assert isinstance(deps, list)
         assert "django-stubs" in deps
         assert "pytest-django" in deps

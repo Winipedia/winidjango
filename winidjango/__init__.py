@@ -6,9 +6,10 @@ import django
 import django_stubs_ext
 from django.conf import settings
 
+django_stubs_ext.monkeypatch()
+
 logger = logging.getLogger(__name__)
 
-django_stubs_ext.monkeypatch()
 logger.info("Monkeypatched django-stubs")
 
 if not settings.configured:
