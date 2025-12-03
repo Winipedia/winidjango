@@ -29,7 +29,6 @@ dev = [
     "pytest-mock",
     "ruff",
     "types-defusedxml",
-    "types-networkx",
     "types-pyinstaller",
     "types-pyyaml",
     "types-setuptools",
