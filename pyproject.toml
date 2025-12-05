@@ -3,7 +3,7 @@ name = "winidjango"
 version = "2.0.13"
 description = "A utils package for django"
 authors = [
-    {name = "Winipedia",email = "win.steveker@gmx.de"},
+    {name = "Winipedia"},
 ]
 license = "MIT"
 readme = "README.md"
