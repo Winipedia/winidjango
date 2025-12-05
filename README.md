@@ -1,290 +1,221 @@
 # winidjango
 
-(This project uses [pyrig](https://github.com/Winipedia/pyrig))
+[![built with pyrig](https://img.shields.io/badge/built%20with-pyrig-3776AB?logo=python&logoColor=white)](https://github.com/Winipedia/pyrig)
+[![PyPI version](https://img.shields.io/badge/version-2.0.13-blue.svg)](https://pypi.org/project/winidjango/)
+[![Python](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
+[![Django](https://img.shields.io/badge/django-compatible-green.svg)](https://www.djangoproject.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Overview
+A production-ready Django utilities library that simplifies complex database operations and provides structured patterns for data management tasks.
 
-**winidjango** is a production-ready Django utilities library that simplifies complex database operations and provides structured patterns for data management tasks. Built with type safety and performance in mind, it leverages modern Python features and integrates seamlessly with Django's ORM.
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Documentation](#documentation)
+- [Requirements](#requirements)
+- [Development](#development)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Features
 
-### Database Utilities (`winidjango.src.db`)
+### 🚀 High-Performance Bulk Operations
+- **Multithreaded Processing**: Parallel execution of database operations for maximum speed
+- **Automatic Chunking**: Configurable batch sizes (default: 1000) for memory-efficient processing
+- **Transaction Safety**: Atomic operations with intelligent transaction management
+- **Dependency Resolution**: Automatic topological sorting for foreign key relationships
 
-High-performance database operations with automatic optimization, dependency management, and type safety.
+### 🛠️ Database Utilities
+- **Bulk Create/Update/Delete**: Process thousands of records efficiently
+- **Deletion Simulation**: Preview cascade effects before executing destructive operations
+- **Bulk Comparison**: Detect differences between datasets with field-level hashing
+- **Raw SQL Execution**: Safe parameter binding with automatic cursor management
 
-#### Bulk Operations (`bulk.py`)
+### 📦 Model Utilities
+- **BaseModel**: Abstract base with `created_at`, `updated_at`, and type-safe `meta` property
+- **Topological Sorting**: Automatic dependency ordering for model operations
+- **Field Introspection**: Type-safe utilities for working with model fields
 
-Efficiently process large datasets with automatic chunking, multithreading, and transaction management.
+### 🎯 Management Command Framework
+- **ABCBaseCommand**: Template method pattern with automatic logging
+- **ImportDataBaseCommand**: Structured data import with Polars integration
+- **Built-in Arguments**: Standard options for dry-run, batch size, threading, and more
+- **Type Safety**: Full type hints with abstract method enforcement
 
-**Core Functions:**
+## Installation
 
-**`bulk_create_in_steps(model, bulk, step=1000)`**
-- Creates thousands of model instances in configurable batches (default: 1000)
-- Uses multithreading for parallel processing across chunks
-- Returns list of created instances with populated PKs
-- Wrapped in atomic transactions for data integrity
+```bash
+pip install winidjango
+```
 
-**`bulk_update_in_steps(model, bulk, update_fields, step=1000)`**
-- Updates large datasets efficiently in batches
-- Requires explicit `update_fields` list for safety
-- Returns total count of updated objects
-- Multithreaded processing for maximum performance
+Or using `uv`:
 
-**`bulk_delete_in_steps(model, bulk, step=1000)`**
-- Deletes in batches with cascade tracking
-- Returns tuple: `(total_count, {model_name: count})`
-- Tracks all cascade deletions across related models
-- Safe handling of foreign key constraints
+```bash
+uv add winidjango
+```
 
-**`bulk_create_bulks_in_steps(bulk_by_class, step=1000)`**
-- **Automatic Dependency Resolution**: Creates multiple model types in correct order
-- Uses topological sorting to handle foreign key relationships
-- Accepts dict mapping model classes to instance lists
-- Returns dict with created instances (PKs populated)
+## Quick Start
 
-**Advanced Comparison & Simulation:**
-
-**`get_differences_between_bulks(bulk1, bulk2, fields)`**
-- Compares two bulks by hashing field values
-- Returns 4-tuple: `(in_1_not_2, in_2_not_1, in_both_from_1, in_both_from_2)`
-- Useful for sync operations and change detection
-- Preserves original object references
-
-**`simulate_bulk_deletion(model_class, entries)`**
-- **Preview deletions without executing** using Django's Collector
-- Returns dict mapping models to objects that would be deleted
-- Includes all cascade deletions
-- Perfect for "what-if" analysis before destructive operations
-
-**`multi_simulate_bulk_deletion(entries)`**
-- Simulates deletions across multiple model types
-- Aggregates cascade effects into single summary
-- Accepts dict of `{model_class: [instances]}`
-
-**Usage Examples:**
+### Bulk Operations
 
 ```python
-from winidjango.src.db.bulk import (
-    bulk_create_in_steps,
-    bulk_create_bulks_in_steps,
-    get_differences_between_bulks,
-    simulate_bulk_deletion,
-)
+from winidjango.src.db.bulk import bulk_create_in_steps
 
-# Create 10,000 objects in batches of 1000
+# Create 10,000 records in batches of 1000
 authors = [Author(name=f"Author {i}") for i in range(10000)]
 created = bulk_create_in_steps(Author, authors, step=1000)
-# Uses multithreading: ~10x faster than individual saves
+```
 
-# Create related models in dependency order
-books = [Book(title=f"Book {i}", author=author) for i, author in enumerate(created)]
-reviews = [Review(book=book, rating=5) for book in books]
+### Automatic Dependency Resolution
 
+```python
+from winidjango.src.db.bulk import bulk_create_bulks_in_steps
+
+# Create related models in correct order automatically
 results = bulk_create_bulks_in_steps({
     Author: authors,
-    Book: books,      # Created after Author (foreign key dependency)
-    Review: reviews,  # Created after Book (foreign key dependency)
+    Book: books,      # Created after Author
+    Review: reviews,  # Created after Book
 })
-# Automatically sorted: Author → Book → Review
+```
 
-# Compare two datasets
-from winidjango.src.db.fields import get_fields
-fields = get_fields(Author)
-old_authors = Author.objects.all()
-new_authors = [Author(name=f"Updated {i}") for i in range(100)]
+### Deletion Simulation
 
-to_delete, to_create, unchanged_old, unchanged_new = get_differences_between_bulks(
-    list(old_authors), new_authors, fields
-)
+```python
+from winidjango.src.db.bulk import simulate_bulk_deletion
 
-# Preview deletion impact
-deletion_preview = simulate_bulk_deletion(Author, to_delete)
-# Returns: {Author: {<Author: 1>, <Author: 2>}, Book: {<Book: 1>, <Book: 2>}, ...}
+# Preview what would be deleted
+deletion_preview = simulate_bulk_deletion(Author, authors_to_delete)
 print(f"Would delete {len(deletion_preview[Author])} authors")
 print(f"Would cascade delete {len(deletion_preview[Book])} books")
 ```
 
-**Key Features:**
-- **Multithreading**: Parallel processing of chunks for maximum speed
-- **Transaction Safety**: Atomic operations with nested transaction warnings
-- **Configurable Batch Size**: Default 1000, adjustable per operation
-- **Type-Safe**: Full generic type hints with overloads
-- **Memory Efficient**: Processes data in chunks, not all at once
+### Custom Management Command
 
-#### Model Utilities (`models.py`)
-
-**`topological_sort_models(models)`**
-- Sorts models by foreign key dependencies using Python's `graphlib.TopologicalSorter`
-- Ensures correct creation/deletion order
-- Ignores self-referential relationships
-- Raises `CycleError` for circular dependencies
-
-**`hash_model_instance(instance, fields)`**
-- Hashes model instances for comparison
-- PK-based for saved instances (fast)
-- Field-based for unsaved instances (content comparison)
-- Used internally by `get_differences_between_bulks()`
-
-**`BaseModel`** - Abstract base model with common fields:
-- `created_at` - Auto-populated on creation
-- `updated_at` - Auto-updated on save
-- `meta` property - Type-safe access to `_meta`
-- Custom `__str__()` and `__repr__()`
-
-```python
-from winidjango.src.db.models import BaseModel
-
-class MyModel(BaseModel):
-    name = models.CharField(max_length=100)
-
-    class Meta(BaseModel.Meta):
-        db_table = "my_model"
-
-# Automatically includes created_at and updated_at
-obj = MyModel.objects.create(name="test")
-print(obj.created_at)  # datetime
-print(obj)  # "MyModel(1)"
-```
-
-#### Field Utilities (`fields.py`)
-
-**`get_fields(model)`** - Get all fields including relationships
-**`get_field_names(fields)`** - Extract field names from field objects
-**`get_model_meta(model)`** - Type-safe access to model `_meta`
-
-```python
-from winidjango.src.db.fields import get_fields, get_field_names
-
-fields = get_fields(User)
-field_names = get_field_names(fields)
-# ['id', 'username', 'email', 'groups', 'user_permissions', ...]
-```
-
-#### SQL Utilities (`sql.py`)
-
-**`execute_sql(sql, params=None)`**
-- Execute raw SQL with safe parameter binding
-- Returns tuple: `(column_names, rows)`
-- Automatic cursor management
-- Protection against SQL injection
-
-```python
-from winidjango.src.db.sql import execute_sql
-
-columns, rows = execute_sql(
-    "SELECT id, username FROM auth_user WHERE is_active = %(active)s",
-    params={"active": True}
-)
-# columns: ['id', 'username']
-# rows: [(1, 'admin'), (2, 'user'), ...]
-```
-
-### Management Commands (`winidjango.src.commands`)
-
-A powerful framework for building Django management commands with built-in best practices, automatic logging, and standardized argument handling.
-
-#### `ABCBaseCommand` - Base Command Framework
-
-Abstract base class that provides a robust foundation for all Django management commands:
-
-**Key Features:**
-- **Template Method Pattern**: Enforces consistent command structure while allowing customization
-- **Automatic Logging**: All method calls are logged with performance tracking via `ABCLoggingMixin`
-- **Built-in Common Arguments**: Pre-configured standard options available to all commands:
-  - `--dry_run` - Preview changes without executing
-  - `--force` - Force execution of actions
-  - `--delete` - Enable deletion operations
-  - `--yes` - Auto-confirm all prompts
-  - `--timeout` - Set command timeout
-  - `--batch_size` - Configure batch processing size
-  - `--threads` - Control thread count for parallel processing
-  - `--processes` - Control process count for multiprocessing
-- **Type-Safe**: Full type hints with abstract method enforcement at compile-time
-- **Structured Execution Flow**: Separates common setup (`base_handle`) from command-specific logic (`handle_command`)
-
-**Usage Pattern:**
 ```python
 from winidjango.src.commands.base.base import ABCBaseCommand
 from argparse import ArgumentParser
 
 class MyCommand(ABCBaseCommand):
     def add_command_arguments(self, parser: ArgumentParser) -> None:
-        """Add command-specific arguments."""
         parser.add_argument('--input-file', type=str, required=True)
-        parser.add_argument('--output-format', choices=['json', 'csv'])
 
     def handle_command(self) -> None:
-        """Execute command logic."""
         input_file = self.get_option('input_file')
-        dry_run = self.get_option('dry_run')  # Built-in argument
-        batch_size = self.get_option('batch_size')  # Built-in argument
+        dry_run = self.get_option('dry_run')  # Built-in
 
         if dry_run:
-            self.stdout.write('Dry run mode - no changes will be made')
+            self.stdout.write('Dry run mode')
 
-        # Your command logic here
-        self.process_data(input_file, batch_size)
+        # Your logic here
 ```
 
-#### `ImportDataBaseCommand` - Data Import Framework
+### Data Import Command
 
-Specialized command for structured data import workflows with automatic cleaning and bulk creation:
-
-**Workflow Steps:**
-1. **Import** (`handle_import()`) - Fetch raw data from any source, returns Polars DataFrame
-2. **Clean** (`get_cleaning_df_cls()`) - Define data cleaning logic using `winiutils.CleaningDF`
-3. **Transform** (`get_bulks_by_model()`) - Convert cleaned DataFrame to Django model instances
-4. **Load** (`import_to_db()`) - Bulk create with automatic dependency resolution via topological sorting
-
-**Key Features:**
-- **Polars Integration**: High-performance data processing with Polars DataFrames
-- **Automatic Cleaning**: Leverages `winiutils.CleaningDF` for standardized data cleaning pipeline
-- **Dependency-Aware**: Uses `bulk_create_bulks_in_steps()` to handle foreign key relationships automatically
-- **Inherits All Base Features**: Gets all `ABCBaseCommand` functionality (logging, common args, etc.)
-
-**Usage Pattern:**
 ```python
 from winidjango.src.commands.import_data import ImportDataBaseCommand
-from winiutils.src.data.dataframe.cleaning import CleaningDF
 import polars as pl
-
-class MyCleaningDF(CleaningDF):
-    """Define your data cleaning rules."""
-    NAME_COL = "name"
-    EMAIL_COL = "email"
-
-    @classmethod
-    def get_rename_map(cls) -> dict[str, str]:
-        return {"name": "user_name", "email": "user_email"}
-
-    @classmethod
-    def get_col_dtype_map(cls) -> dict[str, type[pl.DataType]]:
-        return {cls.NAME_COL: pl.Utf8, cls.EMAIL_COL: pl.Utf8}
-
-    # ... other cleaning methods
 
 class ImportUsersCommand(ImportDataBaseCommand):
     def handle_import(self) -> pl.DataFrame:
-        """Fetch data from source."""
         return pl.read_csv("users.csv")
 
     def get_cleaning_df_cls(self) -> type[CleaningDF]:
-        """Return your cleaning class."""
         return MyCleaningDF
 
     def get_bulks_by_model(self, df: pl.DataFrame) -> dict[type[Model], Iterable[Model]]:
-        """Convert cleaned data to model instances."""
-        users = [User(name=row["name"], email=row["email"])
-                 for row in df.iter_rows(named=True)]
-        profiles = [Profile(user=user) for user in users]
-
-        # Automatically created in correct order (User before Profile)
-        return {User: users, Profile: profiles}
+        users = [User(name=row["name"]) for row in df.iter_rows(named=True)]
+        return {User: users}
 ```
 
-**Benefits:**
-- **Standardized Import Process**: Consistent pattern across all data import commands
-- **Separation of Concerns**: Import, cleaning, and transformation logic clearly separated
-- **Automatic Optimization**: Bulk operations with multithreading and dependency resolution
-- **Data Quality**: Built-in cleaning pipeline ensures data consistency
-- **Testable**: Each step can be tested independently
+## Documentation
+
+Comprehensive documentation is available in the [`docs/`](docs/) directory:
+
+- **[Database Utilities](docs/db.md)** - Bulk operations, model utilities, and SQL helpers
+- **[Management Commands](docs/commands.md)** - Command framework and data import patterns
+- **[API Reference](docs/index.md)** - Complete API documentation
+
+## Requirements
+
+- **Python**: 3.12+
+- **Django**: Compatible with modern Django versions
+- **Dependencies**:
+  - `django`
+  - `django-stubs-ext`
+  - `winiutils`
+
+## Development
+
+### Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/Winipedia/winidjango.git
+cd winidjango
+
+# Install dependencies
+uv sync
+
+# Install pre-commit hooks
+pre-commit install
+```
+
+### Code Quality
+
+This project uses:
+- **mypy**: Strict type checking
+- **ruff**: Linting and formatting
+- **bandit**: Security analysis
+- **pytest**: Testing framework
+
+```bash
+# Run type checking
+mypy .
+
+# Run linting
+ruff check .
+
+# Run security checks
+bandit -r winidjango
+
+# Format code
+ruff format .
+```
+
+## Testing
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=winidjango
+
+# Run specific test file
+pytest tests/test_winidjango/test_src/test_db/test_bulk.py
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- Built with [pyrig](https://github.com/Winipedia/pyrig) - Python project scaffolding tool
+- Integrates with [winiutils](https://github.com/Winipedia/winiutils) - General Python utilities
+
+---
