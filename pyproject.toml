@@ -25,6 +25,7 @@ dev = [
     "pre-commit",
     "pyinstaller",
     "pytest",
+    "pytest-cov",
     "pytest-django",
     "pytest-mock",
     "ruff",
@@ -83,6 +84,7 @@ files = "."
 testpaths = [
     "tests",
 ]
+addopts = "--cov=winidjango --cov-report=term-missing --cov-fail-under=80"
 
 [tool.bandit]
 exclude_dirs = [
