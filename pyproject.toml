@@ -34,6 +34,7 @@ dev = [
     "pytest-django",
     "pytest-mock",
     "ruff",
+    "ty",
     "types-defusedxml",
     "types-pyinstaller",
     "types-pyyaml",

@@ -578,7 +578,7 @@ def simulate_bulk_deletion(
     collector = Collector(using)
 
     # Collect deletion cascade for all entries
-    collector.collect(entries)
+    collector.collect(entries)  # ty:ignore[invalid-argument-type]
 
     # Prepare the result dictionary
     deletion_summary: defaultdict[type[Model], set[Model]] = defaultdict(set)
