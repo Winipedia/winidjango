@@ -1,4 +1,4 @@
-name: Health Check Workflow
+name: Health Check
 'on':
   workflow_dispatch: {}
   pull_request:
@@ -12,7 +12,7 @@ name: Health Check Workflow
   schedule:
   - cron: 0 2 * * *
 permissions: {}
-run-name: Health Check Workflow
+run-name: Health Check
 defaults:
   run:
     shell: bash
@@ -36,6 +36,10 @@ jobs:
     - name: Checkout Repository
       id: checkout_repository
       uses: actions/checkout@main
+    - name: Setup Git
+      id: setup_git
+      run: git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        && git config --global user.name "github-actions[bot]"
     - name: Setup Project Mgt
       id: setup_project_mgt
       uses: astral-sh/setup-uv@main
@@ -63,7 +67,12 @@ jobs:
       run: uv run pre-commit run --all-files
     - name: Run Tests
       id: run_tests
-      run: uv run pytest --log-cli-level=INFO
+      run: uv run pytest --log-cli-level=INFO --cov-report=xml
+    - name: Upload Coverage Report
+      id: upload_coverage_report
+      uses: codecov/codecov-action@main
+      with:
+        files: coverage.xml
   health_check:
     needs:
     - health_check_matrix

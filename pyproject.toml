@@ -13,6 +13,11 @@ dependencies = [
     "django-stubs-ext",
     "winiutils",
 ]
+classifiers = [
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
 
 [project.scripts]
 winidjango = "pyrig.dev.cli.cli:main"
@@ -84,7 +89,7 @@ files = "."
 testpaths = [
     "tests",
 ]
-addopts = "--cov=winidjango --cov-report=term-missing --cov-fail-under=80"
+addopts = "--cov=winidjango --cov-report=term-missing --cov-fail-under=90"
 
 [tool.bandit]
 exclude_dirs = [

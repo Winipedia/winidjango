@@ -1,12 +1,30 @@
 # winidjango
 
-[![built with pyrig](https://img.shields.io/badge/built%20with-pyrig-3776AB?logo=python&logoColor=white)](https://github.com/Winipedia/pyrig)
-[![PyPI version](https://img.shields.io/badge/version-2.0.13-blue.svg)](https://pypi.org/project/winidjango/)
-[![Python](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![Django](https://img.shields.io/badge/django-compatible-green.svg)](https://www.djangoproject.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<!-- tooling -->
+[![pyrig](https://img.shields.io/badge/built%20with-pyrig-3776AB?logo=buildkite&logoColor=black)](https://github.com/Winipedia/pyrig)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com/)
+<!-- code-quality -->
+[![ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![mypy](https://img.shields.io/badge/type%20checked-mypy-039dfc.svg)](https://mypy-lang.org/)
+[![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
+[![pytest](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org/)
+[![codecov](https://codecov.io/gh/Winipedia/winidjango/branch/main/graph/badge.svg)](https://codecov.io/gh/Winipedia/winidjango)
+<!-- package-info -->
+[![PyPI](https://img.shields.io/pypi/v/winidjango?logo=pypi&logoColor=white)](https://pypi.org/project/winidjango/)
+[![Python](https://img.shields.io/badge/python-3.12|3.13|3.14-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![License](https://img.shields.io/github/license/Winipedia/winidjango)](https://github.com/Winipedia/winidjango/blob/main/LICENSE)
+<!-- ci/cd -->
+[![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/winidjango/health_check.yaml?label=CI&logo=github)](https://github.com/Winipedia/winidjango/actions/workflows/health_check.yaml)
+[![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/winidjango/release.yaml?label=CD&logo=github)](https://github.com/Winipedia/winidjango/actions/workflows/release.yaml)
 
-A production-ready Django utilities library that simplifies complex database operations and provides structured patterns for data management tasks.
+
+---
+
+> A utils package for django
+
+---
+
 
 ## Table of Contents
 
