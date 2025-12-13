@@ -926,23 +926,14 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "2.1.33"
+version = "2.1.37"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "dotenv" },
-    { name = "packaging" },
-    { name = "pathspec" },
-    { name = "pillow" },
-    { name = "pygithub" },
-    { name = "pyyaml" },
-    { name = "setuptools" },
-    { name = "tenacity" },
-    { name = "tomlkit" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/43/c7/d1f20baaceba7ae9c116a74e2762af5aa2a99e46aa735f8d00cd8df3b504/pyrig-2.1.33.tar.gz", hash = "sha256:c22c3bfc6ee18a5cd4daa50e2ef832fa6bfc5a3f60bb77d1ad841d882403537e", size = 84215, upload-time = "2025-12-13T01:08:29.802Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/24/f1/801b9daeb871988e05f5d952a17b93dd905c1c3a6aa90643ef0885ee228a/pyrig-2.1.37.tar.gz", hash = "sha256:561a86a705c5c1ad2f823c0338e2439164be8a27437bac70dd2d8e0dbbc971fb", size = 84420, upload-time = "2025-12-13T23:41:15.065Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a2/44/84a446cd051f4d90e9c38899d1be4f855662e6c5c4b17bb0745f437cd2df/pyrig-2.1.33-py3-none-any.whl", hash = "sha256:93da3173a4105f3d53b6a0a439f669cdbfeefb732ed20171ca8eccfd1452c194", size = 123706, upload-time = "2025-12-13T01:08:27.423Z" },
+    { url = "https://files.pythonhosted.org/packages/65/5e/26fd638cf1ced5c584de5eccf9f3187958131392a1c025a8f81c030b6b5e/pyrig-2.1.37-py3-none-any.whl", hash = "sha256:4639825028c5c5822d5639660819eccd8f11b6d4980d3c049917b04f1ef42f83", size = 123187, upload-time = "2025-12-13T23:41:13.821Z" },
 ]
 
 [[package]]
@@ -1307,11 +1298,11 @@ wheels = [
 
 [[package]]
 name = "tzdata"
-version = "2025.2"
+version = "2025.3"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/95/32/1a225d6164441be760d75c2c42e2780dc0873fe382da3e98a2e1e48361e5/tzdata-2025.2.tar.gz", hash = "sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9", size = 196380, upload-time = "2025-03-23T13:54:43.652Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5e/a7/c202b344c5ca7daf398f3b8a477eeb205cf3b6f32e7ec3a6bac0629ca975/tzdata-2025.3.tar.gz", hash = "sha256:de39c2ca5dc7b0344f2eba86f49d614019d29f060fc4ebc8a417896a620b56a7", size = 196772, upload-time = "2025-12-13T17:45:35.667Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5c/23/c7abc0ca0a1526a0774eca151daeb8de62ec457e77262b66b359c3c7679e/tzdata-2025.2-py2.py3-none-any.whl", hash = "sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8", size = 347839, upload-time = "2025-03-23T13:54:41.845Z" },
+    { url = "https://files.pythonhosted.org/packages/c7/b0/003792df09decd6849a5e39c28b513c06e84436a54440380862b5aeff25d/tzdata-2025.3-py2.py3-none-any.whl", hash = "sha256:06a47e5700f3081aab02b2e513160914ff0694bce9947d6b76ebd6bf57cfc5d1", size = 348521, upload-time = "2025-12-13T17:45:33.889Z" },
 ]
 
 [[package]]
@@ -1351,14 +1342,21 @@ dependencies = [
 dev = [
     { name = "bandit" },
     { name = "django-stubs" },
+    { name = "dotenv" },
     { name = "mypy" },
+    { name = "pillow" },
     { name = "pre-commit" },
+    { name = "pygithub" },
     { name = "pyinstaller" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-django" },
     { name = "pytest-mock" },
+    { name = "pyyaml" },
     { name = "ruff" },
+    { name = "setuptools" },
+    { name = "tenacity" },
+    { name = "tomlkit" },
     { name = "ty" },
     { name = "types-defusedxml" },
     { name = "types-pyinstaller" },
@@ -1378,14 +1376,21 @@ requires-dist = [
 dev = [
     { name = "bandit" },
     { name = "django-stubs" },
+    { name = "dotenv" },
     { name = "mypy" },
+    { name = "pillow" },
     { name = "pre-commit" },
+    { name = "pygithub" },
     { name = "pyinstaller" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-django" },
     { name = "pytest-mock" },
+    { name = "pyyaml" },
     { name = "ruff" },
+    { name = "setuptools" },
+    { name = "tenacity" },
+    { name = "tomlkit" },
     { name = "ty" },
     { name = "types-defusedxml" },
     { name = "types-pyinstaller" },
@@ -1396,7 +1401,7 @@ dev = [
 
 [[package]]
 name = "winiutils"
-version = "2.3.10"
+version = "2.3.12"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cryptography" },
@@ -1407,7 +1412,7 @@ dependencies = [
     { name = "pyrig" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5b/f3/206de95d98be31372ddc977a4f45dd127a97e8042ff56ff382752eb662a1/winiutils-2.3.10.tar.gz", hash = "sha256:939e8a92afe9b7a1ebc9fcac177c85d94cc104da111144f7ea8ded215dc423e8", size = 25260, upload-time = "2025-12-13T02:48:12.058Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/35/4d/b0a317a09b0863373f8451cb54205d01ac5fbff159d2268702e15e320ff1/winiutils-2.3.12.tar.gz", hash = "sha256:f143261fede639971d37e4d61664569bd9d8e3f14654c0780d0ee92d1e86aa5f", size = 25305, upload-time = "2025-12-13T23:18:56.719Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9a/a9/67762dfe291df742330535a9de1642119e18b062e87042d52845ae7cd54a/winiutils-2.3.10-py3-none-any.whl", hash = "sha256:f4b73d57d2c42436cc5558e71b48eeed7396c21ec27d1bfe2f260932105228a4", size = 38167, upload-time = "2025-12-13T02:48:10.992Z" },
+    { url = "https://files.pythonhosted.org/packages/ef/10/9dead4d1821694df8df6be848f67616b66d8e541b9a1d3993f3acfd7554a/winiutils-2.3.12-py3-none-any.whl", hash = "sha256:77a327e9737afa7c2e89155754d1ac90fe66aa47c4c69d14bc1e9d0b290ef11f", size = 38162, upload-time = "2025-12-13T23:18:57.596Z" },
 ]
