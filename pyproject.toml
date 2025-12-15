@@ -27,29 +27,9 @@ winidjango = "pyrig.dev.cli.cli:main"
 
 [dependency-groups]
 dev = [
-    "bandit",
     "django-stubs",
-    "dotenv",
-    "mypy",
-    "pillow",
-    "pre-commit",
-    "pygithub",
-    "pyinstaller",
-    "pytest",
-    "pytest-cov",
+    "pyrig-dev",
     "pytest-django",
-    "pytest-mock",
-    "pyyaml",
-    "ruff",
-    "setuptools",
-    "tenacity",
-    "tomlkit",
-    "ty",
-    "types-defusedxml",
-    "types-pyinstaller",
-    "types-pyyaml",
-    "types-setuptools",
-    "types-tqdm",
 ]
 
 [build-system]
