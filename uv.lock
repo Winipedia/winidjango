@@ -1712,7 +1712,7 @@ wheels = [
 
 [[package]]
 name = "winidjango"
-version = "2.0.42"
+version = "2.0.43"
 source = { editable = "." }
 dependencies = [
     { name = "django" },
