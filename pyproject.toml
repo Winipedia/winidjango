@@ -17,13 +17,26 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Operating System :: OS Independent",
+    "Typing :: Typed",
 ]
 license-files = [
     "LICENSE",
 ]
+maintainers = [
+    {name = "Winipedia"},
+]
+keywords = []
 
 [project.scripts]
 winidjango = "pyrig.dev.cli.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/Winipedia/winidjango"
+Documentation = "https://Winipedia.github.io/winidjango"
+Source = "https://github.com/Winipedia/winidjango"
+Issues = "https://github.com/Winipedia/winidjango/issues"
+Changelog = "https://github.com/Winipedia/winidjango/releases"
 
 [dependency-groups]
 dev = [
