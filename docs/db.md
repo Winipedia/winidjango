@@ -1,6 +1,8 @@
 # Database Utilities
 
-The `winidjango.src.db` package provides high-performance database utilities for Django applications, including bulk operations, model utilities, field introspection, and raw SQL execution.
+The `winidjango.src.db` package provides high-performance database utilities
+for Django applications, including bulk operations, model utilities,
+field introspection, and raw SQL execution.
 
 ## Table of Contents
 
@@ -13,7 +15,8 @@ The `winidjango.src.db` package provides high-performance database utilities for
 
 Module: `winidjango.src.db.bulk`
 
-High-performance bulk operations with automatic chunking, multithreading, and transaction management.
+High-performance bulk operations with automatic chunking, multithreading,
+and transaction management.
 
 ### Core Functions
 
@@ -22,6 +25,7 @@ High-performance bulk operations with automatic chunking, multithreading, and tr
 Create thousands of model instances efficiently in configurable batches.
 
 **Signature:**
+
 ```python
 def bulk_create_in_steps[TModel: Model](
     model: type[TModel],
@@ -32,20 +36,24 @@ def bulk_create_in_steps[TModel: Model](
 ```
 
 **Parameters:**
+
 - `model`: Django model class to create instances of
 - `bulk`: Iterable of model instances to create
 - `step`: Batch size (default: 1000)
 
 **Returns:**
+
 - List of created model instances with populated primary keys
 
 **Features:**
+
 - Multithreaded processing of chunks
 - Atomic transaction wrapping
 - Memory-efficient chunking
 - Type-safe with generics
 
 **Example:**
+
 ```python
 from winidjango.src.db.bulk import bulk_create_in_steps
 
@@ -58,6 +66,7 @@ print(f"First author PK: {created[0].pk}")
 ```
 
 **Performance:**
+
 - ~5-10x faster than individual `save()` calls
 - Processes batches in parallel threads
 - Minimal memory footprint
@@ -69,6 +78,7 @@ print(f"First author PK: {created[0].pk}")
 Update large datasets efficiently in batches.
 
 **Signature:**
+
 ```python
 def bulk_update_in_steps[TModel: Model](
     model: type[TModel],
@@ -80,15 +90,18 @@ def bulk_update_in_steps[TModel: Model](
 ```
 
 **Parameters:**
+
 - `model`: Django model class
 - `bulk`: Iterable of model instances to update
 - `update_fields`: List of field names to update (required for safety)
 - `step`: Batch size (default: 1000)
 
 **Returns:**
+
 - Total count of updated objects
 
 **Example:**
+
 ```python
 from winidjango.src.db.bulk import bulk_update_in_steps
 
@@ -108,6 +121,7 @@ print(f"Updated {updated_count} authors")
 ```
 
 **Important:**
+
 - Must specify `update_fields` explicitly for safety
 - Only specified fields are updated in the database
 - Objects must have primary keys (must be saved first)
@@ -119,6 +133,7 @@ print(f"Updated {updated_count} authors")
 Delete model instances in batches with cascade tracking.
 
 **Signature:**
+
 ```python
 def bulk_delete_in_steps[TModel: Model](
     model: type[TModel],
@@ -129,16 +144,19 @@ def bulk_delete_in_steps[TModel: Model](
 ```
 
 **Parameters:**
+
 - `model`: Django model class
 - `bulk`: Iterable of model instances to delete
 - `step`: Batch size (default: 1000)
 
 **Returns:**
+
 - Tuple of `(total_count, count_by_model_dict)`
   - `total_count`: Total number of objects deleted
   - `count_by_model_dict`: Dictionary mapping model names to deletion counts
 
 **Example:**
+
 ```python
 from winidjango.src.db.bulk import bulk_delete_in_steps
 
@@ -151,6 +169,7 @@ for model_name, count in by_model.items():
 ```
 
 **Features:**
+
 - Tracks cascade deletions across related models
 - Safe handling of foreign key constraints
 - Respects Django's `on_delete` behavior
@@ -162,6 +181,7 @@ for model_name, count in by_model.items():
 Create multiple model types in correct dependency order automatically.
 
 **Signature:**
+
 ```python
 def bulk_create_bulks_in_steps[TModel: Model](
     bulk_by_class: dict[type[TModel], Iterable[TModel]],
@@ -171,25 +191,31 @@ def bulk_create_bulks_in_steps[TModel: Model](
 ```
 
 **Parameters:**
+
 - `bulk_by_class`: Dictionary mapping model classes to iterables of instances
 - `step`: Batch size (default: 1000)
 
 **Returns:**
+
 - Dictionary mapping model classes to lists of created instances
 
 **Features:**
+
 - **Automatic topological sorting** based on foreign key dependencies
 - Creates models in correct order to avoid integrity errors
 - Handles complex dependency graphs
 - Returns all created instances with populated PKs
 
 **Example:**
+
 ```python
 from winidjango.src.db.bulk import bulk_create_bulks_in_steps
 
 # Create related models - order doesn't matter!
 authors = [Author(name=f"Author {i}") for i in range(100)]
-books = [Book(title=f"Book {i}", author=authors[i % len(authors)]) for i in range(500)]
+books = [Book(title=f"Book {i}", author=authors[
+    i % len(authors)]) for i in range(500)
+]
 reviews = [Review(book=books[i % len(books)], rating=5) for i in range(1000)]
 
 # Provide in any order - library sorts by dependencies
@@ -206,6 +232,7 @@ print(f"Created {len(results[Review])} reviews")
 ```
 
 **How it works:**
+
 1. Analyzes foreign key relationships between provided models
 2. Uses `graphlib.TopologicalSorter` to determine creation order
 3. Creates each model type in dependency order
@@ -221,6 +248,7 @@ print(f"Created {len(results[Review])} reviews")
 Compare two bulks of model instances and return their differences.
 
 **Signature:**
+
 ```python
 def get_differences_between_bulks(
     bulk1: list[Model],
@@ -231,11 +259,13 @@ def get_differences_between_bulks(
 ```
 
 **Parameters:**
+
 - `bulk1`: First list of model instances
 - `bulk2`: Second list of model instances
 - `fields`: List of fields to compare (get with `get_fields()`)
 
 **Returns:**
+
 - 4-tuple of:
   1. Objects in `bulk1` but not in `bulk2`
   2. Objects in `bulk2` but not in `bulk1`
@@ -243,16 +273,20 @@ def get_differences_between_bulks(
   4. Objects in both (from `bulk2`)
 
 **Example:**
+
 ```python
 from winidjango.src.db.bulk import get_differences_between_bulks
 from winidjango.src.db.fields import get_fields
 
 # Compare current database state with new data
 current_users = list(User.objects.all())
-new_users = [User(username=f"user_{i}", email=f"user_{i}@example.com") for i in range(100)]
+new_users = [
+    User(username=f"user_{i}", email=f"user_{i}@example.com") 
+    for i in range(100)
+    ]
 
-fields = get_fields(User)
-to_delete, to_create, unchanged_old, unchanged_new = get_differences_between_bulks(
+fields = get_fields(User) to_delete, to_create, unchanged_old, unchanged_new =
+get_differences_between_bulks(
     current_users, new_users, fields
 )
 
@@ -268,12 +302,14 @@ if to_create:
 ```
 
 **Use Cases:**
+
 - Data synchronization
 - Change detection
 - Incremental updates
 - Audit trails
 
 **How it works:**
+
 - Hashes instances based on field values
 - For saved instances: uses primary key
 - For unsaved instances: uses field values
@@ -286,6 +322,7 @@ if to_create:
 Preview what objects would be deleted without actually deleting them.
 
 **Signature:**
+
 ```python
 def simulate_bulk_deletion(
     model_class: type[Model],
@@ -295,13 +332,16 @@ def simulate_bulk_deletion(
 ```
 
 **Parameters:**
+
 - `model_class`: Django model class of entries to delete
 - `entries`: List of model instances to simulate deletion for
 
 **Returns:**
+
 - Dictionary mapping model classes to sets of objects that would be deleted
 
 **Example:**
+
 ```python
 from winidjango.src.db.bulk import simulate_bulk_deletion, bulk_delete_in_steps
 
@@ -328,13 +368,15 @@ if input("Proceed? (y/n): ").lower() == 'y':
 ```
 
 **Features:**
+
 - Uses Django's `Collector` for accurate cascade simulation
 - No database modifications
 - Shows all cascade effects
 - Respects `on_delete` settings
 
 **Best Practice:**
-Always simulate deletions before executing them, especially for models with many relationships.
+Always simulate deletions before executing them,
+especially for models with many relationships.
 
 ---
 
@@ -343,6 +385,7 @@ Always simulate deletions before executing them, especially for models with many
 Simulate deletion for multiple model types and aggregate results.
 
 **Signature:**
+
 ```python
 def multi_simulate_bulk_deletion(
     entries: dict[type[Model], list[Model]],
@@ -351,12 +394,15 @@ def multi_simulate_bulk_deletion(
 ```
 
 **Parameters:**
+
 - `entries`: Dictionary mapping model classes to lists of instances
 
 **Returns:**
+
 - Dictionary mapping model classes to sets of all objects that would be deleted
 
 **Example:**
+
 ```python
 from winidjango.src.db.bulk import multi_simulate_bulk_deletion
 
@@ -377,21 +423,25 @@ for model, objects in deletion_preview.items():
 
 #### Batch Size
 
-The default batch size is 1000, defined in `STANDARD_BULK_SIZE`. Adjust based on:
+The default batch size is 1000, defined in `STANDARD_BULK_SIZE`.
+Adjust based on:
 
 **Small batch sizes (100-500):**
+
 - Complex models with many fields
 - Models with heavy validation logic
 - Limited memory environments
 - High database load
 
 **Large batch sizes (2000-5000):**
+
 - Simple models with few fields
 - No validation overhead
 - Ample memory available
 - Low database load
 
 **Example:**
+
 ```python
 # Small objects, large batches
 bulk_create_in_steps(SimpleModel, objects, step=5000)
@@ -436,7 +486,8 @@ def my_function():
     bulk_create_in_steps(...)  # Already atomic
 ```
 
-**Warning:** Nested transactions can cause issues. Remove outer `@transaction.atomic` decorators.
+**Warning:** Nested transactions can cause issues.
+Remove outer `@transaction.atomic` decorators.
 
 ---
 
@@ -444,7 +495,8 @@ def my_function():
 
 Module: `winidjango.src.db.models`
 
-Utilities for working with Django models, including dependency sorting and hashing.
+Utilities for working with Django models,
+including dependency sorting and hashing.
 
 ### Functions
 
@@ -453,6 +505,7 @@ Utilities for working with Django models, including dependency sorting and hashi
 Sort Django models by foreign key dependencies.
 
 **Signature:**
+
 ```python
 def topological_sort_models[TModel: Model](
     models: list[type[TModel]],
@@ -461,12 +514,15 @@ def topological_sort_models[TModel: Model](
 ```
 
 **Parameters:**
+
 - `models`: List of Django model classes to sort
 
 **Returns:**
+
 - List of models sorted in dependency order (dependencies first)
 
 **Example:**
+
 ```python
 from winidjango.src.db.models import topological_sort_models
 
@@ -484,12 +540,14 @@ for model in sorted_models:
 ```
 
 **Features:**
+
 - Uses Python's `graphlib.TopologicalSorter`
 - Handles complex dependency graphs
 - Ignores self-referential relationships
 - Raises `CycleError` for circular dependencies
 
 **Use Cases:**
+
 - Determining creation order for related models
 - Planning deletion order (reverse the list)
 - Database migration ordering
@@ -502,6 +560,7 @@ for model in sorted_models:
 Generate a hash for a model instance based on its field values.
 
 **Signature:**
+
 ```python
 def hash_model_instance(
     instance: Model,
@@ -511,13 +570,16 @@ def hash_model_instance(
 ```
 
 **Parameters:**
+
 - `instance`: Django model instance to hash
 - `fields`: List of fields to include in hash
 
 **Returns:**
+
 - Integer hash value
 
 **Example:**
+
 ```python
 from winidjango.src.db.models import hash_model_instance
 from winidjango.src.db.fields import get_fields
@@ -533,10 +595,12 @@ assert hash_value == hash_value2
 ```
 
 **Behavior:**
+
 - **Saved instances** (with PK): Hash based on primary key only
 - **Unsaved instances** (no PK): Hash based on field values
 
 **Use Cases:**
+
 - Comparing model instances
 - Detecting duplicates
 - Change detection
@@ -554,17 +618,21 @@ Not cryptographically secure. Use only for comparison purposes.
 Abstract base model with common fields and utilities.
 
 **Fields:**
+
 - `created_at`: DateTimeField, auto-populated on creation
 - `updated_at`: DateTimeField, auto-updated on save
 
 **Properties:**
+
 - `meta`: Type-safe access to model's `_meta` attribute
 
 **Methods:**
+
 - `__str__()`: Returns `"ModelName(pk)"`
 - `__repr__()`: Same as `__str__()`
 
 **Example:**
+
 ```python
 from winidjango.src.db.models import BaseModel
 from django.db import models
@@ -589,13 +657,15 @@ print(article.updated_at)  # 2024-01-01 12:05:00
 ```
 
 **Benefits:**
+
 - Consistent timestamp tracking across all models
 - Type-safe meta access
 - Standardized string representation
 - Reduces boilerplate code
 
 **Note:**
-Must inherit `BaseModel.Meta` in your model's Meta class to maintain abstract status.
+Must inherit `BaseModel.Meta`
+in your model's Meta class to maintain abstract status.
 
 ---
 
@@ -612,6 +682,7 @@ Utilities for introspecting and working with Django model fields.
 Get all fields from a Django model including relationships.
 
 **Signature:**
+
 ```python
 def get_fields[TModel: Model](
     model: type[TModel],
@@ -620,9 +691,11 @@ def get_fields[TModel: Model](
 ```
 
 **Parameters:**
+
 - `model`: Django model class
 
 **Returns:**
+
 - List of all field objects including:
   - Regular fields (CharField, IntegerField, etc.)
   - Foreign keys (ForeignKey, OneToOneField)
@@ -630,6 +703,7 @@ def get_fields[TModel: Model](
   - Generic foreign keys (GenericForeignKey)
 
 **Example:**
+
 ```python
 from winidjango.src.db.fields import get_fields
 
@@ -653,6 +727,7 @@ for field in fields:
 Extract field names from a list of field objects.
 
 **Signature:**
+
 ```python
 def get_field_names(
     fields: list[Field | ForeignObjectRel | GenericForeignKey],
@@ -661,12 +736,15 @@ def get_field_names(
 ```
 
 **Parameters:**
+
 - `fields`: List of field objects (from `get_fields()`)
 
 **Returns:**
+
 - List of field names as strings
 
 **Example:**
+
 ```python
 from winidjango.src.db.fields import get_fields, get_field_names
 
@@ -683,18 +761,22 @@ print(field_names)
 Get the Django model metadata options object.
 
 **Signature:**
+
 ```python
 def get_model_meta(model: type[Model]) -> Options[Model]:
     ...
 ```
 
 **Parameters:**
+
 - `model`: Django model class
 
 **Returns:**
+
 - Model's `_meta` attribute (Options object)
 
 **Example:**
+
 ```python
 from winidjango.src.db.fields import get_model_meta
 
@@ -705,6 +787,7 @@ print(meta.verbose_name)  # 'user'
 ```
 
 **Use Cases:**
+
 - Accessing model metadata
 - Getting table name
 - Inspecting model configuration
@@ -725,6 +808,7 @@ Utilities for executing raw SQL queries safely.
 Execute raw SQL query with safe parameter binding.
 
 **Signature:**
+
 ```python
 def execute_sql(
     sql: str,
@@ -734,15 +818,18 @@ def execute_sql(
 ```
 
 **Parameters:**
+
 - `sql`: SQL query string (can contain parameter placeholders)
 - `params`: Dictionary of parameters for safe binding (optional)
 
 **Returns:**
+
 - Tuple of `(column_names, rows)`
   - `column_names`: List of column names
   - `rows`: List of result rows (each row is a tuple)
 
 **Example:**
+
 ```python
 from winidjango.src.db.sql import execute_sql
 
@@ -774,18 +861,21 @@ columns, rows = execute_sql(sql, params={"since": "2024-01-01"})
 ```
 
 **Features:**
+
 - Automatic cursor management
 - Safe parameter binding (prevents SQL injection)
 - Returns column names for easy result processing
 - Works with Django's default database connection
 
 **Best Practices:**
+
 - Always use parameter binding for user input
 - Use Django ORM when possible
 - Reserve for complex queries not expressible in ORM
 - Consider using `raw()` for model-based queries
 
 **Security:**
+
 ```python
 # DON'T do this (SQL injection risk)
 username = request.GET.get('username')
@@ -832,7 +922,10 @@ class Book(BaseModel):
 
 # Create data with automatic dependency resolution
 authors = [Author(name=f"Author {i}") for i in range(100)]
-books = [Book(title=f"Book {i}", author=authors[i % len(authors)]) for i in range(500)]
+books = [
+    Book(title=f"Book {i}", author=authors[i % len(authors)]) 
+    for i in range(500)
+]
 
 results = bulk_create_bulks_in_steps({
     Book: books,      # Provided in any order
@@ -846,7 +939,8 @@ print(f"Created {len(results[Book])} books")
 new_authors = [Author(name=f"Updated Author {i}") for i in range(50)]
 fields = get_fields(Author)
 
-to_delete, to_create, unchanged_old, unchanged_new = get_differences_between_bulks(
+to_delete, to_create, unchanged_old, unchanged_new =
+get_differences_between_bulks(
     list(Author.objects.all()), new_authors, fields
 )
 
@@ -872,7 +966,7 @@ if to_create:
 
 ## See Also
 
-- **[Management Commands Documentation](commands.md)** - Command framework and data import
+- **[Management Commands Documentation](commands.md)**
+  - Command framework and data import
 - **[Main Documentation](index.md)** - Overview and quick start
 - **[Django Documentation](https://docs.djangoproject.com/)** - Official Django docs
-

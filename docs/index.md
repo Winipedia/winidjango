@@ -8,10 +8,11 @@
 [![MkDocs](https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white)](https://www.mkdocs.org/)
 <!-- code-quality -->
 [![ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)[![mypy](https://img.shields.io/badge/type%20checked-mypy-039dfc.svg)](https://mypy-lang.org/)
+[![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)
 [![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 [![pytest](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org/)
 [![codecov](https://codecov.io/gh/Winipedia/winidjango/branch/main/graph/badge.svg)](https://codecov.io/gh/Winipedia/winidjango)
+[![rumdl](https://img.shields.io/badge/markdown-rumdl-darkgreen)](https://github.com/rvben/rumdl)
 <!-- package-info -->
 [![PyPI](https://img.shields.io/pypi/v/winidjango?logo=pypi&logoColor=white)](https://pypi.org/project/winidjango)
 [![Python](https://img.shields.io/badge/python-3.12|3.13|3.14-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
@@ -28,29 +29,37 @@
 
 ---
 
-Welcome to the **winidjango** documentation! This library provides production-ready utilities for Django applications, focusing on high-performance database operations and structured management command patterns.
+Welcome to the **winidjango** documentation! This library provides
+production-ready utilities for Django applications,
+focusing on high-performance database operations
+and structured management command patterns.
 
 ## Overview
 
 **winidjango** is designed to solve common Django development challenges:
 
-- **Performance**: Bulk operations with multithreading for processing thousands of records efficiently
+- **Performance**:
+    Bulk operations with multithreading
+    for processing thousands of records efficiently
 - **Safety**: Transaction management, deletion simulation, and type-safe APIs
 - **Structure**: Standardized patterns for management commands and data imports
-- **Developer Experience**: Full type hints, automatic logging, and comprehensive error handling
+- **Developer Experience**:
+Full type hints, automatic logging, and comprehensive error handling
 
 ## Documentation
 
 ### Core Modules
 
-- **[Database Utilities](db.md)** - High-performance bulk operations, model utilities, field introspection, and SQL helpers
+- **[Database Utilities](db.md)** - High-performance bulk operations,
+    model utilities, field introspection, and SQL helpers
   - Bulk create/update/delete operations
   - Automatic dependency resolution with topological sorting
   - Deletion simulation and bulk comparison
   - BaseModel abstract class
   - Field and SQL utilities
 
-- **[Management Commands](commands.md)** - Command framework with automatic logging and structured data import
+- **[Management Commands](commands.md)**
+    Command framework with automatic logging and structured data import
   - ABCBaseCommand template method pattern
   - ImportDataBaseCommand for data imports
   - Built-in arguments (dry-run, batch size, threading, etc.)
@@ -128,7 +137,8 @@ class CleanupCommand(ABCBaseCommand):
             pass
 ```
 
-See **[Management Commands](commands.md)** for complete command framework documentation.
+See **[Management Commands](commands.md)**
+for complete command framework documentation.
 
 ### Import Data from CSV
 
@@ -144,7 +154,9 @@ class ImportUsersCommand(ImportDataBaseCommand):
         return UserCleaningDF  # Your cleaning rules
 
     def get_bulks_by_model(self, df):
-        users = [User(username=row["username"]) for row in df.iter_rows(named=True)]
+        users = [
+            User(username=row["username"]) for row in df.iter_rows(named=True)
+        ]
         return {User: users}
 ```
 
@@ -152,11 +164,14 @@ See **[Management Commands](commands.md)** for data import patterns.
 
 ## Key Features
 
-- **High-Performance Bulk Operations** - Multithreaded processing with configurable batch sizes
-- **Automatic Dependency Resolution** - Topological sorting for foreign key relationships
+- **High-Performance Bulk Operations** -
+    Multithreaded processing with configurable batch sizes
+- **Automatic Dependency Resolution** -
+    Topological sorting for foreign key relationships
 - **Deletion Simulation** - Preview cascade effects before executing
 - **Dataset Comparison** - Detect differences and synchronize data
-- **Management Command Framework** - Template method pattern with built-in arguments
+- **Management Command Framework** -
+    Template method pattern with built-in arguments
 - **Structured Data Import** - Polars integration with automatic cleaning
 - **Type Safety** - Full type hints with Python 3.12+ generics
 
@@ -164,8 +179,12 @@ See **[Management Commands](commands.md)** for data import patterns.
 
 For detailed documentation, examples, and API reference:
 
-- **[Database Utilities Documentation](db.md)** - Complete guide to bulk operations, model utilities, field introspection, and SQL helpers
-- **[Management Commands Documentation](commands.md)** - Complete guide to command framework, data imports, and best practices
+- **[Database Utilities Documentation](db.md)**
+- Complete guide to bulk operations, model utilities,
+    field introspection, and SQL helpers
+
+- **[Management Commands Documentation](commands.md)**
+  - Complete guide to command framework, data imports, and best practices
 
 ## External Resources
 

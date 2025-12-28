@@ -8,10 +8,11 @@
 [![MkDocs](https://img.shields.io/badge/MkDocs-Documentation-326CE5?logo=mkdocs&logoColor=white)](https://www.mkdocs.org/)
 <!-- code-quality -->
 [![ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)[![mypy](https://img.shields.io/badge/type%20checked-mypy-039dfc.svg)](https://mypy-lang.org/)
+[![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)
 [![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
 [![pytest](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org/)
 [![codecov](https://codecov.io/gh/Winipedia/winidjango/branch/main/graph/badge.svg)](https://codecov.io/gh/Winipedia/winidjango)
+[![rumdl](https://img.shields.io/badge/markdown-rumdl-darkgreen)](https://github.com/rvben/rumdl)
 <!-- package-info -->
 [![PyPI](https://img.shields.io/pypi/v/winidjango?logo=pypi&logoColor=white)](https://pypi.org/project/winidjango)
 [![Python](https://img.shields.io/badge/python-3.12|3.13|3.14-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
@@ -43,26 +44,38 @@
 ## Features
 
 ### 🚀 High-Performance Bulk Operations
-- **Multithreaded Processing**: Parallel execution of database operations for maximum speed
-- **Automatic Chunking**: Configurable batch sizes (default: 1000) for memory-efficient processing
-- **Transaction Safety**: Atomic operations with intelligent transaction management
-- **Dependency Resolution**: Automatic topological sorting for foreign key relationships
+
+- **Multithreaded Processing**:
+    Parallel execution of database operations for maximum speed
+- **Automatic Chunking**:
+    Configurable batch sizes (default: 1000) for memory-efficient processing
+- **Transaction Safety**:
+    Atomic operations with intelligent transaction management
+- **Dependency Resolution**:
+    Automatic topological sorting for foreign key relationships
 
 ### 🛠️ Database Utilities
+
 - **Bulk Create/Update/Delete**: Process thousands of records efficiently
-- **Deletion Simulation**: Preview cascade effects before executing destructive operations
-- **Bulk Comparison**: Detect differences between datasets with field-level hashing
+- **Deletion Simulation**:
+    Preview cascade effects before executing destructive operations
+- **Bulk Comparison**:
+    Detect differences between datasets with field-level hashing
 - **Raw SQL Execution**: Safe parameter binding with automatic cursor management
 
 ### 📦 Model Utilities
-- **BaseModel**: Abstract base with `created_at`, `updated_at`, and type-safe `meta` property
+
+- **BaseModel**:
+    Abstract base with `created_at`, `updated_at`, and type-safe `meta` property
 - **Topological Sorting**: Automatic dependency ordering for model operations
 - **Field Introspection**: Type-safe utilities for working with model fields
 
 ### 🎯 Management Command Framework
+
 - **ABCBaseCommand**: Template method pattern with automatic logging
 - **ImportDataBaseCommand**: Structured data import with Polars integration
-- **Built-in Arguments**: Standard options for dry-run, batch size, threading, and more
+- **Built-in Arguments**:
+    Standard options for dry-run, batch size, threading, and more
 - **Type Safety**: Full type hints with abstract method enforcement
 
 ## Installation
@@ -146,7 +159,9 @@ class ImportUsersCommand(ImportDataBaseCommand):
     def get_cleaning_df_cls(self) -> type[CleaningDF]:
         return MyCleaningDF
 
-    def get_bulks_by_model(self, df: pl.DataFrame) -> dict[type[Model], Iterable[Model]]:
+    def get_bulks_by_model(
+        self, df: pl.DataFrame
+    ) -> dict[type[Model], Iterable[Model]]:
         users = [User(name=row["name"]) for row in df.iter_rows(named=True)]
         return {User: users}
 ```
@@ -155,7 +170,8 @@ class ImportUsersCommand(ImportDataBaseCommand):
 
 Comprehensive documentation is available in the [`docs/`](docs/) directory:
 
-- **[Database Utilities](docs/db.md)** - Bulk operations, model utilities, and SQL helpers
+- **[Database Utilities](docs/db.md)**
+  - Bulk operations, model utilities, and SQL helpers
 - **[Management Commands](docs/commands.md)** - Command framework and data import patterns
 - **[API Reference](docs/index.md)** - Complete API documentation
 
@@ -187,6 +203,7 @@ pre-commit install
 ### Code Quality
 
 This project uses:
+
 - **mypy**: Strict type checking
 - **ruff**: Linting and formatting
 - **bandit**: Security analysis
@@ -221,7 +238,9 @@ pytest tests/test_winidjango/test_src/test_db/test_bulk.py
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+Contributions are welcome! Please feel free to submit a Pull Request.
+For major changes, please open an issue first
+to discuss what you would like to change.
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
@@ -231,7 +250,8 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License,
+see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
