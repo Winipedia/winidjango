@@ -7,7 +7,6 @@ from typing import Any
 import polars as pl
 import pytest
 from django.db.models import Model
-from pyrig.src.testing.assertions import assert_with_msg
 from pytest_mock import MockerFixture
 from winiutils.src.data.dataframe.cleaning import CleaningDF
 
@@ -139,10 +138,7 @@ class TestImportDataBaseCommand:
         df = cmd.handle_import()
 
         # just assert that it returns a dataframe
-        assert_with_msg(
-            isinstance(df, pl.DataFrame),
-            f"Expected dataframe, got {type(df)}",
-        )
+        assert isinstance(df, pl.DataFrame), f"Expected dataframe, got {type(df)}"
 
     def test_get_cleaning_df_cls(
         self, import_data_command: type[ImportDataBaseCommand]
@@ -151,10 +147,7 @@ class TestImportDataBaseCommand:
         cmd = import_data_command()
         df_cls = cmd.get_cleaning_df_cls()
 
-        assert_with_msg(
-            df_cls is MyCleaningDF,
-            f"Expected MyCleaningDF, got {df_cls}",
-        )
+        assert df_cls is MyCleaningDF, f"Expected MyCleaningDF, got {df_cls}"
 
     def test_get_bulks_by_model(
         self, import_data_command: type[ImportDataBaseCommand]
@@ -170,20 +163,17 @@ class TestImportDataBaseCommand:
             )
         )
 
-        assert_with_msg(
-            set(bulk_by_model.keys()) == {ModelA, ModelB},
-            f"Expected {{ModelA, ModelB}}, got {bulk_by_model.keys()}",
+        assert set(bulk_by_model.keys()) == {ModelA, ModelB}, (
+            f"Expected {{ModelA, ModelB}}, got {bulk_by_model.keys()}"
         )
         bulk_a = list(bulk_by_model[ModelA])
         bulk_b = list(bulk_by_model[ModelB])
         expected_len = 3
-        assert_with_msg(
-            len(bulk_a) == expected_len,
-            f"Expected 3 items in bulk_a, got {len(bulk_a)}",
+        assert len(bulk_a) == expected_len, (
+            f"Expected 3 items in bulk_a, got {len(bulk_a)}"
         )
-        assert_with_msg(
-            len(bulk_b) == expected_len,
-            f"Expected 3 items in bulk_b, got {len(bulk_b)}",
+        assert len(bulk_b) == expected_len, (
+            f"Expected 3 items in bulk_b, got {len(bulk_b)}"
         )
 
     @pytest.mark.django_db
@@ -221,11 +211,9 @@ class TestImportDataBaseCommand:
 
         # test the data
         expected_num = 3
-        assert_with_msg(
-            ModelA.objects.count() == expected_num,
-            f"Expected {expected_num} ModelA objects, got {ModelA.objects.count()}",
+        assert ModelA.objects.count() == expected_num, (
+            f"Expected {expected_num} ModelA objects, got {ModelA.objects.count()}"
         )
-        assert_with_msg(
-            ModelB.objects.count() == expected_num,
-            f"Expected {expected_num} ModelB objects, got {ModelB.objects.count()}",
+        assert ModelB.objects.count() == expected_num, (
+            f"Expected {expected_num} ModelB objects, got {ModelB.objects.count()}"
         )

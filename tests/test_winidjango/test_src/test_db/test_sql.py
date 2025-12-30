@@ -1,7 +1,6 @@
 """Test module for sql.py."""
 
 import pytest
-from pyrig.src.testing.assertions import assert_with_msg
 
 from winidjango.src.db.sql import execute_sql
 
@@ -15,11 +14,5 @@ def test_execute_sql() -> None:
     sql = "SELECT * FROM test_execute_sql"
     columns, rows = execute_sql(sql)
 
-    assert_with_msg(
-        columns == ["id", "name"],
-        f"Expected columns ['id', 'name'], got {columns}",
-    )
-    assert_with_msg(
-        len(rows) == 0,
-        f"Expected 0 rows, got {len(rows)}",
-    )
+    assert columns == ["id", "name"], f"Expected columns ['id', 'name'], got {columns}"
+    assert len(rows) == 0, f"Expected 0 rows, got {len(rows)}"

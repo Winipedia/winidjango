@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, cast
 import pytest
 from django.db import models
 from pyrig.src.modules.module import make_obj_importpath
-from pyrig.src.testing.assertions import assert_with_msg
 
 from tests.models import ModelA, ModelB
 from winidjango.src.db import bulk
@@ -41,13 +40,11 @@ def test_bulk_create_in_steps() -> None:
     """Test func for bulk_create_in_steps."""
     bulk = [ModelA(str_field=f"test_{i}", int_field=i) for i in range(1, 11)]
     created = bulk_create_in_steps(ModelA, bulk, step=5)
-    assert_with_msg(
-        len(created) == len(bulk),
-        f"Expected {len(bulk)} created, got {len(created)}",
+    assert len(created) == len(bulk), (
+        f"Expected {len(bulk)} created, got {len(created)}"
     )
-    assert_with_msg(
-        created[0].pk == 1,
-        f"Expected first object to have pk 1, got {created[0].pk}",
+    assert created[0].pk == 1, (
+        f"Expected first object to have pk 1, got {created[0].pk}"
     )
 
 
@@ -61,10 +58,7 @@ def test_bulk_update_in_steps() -> None:
     for obj in created:
         obj.int_field = obj.int_field + 1
     updated = bulk_update_in_steps(ModelA, created, ["int_field"], step=5)
-    assert_with_msg(
-        updated == len(created),
-        f"Expected {len(created)} updated, got {updated}",
-    )
+    assert updated == len(created), f"Expected {len(created)} updated, got {updated}"
 
 
 @pytest.mark.django_db
@@ -74,9 +68,8 @@ def test_bulk_delete_in_steps() -> None:
     bulk = [ModelA(str_field=f"test_{i}", int_field=i) for i in range(1, 11)]
     created: list[ModelA] = bulk_create_in_steps(ModelA, bulk, step=5)
     deleted = bulk_delete_in_steps(ModelA, created, step=5)
-    assert_with_msg(
-        deleted[0] == len(created),
-        f"Expected {len(created)} deleted, got {deleted[0]}",
+    assert deleted[0] == len(created), (
+        f"Expected {len(created)} deleted, got {deleted[0]}"
     )
 
 
@@ -92,9 +85,8 @@ def test_bulk_method_in_steps() -> None:
         "tuple[int, dict[str, int]]",
         bulk_method_in_steps(ModelA, created, step=5, mode=MODE_DELETE),
     )
-    assert_with_msg(
-        deleted[0] == len(created),
-        f"Expected {len(created)} deleted, got {deleted[0]}",
+    assert deleted[0] == len(created), (
+        f"Expected {len(created)} deleted, got {deleted[0]}"
     )
 
 
@@ -111,9 +103,8 @@ def test_bulk_method_in_steps_atomic() -> None:
         "tuple[int, dict[str, int]]",
         bulk_method_in_steps_atomic(ModelA, created, step=5, mode=MODE_DELETE),
     )
-    assert_with_msg(
-        deleted[0] == len(created),
-        f"Expected {len(created)} deleted, got {deleted[0]}",
+    assert deleted[0] == len(created), (
+        f"Expected {len(created)} deleted, got {deleted[0]}"
     )
 
 
@@ -121,19 +112,13 @@ def test_get_step_chunks() -> None:
     """Test func for get_step_chunks."""
     # Test with empty bulk
     empty_chunks = list(get_step_chunks([], 5))
-    assert_with_msg(
-        empty_chunks == [],
-        "Expected empty chunks for empty bulk",
-    )
+    assert empty_chunks == [], "Expected empty chunks for empty bulk"
 
     # Test with bulk smaller than step size
     small_bulk = [ModelA(str_field=f"test_{i}", int_field=i) for i in range(1, 3)]
     small_chunks = list(get_step_chunks(small_bulk, 5))
 
-    assert_with_msg(
-        small_chunks == [(small_bulk,)],
-        f"Expected one chunk, got {small_chunks}",
-    )
+    assert small_chunks == [(small_bulk,)], f"Expected one chunk, got {small_chunks}"
 
     # Test with bulk larger than step size
     large_bulk = [ModelA(str_field=f"test_{i}", int_field=i) for i in range(7)]
@@ -144,9 +129,8 @@ def test_get_step_chunks() -> None:
         (large_bulk[3:6],),
         (large_bulk[6:],),
     ]
-    assert_with_msg(
-        large_chunks == expected_large_chunks,
-        f"Expected {expected_large_chunks}, got {large_chunks}",
+    assert large_chunks == expected_large_chunks, (
+        f"Expected {expected_large_chunks}, got {large_chunks}"
     )
 
 
@@ -167,24 +151,15 @@ def test_get_bulk_method() -> None:
 
     # Test create method
     create_method = get_bulk_method(BulkMethodTestModel, MODE_CREATE)
-    assert_with_msg(
-        callable(create_method),
-        "Expected create method to be callable",
-    )
+    assert callable(create_method), "Expected create method to be callable"
 
     # Test update method
     update_method = get_bulk_method(BulkMethodTestModel, MODE_UPDATE, fields=["name"])
-    assert_with_msg(
-        callable(update_method),
-        "Expected update method to be callable",
-    )
+    assert callable(update_method), "Expected update method to be callable"
 
     # Test delete method
     delete_method = get_bulk_method(BulkMethodTestModel, MODE_DELETE)
-    assert_with_msg(
-        callable(delete_method),
-        "Expected delete method to be callable",
-    )
+    assert callable(delete_method), "Expected delete method to be callable"
 
 
 def test_flatten_bulk_in_steps_result() -> None:
@@ -207,18 +182,16 @@ def test_flatten_bulk_in_steps_result() -> None:
     create_results = [test_instances[:2], test_instances[2:]]
     flattened_create = flatten_bulk_in_steps_result(create_results, MODE_CREATE)
 
-    assert_with_msg(
-        len(flattened_create) == len(test_instances),
-        f"Expected {len(test_instances)} flattened items, got {len(flattened_create)}",
+    assert len(flattened_create) == len(test_instances), (
+        f"Expected {len(test_instances)} flattened items, got {len(flattened_create)}"
     )
 
     # Test update mode flattening
     update_results = [5, 3, 2]  # Counts from different chunks
     flattened_update = flatten_bulk_in_steps_result(update_results, MODE_UPDATE)
     expected_update_sum = 10
-    assert_with_msg(
-        flattened_update == expected_update_sum,
-        f"Expected sum {expected_update_sum}, got {flattened_update}",
+    assert flattened_update == expected_update_sum, (
+        f"Expected sum {expected_update_sum}, got {flattened_update}"
     )
 
     # Test delete mode flattening
@@ -230,19 +203,16 @@ def test_flatten_bulk_in_steps_result() -> None:
 
     total_count, model_counts = flattened_delete
     expected_total = 5
-    assert_with_msg(
-        total_count == expected_total,
-        f"Expected total count {expected_total}, got {total_count}",
+    assert total_count == expected_total, (
+        f"Expected total count {expected_total}, got {total_count}"
     )
     expected_model1_count = 3
-    assert_with_msg(
-        model_counts["Model1"] == expected_model1_count,
-        f"Expected Model1 count 3, got {model_counts['Model1']}",
+    assert model_counts["Model1"] == expected_model1_count, (
+        f"Expected Model1 count 3, got {model_counts['Model1']}"
     )
     expected_model2_count = 2
-    assert_with_msg(
-        model_counts["Model2"] == expected_model2_count,
-        f"Expected Model2 count 2, got {model_counts['Model2']}",
+    assert model_counts["Model2"] == expected_model2_count, (
+        f"Expected Model2 count 2, got {model_counts['Model2']}"
     )
 
 
@@ -278,9 +248,8 @@ def test_bulk_delete() -> None:
 
         result = bulk_delete(BulkDeleteTestModel, test_instances)
 
-        assert_with_msg(
-            result == (3, {"BulkDeleteTestModel": 3}),
-            f"Expected (3, {{'BulkDeleteTestModel': 3}}), got {result}",
+        assert result == (3, {"BulkDeleteTestModel": 3}), (
+            f"Expected (3, {{'BulkDeleteTestModel': 3}}), got {result}"
         )
 
 
@@ -295,16 +264,13 @@ def test_bulk_create_bulks_in_steps() -> None:
         ModelB: bulk_b,
     }
     results = bulk_create_bulks_in_steps(bulk_by_class)
-    assert_with_msg(
-        results == bulk_by_class,
-        f"Expected {bulk_by_class}, got {results}",
-    )
+    assert results == bulk_by_class, f"Expected {bulk_by_class}, got {results}"
     results_b: list[ModelB] = cast("list[ModelB]", (results[ModelB]))
     # assert b has as with pks after
     for model_b in results_b:
-        assert_with_msg(
-            model_b.pk is not None and model_b.model_a.pk is not None,
-            f"Expected pk for {model_b}, got None",
+        assert model_b.pk is not None, f"Expected pk for {model_b}, got None"
+        assert model_b.model_a.pk is not None, (
+            f"Expected pk for {model_b.model_a}, got None"
         )
 
 
@@ -326,10 +292,7 @@ def test_get_differences_between_bulks() -> None:
 
     # Test with empty bulks
     empty_result = get_differences_between_bulks([], [], [])
-    assert_with_msg(
-        empty_result == ([], [], [], []),
-        "Expected empty result for empty bulks",
-    )
+    assert empty_result == ([], [], [], []), "Expected empty result for empty bulks"
 
     # Test with different instances
     bulk1 = [
@@ -357,10 +320,7 @@ def test_get_differences_between_bulks() -> None:
         [bulk1[2]],
         [bulk2[2]],
     )
-    assert_with_msg(
-        result == expected,
-        f"Expected {expected}, got {result}",
-    )
+    assert result == expected, f"Expected {expected}, got {result}"
 
     # Test with different model types raises ValueError
     class OtherModel(models.Model):
@@ -397,10 +357,7 @@ def test_simulate_bulk_deletion() -> None:
 
     # Test with empty entries
     empty_result = simulate_bulk_deletion(SimulateDeleteTestModel, [])
-    assert_with_msg(
-        empty_result == {},
-        "Expected empty result for empty entries",
-    )
+    assert empty_result == {}, "Expected empty result for empty entries"
 
     # Test with mock entries
     test_instances: list[models.Model] = [
@@ -426,14 +383,12 @@ def test_simulate_bulk_deletion() -> None:
 
         result = simulate_bulk_deletion(SimulateDeleteTestModel, test_instances)
 
-        assert_with_msg(
-            SimulateDeleteTestModel in result,
-            "Expected SimulateDeleteTestModel in result",
+        assert SimulateDeleteTestModel in result, (
+            "Expected SimulateDeleteTestModel in result"
         )
-        assert_with_msg(
-            len(result[SimulateDeleteTestModel]) == len(test_instances),
+        assert len(result[SimulateDeleteTestModel]) == len(test_instances), (
             f"Expected {len(test_instances)} instances, "
-            f"got {len(result[SimulateDeleteTestModel])}",
+            f"got {len(result[SimulateDeleteTestModel])}"
         )
 
 
@@ -465,10 +420,7 @@ def test_multi_simulate_bulk_deletion() -> None:
 
     # Test with empty entries
     empty_result = multi_simulate_bulk_deletion({})
-    assert_with_msg(
-        empty_result == {},
-        "Expected empty result for empty entries",
-    )
+    assert empty_result == {}, "Expected empty result for empty entries"
 
     # Mock the simulate_bulk_deletion function
     with pytest.MonkeyPatch().context() as m:
@@ -502,12 +454,10 @@ def test_multi_simulate_bulk_deletion() -> None:
 
         result = multi_simulate_bulk_deletion(entries)
 
-        assert_with_msg(
-            result
-            == {
-                MultiDeleteModel1: set(model1_instances[:1]),
-                MultiDeleteModel2: set(model2_instances[:1]),
-            },
+        assert result == {
+            MultiDeleteModel1: set(model1_instances[:1]),
+            MultiDeleteModel2: set(model2_instances[:1]),
+        }, (
             f"Expected {{MultiDeleteModel1: {model1_instances[:1]}, "
-            f"MultiDeleteModel2: {model2_instances[:1]}}}, got {result}",
+            f"MultiDeleteModel2: {model2_instances[:1]}}}, got {result}"
         )

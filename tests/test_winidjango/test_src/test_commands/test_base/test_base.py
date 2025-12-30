@@ -4,7 +4,6 @@ from argparse import ArgumentParser
 from typing import Any, final
 
 from django.core.management import call_command
-from pyrig.src.testing.assertions import assert_with_msg
 
 from winidjango.src.commands.base.base import ABCBaseCommand
 
@@ -38,9 +37,8 @@ class TestABCBaseCommand:
             if action.option_strings:
                 added_arguments.update(action.option_strings)
 
-        assert_with_msg(
-            command.add_command_arguments_called,
-            "Expected add_command_arguments to be called",
+        assert command.add_command_arguments_called, (
+            "Expected add_command_arguments to be called"
         )
 
     def test_base_add_arguments(self) -> None:
@@ -76,9 +74,8 @@ class TestABCBaseCommand:
                 added_arguments.update(action.option_strings)
 
         for expected_arg in expected_arguments:
-            assert_with_msg(
-                expected_arg in added_arguments,
-                f"Expected argument {expected_arg} to be added, got {added_arguments}",
+            assert expected_arg in added_arguments, (
+                f"Expected argument {expected_arg} to be added, got {added_arguments}"
             )
 
     def test_add_command_arguments(self) -> None:
@@ -87,9 +84,8 @@ class TestABCBaseCommand:
         abstract_methods: set[str] = getattr(
             ABCBaseCommand, "__abstractmethods__", set()
         )
-        assert_with_msg(
-            "add_command_arguments" in abstract_methods,
-            "Expected add_command_arguments to be abstract",
+        assert "add_command_arguments" in abstract_methods, (
+            "Expected add_command_arguments to be abstract"
         )
 
         # Test that concrete implementation works correctly
@@ -105,9 +101,8 @@ class TestABCBaseCommand:
 
         # Test that concrete implementation can be instantiated
         command = ConcreteTestCommand()
-        assert_with_msg(
-            command.__class__.__bases__[0] is ABCBaseCommand,
-            "Expected concrete command to inherit from ABCBaseCommand",
+        assert command.__class__.__bases__[0] is ABCBaseCommand, (
+            "Expected concrete command to inherit from ABCBaseCommand"
         )
 
         # Test that the method can add custom arguments
@@ -120,9 +115,8 @@ class TestABCBaseCommand:
             if action.option_strings:
                 added_arguments.update(action.option_strings)
 
-        assert_with_msg(
-            "--test-arg" in added_arguments,
-            "Expected custom argument --test-arg to be added",
+        assert "--test-arg" in added_arguments, (
+            "Expected custom argument --test-arg to be added"
         )
 
     def test_handle(self) -> None:
@@ -144,9 +138,8 @@ class TestABCBaseCommand:
         # Test the template method pattern
         command.handle()
 
-        assert_with_msg(
-            command.handle_command_called,
-            "Expected handle_command to be called by handle",
+        assert command.handle_command_called, (
+            "Expected handle_command to be called by handle"
         )
 
     def test_base_handle(self) -> None:
@@ -168,13 +161,9 @@ class TestABCBaseCommand:
         args = ("test_arg",)
         options = {"test_option": "test_value"}
         command.handle(*args, **options)
-        assert_with_msg(
-            command.args == args,
-            f"Expected args to be {args}, got {command.args}",
-        )
-        assert_with_msg(
-            command.options == options,
-            f"Expected options to be {options}, got {command.options}",
+        assert command.args == args, f"Expected args to be {args}, got {command.args}"
+        assert command.options == options, (
+            f"Expected options to be {options}, got {command.options}"
         )
 
     def test_handle_command(self) -> None:
@@ -183,9 +172,8 @@ class TestABCBaseCommand:
         abstract_methods: set[str] = getattr(
             ABCBaseCommand, "__abstractmethods__", set()
         )
-        assert_with_msg(
-            "handle_command" in abstract_methods,
-            "Expected handle_command to be abstract",
+        assert "handle_command" in abstract_methods, (
+            "Expected handle_command to be abstract"
         )
 
         # Test that concrete implementation works correctly
@@ -202,16 +190,14 @@ class TestABCBaseCommand:
         command = ConcreteTestCommand()
 
         # Verify that the method exists and can be called
-        assert_with_msg(
-            hasattr(command, "handle_command"),
-            "Expected command to have handle_command method",
+        assert hasattr(command, "handle_command"), (
+            "Expected command to have handle_command method"
         )
 
         # Test that the method can be called without errors
         command.handle()
-        assert_with_msg(
-            command.handle_command_called,
-            "Expected handle_command to be called by handle",
+        assert command.handle_command_called, (
+            "Expected handle_command to be called by handle"
         )
 
     def test_get_option(self) -> None:
@@ -236,7 +222,6 @@ class TestABCBaseCommand:
         # call the command with djangos call_command
         cmd = TestCommand()
         call_command(cmd, extra="test")
-        assert_with_msg(
-            cmd.extra_option == "test",
-            f"Expected extra_option to be 'test', got {cmd.extra_option}",
+        assert cmd.extra_option == "test", (
+            f"Expected extra_option to be 'test', got {cmd.extra_option}"
         )
