@@ -309,9 +309,7 @@ def test_get_differences_between_bulks() -> None:
     # Get fields for comparison
     fields = get_fields(DiffTestModel)
 
-    result = (
-        get_differences_between_bulks(bulk1, bulk2, fields)  # type: ignore[arg-type]
-    )
+    result = get_differences_between_bulks(bulk1, bulk2, fields)
 
     # Test that we get lists back
     expected = (
@@ -337,7 +335,7 @@ def test_get_differences_between_bulks() -> None:
     other_bulk = [OtherModel(name="other")]
 
     with pytest.raises(ValueError, match="Both bulks must be of the same model type"):
-        get_differences_between_bulks(bulk1, other_bulk, fields)  # type: ignore[arg-type]
+        get_differences_between_bulks(bulk1, other_bulk, fields)
 
 
 def test_simulate_bulk_deletion() -> None:
