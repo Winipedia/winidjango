@@ -10,9 +10,9 @@ class PyprojectConfigFile(PyrigPyprojectConfigFile):
     """Pyproject.toml config file."""
 
     @classmethod
-    def get_standard_dev_dependencies(cls) -> list[str]:
-        """Get the standard dev dependencies."""
-        dev_dependencies = super().get_standard_dev_dependencies()
+    def get_dev_dependencies(cls) -> list[str]:
+        """Get the dev dependencies."""
+        dev_dependencies = super().get_dev_dependencies()
         dev_dependencies.extend(["django-stubs", "pytest-django"])
 
         return sorted(dev_dependencies)
