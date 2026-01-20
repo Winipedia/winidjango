@@ -18,8 +18,8 @@
 [![Python](https://img.shields.io/badge/python-3.12|3.13|3.14-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![License](https://img.shields.io/github/license/Winipedia/winidjango)](https://github.com/Winipedia/winidjango/blob/main/LICENSE)
 <!-- ci/cd -->
-[![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/winidjango/health_check.yaml?label=CI&logo=github)](https://github.com/Winipedia/winidjango/actions/workflows/health_check.yaml)
-[![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/winidjango/release.yaml?label=CD&logo=github)](https://github.com/Winipedia/winidjango/actions/workflows/release.yaml)
+[![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/winidjango/health_check.yml?label=CI&logo=github)](https://github.com/Winipedia/winidjango/actions/workflows/health_check.yml)
+[![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/winidjango/release.yml?label=CD&logo=github)](https://github.com/Winipedia/winidjango/actions/workflows/release.yml)
 <!-- documentation -->
 [![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)](https://Winipedia.github.io/winidjango)
 
