@@ -1,5 +1,6 @@
 # winidjango Documentation
 
+<!-- rumdl-disable MD013 -->
 <!-- tooling -->
 [![pyrig](https://img.shields.io/badge/built%20with-pyrig-3776AB?logo=buildkite&logoColor=black)](https://github.com/Winipedia/pyrig)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
@@ -22,10 +23,11 @@
 [![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/winidjango/release.yml?label=CD&logo=github)](https://github.com/Winipedia/winidjango/actions/workflows/release.yml)
 <!-- documentation -->
 [![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)](https://Winipedia.github.io/winidjango)
+<!-- rumdl-enable MD013 -->
 
 ---
 
-> A utils package for django
+> A utility package for django
 
 ---
 
@@ -188,9 +190,12 @@ For detailed documentation, examples, and API reference:
 
 ## External Resources
 
-- **[GitHub Repository](https://github.com/Winipedia/winidjango)** - Source code and issue tracker
-- **[Django Documentation](https://docs.djangoproject.com/)** - Official Django documentation
-- **[winiutils](https://github.com/Winipedia/winiutils)** - General Python utilities
+- **[GitHub Repository](https://github.com/Winipedia/winidjango)** -
+Source code and issue tracker
+- **[Django Documentation](https://docs.djangoproject.com/)** -
+Official Django documentation
+- **[winiutils](https://github.com/Winipedia/winiutils)** -
+General Python utilities
 - **[Polars](https://pola.rs/)** - High-performance DataFrame library
 
 ---

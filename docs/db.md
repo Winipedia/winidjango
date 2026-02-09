@@ -969,4 +969,5 @@ if to_create:
 - **[Management Commands Documentation](commands.md)**
   - Command framework and data import
 - **[Main Documentation](index.md)** - Overview and quick start
-- **[Django Documentation](https://docs.djangoproject.com/)** - Official Django docs
+- **[Django Documentation](https://docs.djangoproject.com/)** -
+Official Django docs

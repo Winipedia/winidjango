@@ -1,5 +1,6 @@
 # winidjango
 
+<!-- rumdl-disable MD013 -->
 <!-- tooling -->
 [![pyrig](https://img.shields.io/badge/built%20with-pyrig-3776AB?logo=buildkite&logoColor=black)](https://github.com/Winipedia/pyrig)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
@@ -22,10 +23,11 @@
 [![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/winidjango/release.yml?label=CD&logo=github)](https://github.com/Winipedia/winidjango/actions/workflows/release.yml)
 <!-- documentation -->
 [![Documentation](https://img.shields.io/badge/Docs-GitHub%20Pages-black?style=for-the-badge&logo=github&logoColor=white)](https://Winipedia.github.io/winidjango)
+<!-- rumdl-enable MD013 -->
 
 ---
 
-> A utils package for django
+> A utility package for django
 
 ---
 
@@ -172,7 +174,8 @@ Comprehensive documentation is available in the [`docs/`](docs/) directory:
 
 - **[Database Utilities](docs/db.md)**
   - Bulk operations, model utilities, and SQL helpers
-- **[Management Commands](docs/commands.md)** - Command framework and data import patterns
+- **[Management Commands](docs/commands.md)** -
+Command framework and data import patterns
 - **[API Reference](docs/index.md)** - Complete API documentation
 
 ## Requirements
@@ -255,7 +258,9 @@ see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-- Built with [pyrig](https://github.com/Winipedia/pyrig) - Python project scaffolding tool
-- Integrates with [winiutils](https://github.com/Winipedia/winiutils) - General Python utilities
+- Built with [pyrig](https://github.com/Winipedia/pyrig) -
+Python project scaffolding tool
+- Integrates with [winiutils](https://github.com/Winipedia/winiutils) -
+General Python utilities
 
 ---

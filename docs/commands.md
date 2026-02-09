@@ -1104,4 +1104,5 @@ class ImportStoreDataCommand(ImportDataBaseCommand):
 - **[Database Utilities Documentation](db.md)**
   - Bulk operations and model utilities
 - **[Main Documentation](index.md)** - Overview and quick start
-- **[winiutils Documentation](https://github.com/Winipedia/winiutils)** - CleaningDF and other utilities
+- **[winiutils Documentation](https://github.com/Winipedia/winiutils)** -
+CleaningDF and other utilities
