@@ -7,6 +7,6 @@ import winidjango
 logger = logging.getLogger(__name__)
 
 logger.info(
-    "Imported django: %s to setup django in tests for winiutils.django",
+    "Imported django: %s to setup django in tests for winiutils",
     winidjango,
 )
