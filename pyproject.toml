@@ -29,7 +29,7 @@ maintainers = [
 keywords = []
 
 [project.scripts]
-winidjango = "pyrig.dev.cli.cli:main"
+winidjango = "pyrig.rig.cli.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/Winipedia/winidjango"

@@ -3,7 +3,7 @@
 All subclasses of ConfigFile in the configs package are automatically called.
 """
 
-from pyrig.dev.configs.pyproject import PyprojectConfigFile as PyrigPyprojectConfigFile
+from pyrig.rig.configs.pyproject import PyprojectConfigFile as PyrigPyprojectConfigFile
 
 
 class PyprojectConfigFile(PyrigPyprojectConfigFile):

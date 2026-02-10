@@ -1,6 +1,6 @@
 """module."""
 
-from winidjango.dev.configs.configs import PyprojectConfigFile
+from winidjango.rig.configs.configs import PyprojectConfigFile
 
 
 class TestPyprojectConfigFile:
