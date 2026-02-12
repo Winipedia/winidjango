@@ -8,15 +8,15 @@ class Pyrigger(BasePyrigger):
     """Subclass of Pyrigger for customizing pyrig behavior."""
 
     @classmethod
-    def get_dev_dependencies(cls) -> list[str]:
+    def dev_dependencies(cls) -> list[str]:
         """Get the dev dependencies."""
-        return [*super().get_dev_dependencies(), "django-stubs"]
+        return [*super().dev_dependencies(), "django-stubs"]
 
 
 class ProjectTester(BaseProjectTester):
     """Subclass of ProjectTester for customizing pyrig behavior."""
 
     @classmethod
-    def get_dev_dependencies(cls) -> list[str]:
+    def dev_dependencies(cls) -> list[str]:
         """Get the dev dependencies."""
-        return [*super().get_dev_dependencies(), "pytest-django"]
+        return [*super().dev_dependencies(), "pytest-django"]
