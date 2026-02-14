@@ -17,7 +17,6 @@ from django.db import router, transaction
 from django.db.models import (
     Field,
     Model,
-    QuerySet,
 )
 from django.db.models.deletion import Collector
 from winiutils.src.iterating.concurrent.multithreading import multithread_loop
@@ -439,13 +438,7 @@ def bulk_delete(
     Returns:
         Tuple(total_deleted, per_model_counts) as returned by ``delete()``.
     """
-    query_set = objs
-    if not isinstance(query_set, QuerySet):
-        query_set = list(query_set)
-        pks = [obj.pk for obj in query_set]
-        query_set = model.objects.filter(pk__in=pks)
-
-    return query_set.delete()
+    return model.objects.filter(pk__in=(obj.pk for obj in objs)).delete()
 
 
 def bulk_create_bulks_in_steps[TModel: Model](
