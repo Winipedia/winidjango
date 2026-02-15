@@ -8,7 +8,7 @@ class TestPyrigger:
 
     def test_dev_dependencies(self) -> None:
         """Test method."""
-        result = Pyrigger.dev_dependencies()
+        result = Pyrigger().dev_dependencies()
         assert "django-stubs" in result
 
 
@@ -17,5 +17,5 @@ class TestProjectTester:
 
     def test_dev_dependencies(self) -> None:
         """Test method."""
-        result = ProjectTester.dev_dependencies()
+        result = ProjectTester().dev_dependencies()
         assert "pytest-django" in result
