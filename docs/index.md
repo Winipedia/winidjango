@@ -185,7 +185,7 @@ See **[Management Commands](commands.md)** for data import patterns.
 For detailed documentation, examples, and API reference:
 
 - **[Database Utilities Documentation](db.md)**
-- Complete guide to bulk operations, model utilities,
+  - Complete guide to bulk operations, model utilities,
     field introspection, and SQL helpers
 
 - **[Management Commands Documentation](commands.md)**

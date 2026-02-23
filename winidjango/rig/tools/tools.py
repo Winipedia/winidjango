@@ -7,14 +7,14 @@ from winiutils.rig.tools.pyrigger import Pyrigger as BasePyrigger
 class Pyrigger(BasePyrigger):
     """Subclass of Pyrigger for customizing pyrig behavior."""
 
-    def dev_dependencies(self) -> list[str]:
+    def dev_dependencies(self) -> tuple[str, ...]:
         """Get the dev dependencies."""
-        return [*super().dev_dependencies(), "django-stubs"]
+        return (*super().dev_dependencies(), "django-stubs")
 
 
 class ProjectTester(BaseProjectTester):
     """Subclass of ProjectTester for customizing pyrig behavior."""
 
-    def dev_dependencies(self) -> list[str]:
+    def dev_dependencies(self) -> tuple[str, ...]:
         """Get the dev dependencies."""
-        return [*super().dev_dependencies(), "pytest-django"]
+        return (*super().dev_dependencies(), "pytest-django")
