@@ -8,7 +8,7 @@ deterministic hash for unsaved instances, and a project-wide
 
 from datetime import datetime
 from graphlib import TopologicalSorter
-from typing import TYPE_CHECKING, Any, Self, cast
+from typing import TYPE_CHECKING, Any, Self
 
 from django.db.models import DateTimeField, Field, Model
 from django.db.models.fields.related import ForeignKey, ForeignObjectRel
@@ -25,9 +25,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def topological_sort_models[TModel: Model](
-    models: list[type[TModel]],
-) -> list[type[TModel]]:
+def topological_sort_models(
+    models: list[type[Model]],
+) -> list[type[Model]]:
     """Sort Django models in dependency order using topological sorting.
 
     Analyzes foreign key relationships between Django models and returns them
@@ -65,11 +65,11 @@ def topological_sort_models[TModel: Model](
         - Self-referential foreign keys are ignored to avoid self-loops
         - Only relationships between models in the input list are considered
     """
-    ts: TopologicalSorter[type[TModel]] = TopologicalSorter()
+    ts: TopologicalSorter[type[Model]] = TopologicalSorter()
 
     for model in models:
         deps = {
-            cast("type[TModel]", field.related_model)
+            field.related_model
             for field in get_fields(model)
             if isinstance(field, ForeignKey)
             and isinstance(field.related_model, type)

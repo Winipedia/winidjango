@@ -441,10 +441,10 @@ def bulk_delete(
     return model.objects.filter(pk__in=(obj.pk for obj in objs)).delete()
 
 
-def bulk_create_bulks_in_steps[TModel: Model](
-    bulk_by_class: dict[type[TModel], Iterable[TModel]],
+def bulk_create_bulks_in_steps(
+    bulk_by_class: dict[type[Model], Iterable[Model]],
     step: int = STANDARD_BULK_SIZE,
-) -> dict[type[TModel], list[TModel]]:
+) -> dict[type[Model], list[Model]]:
     """Create multiple model-type bulks in dependency order.
 
     The function topologically sorts the provided model classes so that
@@ -463,7 +463,7 @@ def bulk_create_bulks_in_steps[TModel: Model](
     models_ = list(bulk_by_class.keys())
     ordered_models = topological_sort_models(models=models_)
 
-    results: dict[type[TModel], list[TModel]] = {}
+    results: dict[type[Model], list[Model]] = {}
     for model_ in ordered_models:
         bulk = bulk_by_class[model_]
         result = bulk_create_in_steps(model=model_, bulk=bulk, step=step)
@@ -472,11 +472,11 @@ def bulk_create_bulks_in_steps[TModel: Model](
     return results
 
 
-def get_differences_between_bulks(
-    bulk1: list[Model],
-    bulk2: list[Model],
+def get_differences_between_bulks[TModel1: Model, TModel2: Model](
+    bulk1: list[TModel1],
+    bulk2: list[TModel2],
     fields: "list[Field[Any, Any] | ForeignObjectRel | GenericForeignKey]",
-) -> tuple[list[Model], list[Model], list[Model], list[Model]]:
+) -> tuple[list[TModel1], list[TModel2], list[TModel1], list[TModel2]]:
     """Return differences and intersections between two bulks of the same model.
 
     Instances are compared using :func:`hash_model_instance` over the
@@ -547,8 +547,8 @@ def get_differences_between_bulks(
     return in_1_not_2_list, in_2_not_1_list, in_1_and_2_from_1, in_1_and_2_from_2
 
 
-def simulate_bulk_deletion(
-    model_class: type[Model], entries: list[Model]
+def simulate_bulk_deletion[TModel: Model](
+    model_class: type[TModel], entries: list[TModel]
 ) -> dict[type[Model], set[Model]]:
     """Simulate Django's delete cascade and return affected objects.
 

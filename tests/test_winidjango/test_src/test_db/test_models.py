@@ -1,5 +1,7 @@
 """Tests for winidjango.database module."""
 
+from typing import TYPE_CHECKING
+
 from django.db import models
 
 from winidjango.src.db.fields import get_fields
@@ -8,6 +10,9 @@ from winidjango.src.db.models import (
     hash_model_instance,
     topological_sort_models,
 )
+
+if TYPE_CHECKING:
+    from django.db.models import Model
 
 
 def test_topological_sort_models() -> None:
@@ -68,7 +73,7 @@ def test_topological_sort_models() -> None:
             return f"Review of {self.book}"
 
     # Test basic topological sorting
-    models_to_sort = [Review, Book, Author, Publisher]
+    models_to_sort: list[type[Model]] = [Review, Book, Author, Publisher]
     sorted_models = topological_sort_models(models_to_sort)
 
     # Test that we get all models back
@@ -99,7 +104,7 @@ def test_topological_sort_models() -> None:
     )
 
     # Test with models that have no dependencies
-    independent_models = [Author, Publisher]
+    independent_models: list[type[Model]] = [Author, Publisher]
     sorted_independent = topological_sort_models(independent_models)
     expected_independent_count = len(independent_models)
     assert len(sorted_independent) == expected_independent_count, (
