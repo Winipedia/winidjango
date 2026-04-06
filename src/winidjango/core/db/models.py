@@ -14,7 +14,7 @@ from django.db.models import DateTimeField, Field, Model
 from django.db.models.fields.related import ForeignKey, ForeignObjectRel
 from django.forms.models import model_to_dict
 
-from winidjango.src.db.fields import get_field_names, get_fields
+from winidjango.core.db.fields import get_field_names, get_fields
 
 if TYPE_CHECKING:
     from django.contrib.contenttypes.fields import GenericForeignKey

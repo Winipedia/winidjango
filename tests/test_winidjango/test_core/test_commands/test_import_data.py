@@ -8,10 +8,10 @@ import polars as pl
 import pytest
 from django.db.models import Model
 from pytest_mock import MockerFixture
-from winiutils.src.data.dataframe.cleaning import CleaningDF
+from winiutils.core.data.dataframe.cleaning import CleaningDF
 
 from tests.models import ModelA, ModelB
-from winidjango.src.commands.import_data import ImportDataBaseCommand
+from winidjango.core.commands.import_data import ImportDataBaseCommand
 
 
 class MyCleaningDF(CleaningDF):

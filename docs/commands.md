@@ -1,6 +1,6 @@
 # Management Commands
 
-The `winidjango.src.commands` package provides a powerful framework for
+The `winidjango.core.commands` package provides a powerful framework for
 building Django management commands with built-in best practices,
 automatic logging, and standardized argument handling.
 
@@ -14,7 +14,7 @@ automatic logging, and standardized argument handling.
 
 ## ABCBaseCommand
 
-Module: `winidjango.src.commands.base.base`
+Module: `winidjango.core.commands.base.base`
 
 Abstract base class that provides a
 robust foundation for all Django management commands.
@@ -37,7 +37,7 @@ logging and standardized argument handling.
 ### Class Structure
 
 ```python
-from winidjango.src.commands.base.base import ABCBaseCommand
+from winidjango.core.commands.base.base import ABCBaseCommand
 from argparse import ArgumentParser
 
 class MyCommand(ABCBaseCommand):
@@ -214,9 +214,9 @@ class MyCommand(ABCBaseCommand):
 ### Complete Example
 
 ```python
-from winidjango.src.commands.base.base import ABCBaseCommand
+from winidjango.core.commands.base.base import ABCBaseCommand
 from argparse import ArgumentParser
-from winidjango.src.db.bulk import bulk_create_in_steps
+from winidjango.core.db.bulk import bulk_create_in_steps
 
 class ImportProductsCommand(ABCBaseCommand):
     """Import products from CSV file."""
@@ -283,7 +283,7 @@ python manage.py import_products --file products.csv --force
 
 ## ImportDataBaseCommand
 
-Module: `winidjango.src.commands.import_data`
+Module: `winidjango.core.commands.import_data`
 
 Specialized command for structured data import
 workflows with automatic cleaning and bulk creation.
@@ -366,7 +366,7 @@ def get_cleaning_df_cls(self) -> type[CleaningDF]:
 **Example:**
 
 ```python
-from winiutils.src.data.dataframe.cleaning import CleaningDF
+from winiutils.core.data.dataframe.cleaning import CleaningDF
 import polars as pl
 
 class UserCleaningDF(CleaningDF):
@@ -481,8 +481,8 @@ def import_to_db(self) -> None:
 ### Complete Example
 
 ```python
-from winidjango.src.commands.import_data import ImportDataBaseCommand
-from winiutils.src.data.dataframe.cleaning import CleaningDF
+from winidjango.core.commands.import_data import ImportDataBaseCommand
+from winiutils.core.data.dataframe.cleaning import CleaningDF
 from argparse import ArgumentParser
 import polars as pl
 
@@ -908,7 +908,7 @@ class MyCommand(ABCBaseCommand):
 ### Example 1: Simple Data Processing Command
 
 ```python
-from winidjango.src.commands.base.base import ABCBaseCommand
+from winidjango.core.commands.base.base import ABCBaseCommand
 from argparse import ArgumentParser
 
 class CleanupOldRecordsCommand(ABCBaseCommand):
@@ -971,8 +971,8 @@ class CleanupOldRecordsCommand(ABCBaseCommand):
 ### Example 2: Data Import with Validation
 
 ```python
-from winidjango.src.commands.import_data import ImportDataBaseCommand
-from winiutils.src.data.dataframe.cleaning import CleaningDF
+from winidjango.core.commands.import_data import ImportDataBaseCommand
+from winiutils.core.data.dataframe.cleaning import CleaningDF
 from argparse import ArgumentParser
 import polars as pl
 
@@ -1041,8 +1041,8 @@ class ImportOrdersCommand(ImportDataBaseCommand):
 ### Example 3: Multi-Model Import
 
 ```python
-from winidjango.src.commands.import_data import ImportDataBaseCommand
-from winiutils.src.data.dataframe.cleaning import CleaningDF
+from winidjango.core.commands.import_data import ImportDataBaseCommand
+from winiutils.core.data.dataframe.cleaning import CleaningDF
 import polars as pl
 
 class StoreDataCleaningDF(CleaningDF):

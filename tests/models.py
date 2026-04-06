@@ -2,7 +2,7 @@
 
 from django.db.models import CASCADE, BooleanField, CharField, ForeignKey, IntegerField
 
-from winidjango.src.db.models import BaseModel
+from winidjango.core.db.models import BaseModel
 
 
 class ModelA(BaseModel):

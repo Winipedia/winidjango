@@ -19,9 +19,9 @@ from django.db.models import (
     Model,
 )
 from django.db.models.deletion import Collector
-from winiutils.src.iterating.concurrent.multithreading import multithread_loop
+from winiutils.core.iterating.concurrent.multithreading import multithread_loop
 
-from winidjango.src.db.models import (
+from winidjango.core.db.models import (
     hash_model_instance,
     topological_sort_models,
 )
@@ -167,7 +167,7 @@ def bulk_method_in_steps[TModel: Model](
     This wrapper warns if called from within an existing transaction and
     delegates actual work to :func:`bulk_method_in_steps_atomic` which is
     executed inside an atomic transaction. The return type depends on
-    ``mode`` (see :mod:`winidjango.src.db.bulk` constants).
+    ``mode`` (see :mod:`winidjango.core.db.bulk` constants).
 
     Args:
         model: Django model class to operate on.

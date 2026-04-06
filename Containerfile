@@ -5,7 +5,7 @@ COPY README.md LICENSE pyproject.toml uv.lock ./
 RUN useradd -m -u 1000 appuser
 RUN chown -R appuser:appuser .
 USER appuser
-COPY --chown=appuser:appuser winidjango winidjango
+COPY --chown=appuser:appuser src/winidjango src/winidjango
 RUN uv sync --no-group dev
 RUN rm README.md LICENSE pyproject.toml uv.lock
 ENTRYPOINT ["uv", "run", "winidjango"]

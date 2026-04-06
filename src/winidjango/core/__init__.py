@@ -3,7 +3,7 @@
 This package exposes the project's internal modules used by the
 command-line utilities and database helpers. It exists primarily so
 that code under `winidjango/src` can be imported using the
-`winidjango.src` package path in other modules and tests.
+`winidjango.core` package path in other modules and tests.
 
 The package itself contains the following subpackages:
 - `commands` - management command helpers and base classes

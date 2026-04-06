@@ -51,27 +51,27 @@
 ### 🚀 High-Performance Bulk Operations
 
 - **Multithreaded Processing**:
-    Parallel execution of database operations for maximum speed
+  Parallel execution of database operations for maximum speed
 - **Automatic Chunking**:
-    Configurable batch sizes (default: 1000) for memory-efficient processing
+  Configurable batch sizes (default: 1000) for memory-efficient processing
 - **Transaction Safety**:
-    Atomic operations with intelligent transaction management
+  Atomic operations with intelligent transaction management
 - **Dependency Resolution**:
-    Automatic topological sorting for foreign key relationships
+  Automatic topological sorting for foreign key relationships
 
 ### 🛠️ Database Utilities
 
 - **Bulk Create/Update/Delete**: Process thousands of records efficiently
 - **Deletion Simulation**:
-    Preview cascade effects before executing destructive operations
+  Preview cascade effects before executing destructive operations
 - **Bulk Comparison**:
-    Detect differences between datasets with field-level hashing
+  Detect differences between datasets with field-level hashing
 - **Raw SQL Execution**: Safe parameter binding with automatic cursor management
 
 ### 📦 Model Utilities
 
 - **BaseModel**:
-    Abstract base with `created_at`, `updated_at`, and type-safe `meta` property
+  Abstract base with `created_at`, `updated_at`, and type-safe `meta` property
 - **Topological Sorting**: Automatic dependency ordering for model operations
 - **Field Introspection**: Type-safe utilities for working with model fields
 
@@ -80,7 +80,7 @@
 - **ABCBaseCommand**: Template method pattern with automatic logging
 - **ImportDataBaseCommand**: Structured data import with Polars integration
 - **Built-in Arguments**:
-    Standard options for dry-run, batch size, threading, and more
+  Standard options for dry-run, batch size, threading, and more
 - **Type Safety**: Full type hints with abstract method enforcement
 
 ## Installation
@@ -100,7 +100,7 @@ uv add winidjango
 ### Bulk Operations
 
 ```python
-from winidjango.src.db.bulk import bulk_create_in_steps
+from winidjango.core.db.bulk import bulk_create_in_steps
 
 # Create 10,000 records in batches of 1000
 authors = [Author(name=f"Author {i}") for i in range(10000)]
@@ -110,7 +110,7 @@ created = bulk_create_in_steps(Author, authors, step=1000)
 ### Automatic Dependency Resolution
 
 ```python
-from winidjango.src.db.bulk import bulk_create_bulks_in_steps
+from winidjango.core.db.bulk import bulk_create_bulks_in_steps
 
 # Create related models in correct order automatically
 results = bulk_create_bulks_in_steps({
@@ -123,7 +123,7 @@ results = bulk_create_bulks_in_steps({
 ### Deletion Simulation
 
 ```python
-from winidjango.src.db.bulk import simulate_bulk_deletion
+from winidjango.core.db.bulk import simulate_bulk_deletion
 
 # Preview what would be deleted
 deletion_preview = simulate_bulk_deletion(Author, authors_to_delete)
@@ -134,7 +134,7 @@ print(f"Would cascade delete {len(deletion_preview[Book])} books")
 ### Custom Management Command
 
 ```python
-from winidjango.src.commands.base.base import ABCBaseCommand
+from winidjango.core.commands.base.base import ABCBaseCommand
 from argparse import ArgumentParser
 
 class MyCommand(ABCBaseCommand):
@@ -154,7 +154,7 @@ class MyCommand(ABCBaseCommand):
 ### Data Import Command
 
 ```python
-from winidjango.src.commands.import_data import ImportDataBaseCommand
+from winidjango.core.commands.import_data import ImportDataBaseCommand
 import polars as pl
 
 class ImportUsersCommand(ImportDataBaseCommand):

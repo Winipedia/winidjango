@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 from django.db import models
-from pyrig.src.modules.module import make_obj_importpath
+from pyrig.core.modules.module import make_obj_importpath
 
 from tests.models import ModelA, ModelB
-from winidjango.src.db import bulk
-from winidjango.src.db.bulk import (
+from winidjango.core.db import bulk
+from winidjango.core.db.bulk import (
     MODE_CREATE,
     MODE_DELETE,
     MODE_UPDATE,
@@ -27,7 +27,7 @@ from winidjango.src.db.bulk import (
     multi_simulate_bulk_deletion,
     simulate_bulk_deletion,
 )
-from winidjango.src.db.fields import get_fields
+from winidjango.core.db.fields import get_fields
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

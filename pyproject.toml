@@ -67,10 +67,6 @@ requires = [
 ]
 build-backend = "uv_build"
 
-[tool.uv.build-backend]
-module-name = "winidjango"
-module-root = ""
-
 [tool.ruff]
 exclude = [
     ".*",

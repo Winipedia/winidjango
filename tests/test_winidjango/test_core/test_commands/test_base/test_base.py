@@ -5,7 +5,7 @@ from typing import Any, final
 
 from django.core.management import call_command
 
-from winidjango.src.commands.base.base import ABCBaseCommand
+from winidjango.core.commands.base.base import ABCBaseCommand
 
 
 class TestABCBaseCommand:

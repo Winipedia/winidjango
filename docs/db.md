@@ -1,6 +1,6 @@
 # Database Utilities
 
-The `winidjango.src.db` package provides high-performance database utilities
+The `winidjango.core.db` package provides high-performance database utilities
 for Django applications, including bulk operations, model utilities,
 field introspection, and raw SQL execution.
 
@@ -13,7 +13,7 @@ field introspection, and raw SQL execution.
 
 ## Bulk Operations
 
-Module: `winidjango.src.db.bulk`
+Module: `winidjango.core.db.bulk`
 
 High-performance bulk operations with automatic chunking, multithreading,
 and transaction management.
@@ -55,7 +55,7 @@ def bulk_create_in_steps[TModel: Model](
 **Example:**
 
 ```python
-from winidjango.src.db.bulk import bulk_create_in_steps
+from winidjango.core.db.bulk import bulk_create_in_steps
 
 # Create 10,000 authors in batches of 1,000
 authors = [Author(name=f"Author {i}") for i in range(10000)]
@@ -103,7 +103,7 @@ def bulk_update_in_steps[TModel: Model](
 **Example:**
 
 ```python
-from winidjango.src.db.bulk import bulk_update_in_steps
+from winidjango.core.db.bulk import bulk_update_in_steps
 
 # Update 10,000 authors
 authors = Author.objects.all()
@@ -158,7 +158,7 @@ def bulk_delete_in_steps[TModel: Model](
 **Example:**
 
 ```python
-from winidjango.src.db.bulk import bulk_delete_in_steps
+from winidjango.core.db.bulk import bulk_delete_in_steps
 
 authors = Author.objects.filter(name__startswith="Test")
 total, by_model = bulk_delete_in_steps(Author, list(authors), step=500)
@@ -209,7 +209,7 @@ def bulk_create_bulks_in_steps[TModel: Model](
 **Example:**
 
 ```python
-from winidjango.src.db.bulk import bulk_create_bulks_in_steps
+from winidjango.core.db.bulk import bulk_create_bulks_in_steps
 
 # Create related models - order doesn't matter!
 authors = [Author(name=f"Author {i}") for i in range(100)]
@@ -275,8 +275,8 @@ def get_differences_between_bulks(
 **Example:**
 
 ```python
-from winidjango.src.db.bulk import get_differences_between_bulks
-from winidjango.src.db.fields import get_fields
+from winidjango.core.db.bulk import get_differences_between_bulks
+from winidjango.core.db.fields import get_fields
 
 # Compare current database state with new data
 current_users = list(User.objects.all())
@@ -343,7 +343,7 @@ def simulate_bulk_deletion(
 **Example:**
 
 ```python
-from winidjango.src.db.bulk import simulate_bulk_deletion, bulk_delete_in_steps
+from winidjango.core.db.bulk import simulate_bulk_deletion, bulk_delete_in_steps
 
 # Get authors to potentially delete
 authors = Author.objects.filter(name__startswith="Test")
@@ -404,7 +404,7 @@ def multi_simulate_bulk_deletion(
 **Example:**
 
 ```python
-from winidjango.src.db.bulk import multi_simulate_bulk_deletion
+from winidjango.core.db.bulk import multi_simulate_bulk_deletion
 
 # Simulate deletion of multiple model types
 deletion_preview = multi_simulate_bulk_deletion({
@@ -493,7 +493,7 @@ Remove outer `@transaction.atomic` decorators.
 
 ## Model Utilities
 
-Module: `winidjango.src.db.models`
+Module: `winidjango.core.db.models`
 
 Utilities for working with Django models,
 including dependency sorting and hashing.
@@ -524,7 +524,7 @@ def topological_sort_models[TModel: Model](
 **Example:**
 
 ```python
-from winidjango.src.db.models import topological_sort_models
+from winidjango.core.db.models import topological_sort_models
 
 # Unsorted models
 models = [Review, Book, Author, Publisher]
@@ -581,8 +581,8 @@ def hash_model_instance(
 **Example:**
 
 ```python
-from winidjango.src.db.models import hash_model_instance
-from winidjango.src.db.fields import get_fields
+from winidjango.core.db.models import hash_model_instance
+from winidjango.core.db.fields import get_fields
 
 user = User(username="john", email="john@example.com")
 fields = get_fields(User)
@@ -634,7 +634,7 @@ Abstract base model with common fields and utilities.
 **Example:**
 
 ```python
-from winidjango.src.db.models import BaseModel
+from winidjango.core.db.models import BaseModel
 from django.db import models
 
 class Article(BaseModel):
@@ -671,7 +671,7 @@ in your model's Meta class to maintain abstract status.
 
 ## Field Utilities
 
-Module: `winidjango.src.db.fields`
+Module: `winidjango.core.db.fields`
 
 Utilities for introspecting and working with Django model fields.
 
@@ -705,7 +705,7 @@ def get_fields[TModel: Model](
 **Example:**
 
 ```python
-from winidjango.src.db.fields import get_fields
+from winidjango.core.db.fields import get_fields
 
 fields = get_fields(User)
 for field in fields:
@@ -746,7 +746,7 @@ def get_field_names(
 **Example:**
 
 ```python
-from winidjango.src.db.fields import get_fields, get_field_names
+from winidjango.core.db.fields import get_fields, get_field_names
 
 fields = get_fields(User)
 field_names = get_field_names(fields)
@@ -778,7 +778,7 @@ def get_model_meta(model: type[Model]) -> Options[Model]:
 **Example:**
 
 ```python
-from winidjango.src.db.fields import get_model_meta
+from winidjango.core.db.fields import get_model_meta
 
 meta = get_model_meta(User)
 print(meta.db_table)  # 'auth_user'
@@ -797,7 +797,7 @@ print(meta.verbose_name)  # 'user'
 
 ## SQL Utilities
 
-Module: `winidjango.src.db.sql`
+Module: `winidjango.core.db.sql`
 
 Utilities for executing raw SQL queries safely.
 
@@ -831,7 +831,7 @@ def execute_sql(
 **Example:**
 
 ```python
-from winidjango.src.db.sql import execute_sql
+from winidjango.core.db.sql import execute_sql
 
 # Simple query
 columns, rows = execute_sql("SELECT id, username FROM auth_user LIMIT 10")
@@ -896,14 +896,14 @@ execute_sql(
 Here's a complete example combining multiple utilities:
 
 ```python
-from winidjango.src.db.bulk import (
+from winidjango.core.db.bulk import (
     bulk_create_bulks_in_steps,
     simulate_bulk_deletion,
     bulk_delete_in_steps,
     get_differences_between_bulks,
 )
-from winidjango.src.db.fields import get_fields
-from winidjango.src.db.models import BaseModel, topological_sort_models
+from winidjango.core.db.fields import get_fields
+from winidjango.core.db.models import BaseModel, topological_sort_models
 from django.db import models
 
 # Define models using BaseModel

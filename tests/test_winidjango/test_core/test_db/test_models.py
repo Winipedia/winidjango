@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING
 
 from django.db import models
 
-from winidjango.src.db.fields import get_fields
-from winidjango.src.db.models import (
+from winidjango.core.db.fields import get_fields
+from winidjango.core.db.models import (
     BaseModel,
     hash_model_instance,
     topological_sort_models,

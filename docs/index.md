@@ -44,8 +44,8 @@ and structured management command patterns.
 **winidjango** is designed to solve common Django development challenges:
 
 - **Performance**:
-    Bulk operations with multithreading
-    for processing thousands of records efficiently
+  Bulk operations with multithreading
+  for processing thousands of records efficiently
 - **Safety**: Transaction management, deletion simulation, and type-safe APIs
 - **Structure**: Standardized patterns for management commands and data imports
 - **Developer Experience**:
@@ -56,7 +56,7 @@ Full type hints, automatic logging, and comprehensive error handling
 ### Core Modules
 
 - **[Database Utilities](db.md)** - High-performance bulk operations,
-    model utilities, field introspection, and SQL helpers
+  model utilities, field introspection, and SQL helpers
   - Bulk create/update/delete operations
   - Automatic dependency resolution with topological sorting
   - Deletion simulation and bulk comparison
@@ -64,7 +64,7 @@ Full type hints, automatic logging, and comprehensive error handling
   - Field and SQL utilities
 
 - **[Management Commands](commands.md)**
-    Command framework with automatic logging and structured data import
+  Command framework with automatic logging and structured data import
   - ABCBaseCommand template method pattern
   - ImportDataBaseCommand for data imports
   - Built-in arguments (dry-run, batch size, threading, etc.)
@@ -89,7 +89,7 @@ uv add winidjango
 ### Bulk Create with Dependency Resolution
 
 ```python
-from winidjango.src.db.bulk import bulk_create_bulks_in_steps
+from winidjango.core.db.bulk import bulk_create_bulks_in_steps
 
 # Create related models - order doesn't matter!
 authors = [Author(name=f"Author {i}") for i in range(100)]
@@ -108,7 +108,7 @@ See **[Database Utilities](db.md)** for complete bulk operations documentation.
 ### Simulate Deletion
 
 ```python
-from winidjango.src.db.bulk import simulate_bulk_deletion
+from winidjango.core.db.bulk import simulate_bulk_deletion
 
 # Preview cascade effects (no database changes)
 authors = Author.objects.filter(name__startswith="Test")
@@ -124,7 +124,7 @@ See **[Database Utilities](db.md)** for deletion simulation details.
 ### Build Management Commands
 
 ```python
-from winidjango.src.commands.base.base import ABCBaseCommand
+from winidjango.core.commands.base.base import ABCBaseCommand
 
 class CleanupCommand(ABCBaseCommand):
     def add_command_arguments(self, parser):
@@ -148,7 +148,7 @@ for complete command framework documentation.
 ### Import Data from CSV
 
 ```python
-from winidjango.src.commands.import_data import ImportDataBaseCommand
+from winidjango.core.commands.import_data import ImportDataBaseCommand
 import polars as pl
 
 class ImportUsersCommand(ImportDataBaseCommand):
@@ -170,13 +170,13 @@ See **[Management Commands](commands.md)** for data import patterns.
 ## Key Features
 
 - **High-Performance Bulk Operations** -
-    Multithreaded processing with configurable batch sizes
+  Multithreaded processing with configurable batch sizes
 - **Automatic Dependency Resolution** -
-    Topological sorting for foreign key relationships
+  Topological sorting for foreign key relationships
 - **Deletion Simulation** - Preview cascade effects before executing
 - **Dataset Comparison** - Detect differences and synchronize data
 - **Management Command Framework** -
-    Template method pattern with built-in arguments
+  Template method pattern with built-in arguments
 - **Structured Data Import** - Polars integration with automatic cleaning
 - **Type Safety** - Full type hints with Python 3.12+ generics
 

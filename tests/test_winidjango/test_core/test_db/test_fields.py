@@ -2,7 +2,7 @@
 
 from django.db import models
 
-from winidjango.src.db.fields import get_field_names, get_fields, get_model_meta
+from winidjango.core.db.fields import get_field_names, get_fields, get_model_meta
 
 
 class CustomContentType(models.Model):

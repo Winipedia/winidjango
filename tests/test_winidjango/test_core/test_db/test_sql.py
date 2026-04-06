@@ -2,7 +2,7 @@
 
 import pytest
 
-from winidjango.src.db.sql import execute_sql
+from winidjango.core.db.sql import execute_sql
 
 
 @pytest.mark.django_db

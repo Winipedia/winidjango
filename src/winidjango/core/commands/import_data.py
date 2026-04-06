@@ -23,10 +23,10 @@ from collections.abc import Iterable
 
 import polars as pl
 from django.db.models import Model
-from winiutils.src.data.dataframe.cleaning import CleaningDF
+from winiutils.core.data.dataframe.cleaning import CleaningDF
 
-from winidjango.src.commands.base.base import ABCBaseCommand
-from winidjango.src.db.bulk import bulk_create_bulks_in_steps
+from winidjango.core.commands.base.base import ABCBaseCommand
+from winidjango.core.db.bulk import bulk_create_bulks_in_steps
 
 logger = logging.getLogger(__name__)
 
