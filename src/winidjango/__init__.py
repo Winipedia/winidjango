@@ -1,6 +1,7 @@
 """__init__ module."""
 
 import logging
+import os
 
 import django
 import django_stubs_ext
@@ -22,7 +23,8 @@ logger = logging.getLogger(__name__)
 # Configure Django settings for tests if not already configured
 if not settings.configured:
     in_this_repo = (PackageManager.I.source_root() / winidjango.__name__).exists()
-    if in_this_repo:
+    tests_running = os.environ.get("PYTEST_VERSION")
+    if in_this_repo and tests_running:
         logger.info("Configuring minimal django settings for tests")
         installed_apps = (
             [ProjectTester.I.tests_package_name()]
