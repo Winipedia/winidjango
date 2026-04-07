@@ -26,11 +26,14 @@ if not settings.configured:
     if in_this_repo:
         logger.info("Configuring minimal django settings for tests")
         # manual import needed bc tests is not a registered package
-        tests_package = import_package_with_dir_fallback(
-            path=ProjectTester.I.tests_package_root(),
-            name=ProjectTester.I.tests_package_name(),
-        )
-        installed_apps = [tests_package.__name__]
+        if ProjectTester.I.tests_package_root().exists():
+            tests_package = import_package_with_dir_fallback(
+                path=ProjectTester.I.tests_package_root(),
+                name=ProjectTester.I.tests_package_name(),
+            )
+            installed_apps = [tests_package.__name__]
+        else:
+            installed_apps = []
         settings.configure(
             DATABASES={
                 "default": {
