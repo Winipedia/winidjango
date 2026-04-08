@@ -110,19 +110,14 @@ testpaths = [
 ]
 addopts = "--cov=winidjango --cov-report=term-missing --cov-fail-under=90"
 
-[tool.bandit]
-exclude_dirs = [
-    ".*",
-]
+[tool.ty.terminal]
+error-on-warning = true
+
+[tool.rumdl]
+respect_gitignore = true
 
 [tool.bandit.assert_used]
 skips = [
     "*/tests/*.py",
     "*/test_*/*.py",
 ]
-
-[tool.ty.terminal]
-error-on-warning = true
-
-[tool.rumdl]
-respect_gitignore = true
