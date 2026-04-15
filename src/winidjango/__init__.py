@@ -5,7 +5,7 @@ import logging
 import django
 import django_stubs_ext
 from django.conf import settings
-from pyrig.core.modules.imports import import_package_with_dir_fallback
+from pyrig.core.introspection.imports import import_package_with_dir_fallback
 from pyrig.rig.tools.package_manager import PackageManager
 
 import winidjango
