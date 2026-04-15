@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 from django.db import models
-from pyrig.core.modules.module import make_obj_importpath
 
 from tests.models import ModelA, ModelB
 from winidjango.core.db import bulk
@@ -377,7 +376,7 @@ def test_simulate_bulk_deletion() -> None:
                 for entry in entries:
                     self.data[entry.__class__].add(entry)
 
-        m.setattr(make_obj_importpath(bulk) + ".Collector", MockCollector)
+        m.setattr(bulk.__name__ + ".Collector", MockCollector)
 
         result = simulate_bulk_deletion(SimulateDeleteTestModel, test_instances)
 
@@ -432,7 +431,7 @@ def test_multi_simulate_bulk_deletion() -> None:
             }  # Only take first item to avoid hashing issues
 
         m.setattr(
-            make_obj_importpath(simulate_bulk_deletion),
+            bulk.__name__ + "." + simulate_bulk_deletion.__name__,
             mock_simulate_bulk_deletion,
         )
 
