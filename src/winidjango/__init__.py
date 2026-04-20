@@ -5,8 +5,10 @@ import logging
 import django
 import django_stubs_ext
 from django.conf import settings
-from pyrig.core.introspection.imports import import_package_with_dir_fallback
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.core.introspection.packages import (
+    import_package_with_dir_fallback,
+    src_package_is_package,
+)
 
 import winidjango
 from winidjango.rig.tools.tools import ProjectTester
@@ -22,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 # Configure Django settings for tests if not already configured
 if not settings.configured:
-    in_this_repo = (PackageManager.I.source_root() / winidjango.__name__).exists()
+    in_this_repo = src_package_is_package(winidjango)
     if in_this_repo:
         logger.info("Configuring minimal django settings for tests")
         # manual import needed bc tests is not a registered package
