@@ -1956,7 +1956,7 @@ wheels = [
 
 [[package]]
 name = "winidjango"
-version = "2.0.101"
+version = "2.0.102"
 source = { editable = "." }
 dependencies = [
     { name = "django" },
