@@ -23,7 +23,7 @@
 [![License](https://img.shields.io/github/license/Winipedia/winidjango)](https://github.com/Winipedia/winidjango/blob/main/LICENSE)
 <!-- testing -->
 [![ProjectTester](https://img.shields.io/badge/tested%20with-pytest-46a2f1.svg?logo=pytest)](https://pytest.org)
-[![CoverageTester](https://codecov.io/gh/Winipedia/winidjango/branch/main/graph/badge.svg)](https://codecov.io/gh/Winipedia/winidjango)
+[![CoverageTester](https://img.shields.io/badge/coverage->=90%25-hsl(108,80%25,45%25)?logo=codecov&logoColor=white)](https://github.com/pytest-dev/pytest-cov)
 <!-- ci/cd -->
 [![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/winidjango/health_check.yml?label=CI&logo=github)](https://github.com/Winipedia/winidjango/actions/workflows/health_check.yml)
 [![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/winidjango/release.yml?label=CD&logo=github)](https://github.com/Winipedia/winidjango/actions/workflows/release.yml)
