@@ -1413,6 +1413,18 @@ wheels = [
 ]
 
 [[package]]
+name = "pyrig-pypi"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyrig" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d3/b0/f0d879d71a9a75c0521c697bae3a3c8b7a44e81d6c233752e6f60c6a26d0/pyrig_pypi-1.0.0.tar.gz", hash = "sha256:5ad7d5e0d1a07f1260f2d50bcbb787118dbdbb84add6ffbf9aa3c3c6b90a28f2", size = 5518, upload-time = "2026-06-06T22:30:55.488Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e5/fe/7ce3bdd7c339c143fbbcd4457485fcf7e1ef8b5b35fca2b4486b074674c6/pyrig_pypi-1.0.0-py3-none-any.whl", hash = "sha256:fec5255d2c1907d9584d14be8c38d43d809245d0fb533bc847ea6008efb4802f", size = 9307, upload-time = "2026-06-06T22:30:54.485Z" },
+]
+
+[[package]]
 name = "pytest"
 version = "9.0.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1926,7 +1938,7 @@ wheels = [
 
 [[package]]
 name = "winidjango"
-version = "2.2.0"
+version = "2.3.0"
 source = { editable = "." }
 dependencies = [
     { name = "django" },
@@ -1946,6 +1958,7 @@ dev = [
     { name = "prek" },
     { name = "pygithub" },
     { name = "pyrig-dev" },
+    { name = "pyrig-pypi" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-django" },
@@ -1976,6 +1989,7 @@ dev = [
     { name = "prek", specifier = ">=0.3.2" },
     { name = "pygithub", specifier = ">=2.8.1" },
     { name = "pyrig-dev", specifier = ">=0.1.19" },
+    { name = "pyrig-pypi", specifier = ">=1.0.0" },
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
     { name = "pytest-django", specifier = ">=4.11.1" },
