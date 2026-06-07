@@ -89,8 +89,8 @@ jobs:
       run: uv run pytest
   health-check:
     needs:
-    - matrix-health-checks
     - health-checks
+    - matrix-health-checks
     runs-on: ubuntu-latest
     steps:
     - name: Aggregate Jobs
