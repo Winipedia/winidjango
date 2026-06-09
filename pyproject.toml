@@ -1,6 +1,6 @@
 [project]
 name = "winidjango"
-version = "2.4.1"
+version = "2.4.2"
 description = "A utility package for django"
 license = "MIT"
 readme = "README.md"
@@ -10,6 +10,9 @@ dependencies = [
     "django-stubs-ext",
     "winiutils",
 ]
+license-files = [
+    "LICENSE",
+]
 classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -17,10 +20,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Typing :: Typed",
 ]
-license-files = [
-    "LICENSE",
-]
-keywords = []
 
 [[project.authors]]
 name = "Winipedia"
