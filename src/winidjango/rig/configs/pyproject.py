@@ -10,18 +10,32 @@ Utility methods: project info, dependencies, Python versions, license detection,
 classifiers.
 """
 
-from typing import Any
-
-from pyrig_pypi.rig.configs.pyproject import (
+from pyrig.core.introspection.packages import is_src_package
+from pyrig.rig.configs.base.config_file import ConfigDict
+from pyrig.rig.configs.pyproject import (
     PyprojectConfigFile as BasePyprojectConfigFile,
 )
+
+import winidjango
 
 
 class PyprojectConfigFile(BasePyprojectConfigFile):
     """You can override methods from the base class to customize behavior."""
 
-    def _configs(self) -> dict[str, Any]:
+    def _configs(self) -> ConfigDict:
         configs = super()._configs()
 
         configs["tool"]["ruff"].setdefault("exclude", []).extend(["**/migrations/*.py"])
         return configs
+
+
+if is_src_package(winidjango):
+    from pyrig_pypi.rig.configs.pyproject import (
+        PyprojectConfigFile as PyPIPyprojectConfigFile,
+    )
+
+    class DjangoPyprojectConfigFile(PyPIPyprojectConfigFile, PyprojectConfigFile):
+        """Overrides base to resolve conflicts.
+
+        Only needed when developing Winidjango itself.
+        """
