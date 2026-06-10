@@ -12,7 +12,9 @@ classifiers.
 
 from typing import Any
 
-from pyrig.rig.configs.pyproject import PyprojectConfigFile as BasePyprojectConfigFile
+from pyrig_pypi.rig.configs.pyproject import (
+    PyprojectConfigFile as BasePyprojectConfigFile,
+)
 
 
 class PyprojectConfigFile(BasePyprojectConfigFile):
@@ -21,11 +23,5 @@ class PyprojectConfigFile(BasePyprojectConfigFile):
     def _configs(self) -> dict[str, Any]:
         configs = super()._configs()
 
-        # add exclude = ["**/migrations/*.py",]
-        exclude = (
-            configs.setdefault("tool", {})
-            .setdefault("ruff", {})
-            .setdefault("exclude", [])
-        )
-        exclude.append("**/migrations/*.py")
+        configs["tool"]["ruff"].setdefault("exclude", []).extend(["**/migrations/*.py"])
         return configs
