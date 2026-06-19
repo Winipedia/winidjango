@@ -12,7 +12,7 @@ classifiers.
 
 from pyrig.core.introspection.packages import is_src_package
 from pyrig.rig.configs.base.config_file import ConfigDict
-from pyrig.rig.configs.pyproject import (
+from pyrig_dev.rig.configs.pyproject import (  # deptry: ignore[DEP004]
     PyprojectConfigFile as BasePyprojectConfigFile,
 )
 
@@ -30,7 +30,7 @@ class PyprojectConfigFile(BasePyprojectConfigFile):
 
 
 if is_src_package(winidjango):
-    from pyrig_pypi.rig.configs.pyproject import (
+    from pyrig_pypi.rig.configs.pyproject import (  # deptry: ignore[DEP004]
         PyprojectConfigFile as PyPIPyprojectConfigFile,
     )
 

@@ -398,12 +398,12 @@ def flatten_bulk_in_steps_result[TModel: Model](
         Aggregated result corresponding to ``mode``.
     """
     if mode == MODE_UPDATE:
-        # formated as [1000, 1000, ...]
+        # formatted as [1000, 1000, ...]
         # since django 4.2 bulk_update returns the count of updated objects
         result = cast("list[int]", result)
         return int(sum(result))
     if mode == MODE_DELETE:
-        # formated as [(count, {model_name: count, model_cascade_name: count}), ...]
+        # formatted as [(count, {model_name: count, model_cascade_name: count}), ...]
         # join the results to get the total count of deleted objects
         result = cast("list[tuple[int, dict[str, int]]]", result)
         total_count = 0
@@ -414,7 +414,7 @@ def flatten_bulk_in_steps_result[TModel: Model](
                 count_sum_by_model[model_name] += count
         return (total_count, dict(count_sum_by_model))
     if mode == MODE_CREATE:
-        # formated as [[obj1, obj2, ...], [obj1, obj2, ...], ...]
+        # formatted as [[obj1, obj2, ...], [obj1, obj2, ...], ...]
         result = cast("list[list[TModel]]", result)
         return [item for sublist in result for item in sublist]
 
