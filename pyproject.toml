@@ -1,6 +1,6 @@
 [project]
 name = "winidjango"
-version = "2.6.0"
+version = "2.6.1"
 description = "A utility package for django"
 license = "MIT"
 readme = "README.md"
@@ -56,12 +56,10 @@ dev = [
     "mkdocstrings[python]>=1.0.3",
     "pip-audit>=2.10.0",
     "prek>=0.3.2",
-    "pygithub>=2.8.1",
     "pyrig-dev>=0.1.19",
     "pyrig-pypi>=1.0.0",
     "pytest-cov>=7.0.0",
     "pytest-django>=4.11.1",
-    "pytest-mock>=3.15.1",
     "pytest>=9.0.2",
     "ruff>=0.15.0",
     "rumdl>=0.1.18",
