@@ -10,8 +10,9 @@ Utility methods: project info, dependencies, Python versions, license detection,
 classifiers.
 """
 
+from typing import Any
+
 from pyrig.core.introspection.packages import is_src_package
-from pyrig.rig.configs.base.config_file import ConfigDict
 from pyrig_dev.rig.configs.pyproject import (  # deptry: ignore[DEP004]
     PyprojectConfigFile as BasePyprojectConfigFile,
 )
@@ -22,7 +23,7 @@ import winidjango
 class PyprojectConfigFile(BasePyprojectConfigFile):
     """You can override methods from the base class to customize behavior."""
 
-    def _configs(self) -> ConfigDict:
+    def _configs(self) -> dict[str, Any]:
         configs = super()._configs()
 
         configs["tool"]["ruff"].setdefault("exclude", []).extend(["**/migrations/*.py"])
