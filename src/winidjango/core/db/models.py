@@ -20,10 +20,6 @@ if TYPE_CHECKING:
     from django.contrib.contenttypes.fields import GenericForeignKey
     from django.db.models.options import Options
 
-import logging
-
-logger = logging.getLogger(__name__)
-
 
 def topological_sort_models(
     models: list[type[Model]],

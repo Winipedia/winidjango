@@ -8,15 +8,12 @@ abstract extension points for providing command-specific arguments and
 business logic.
 """
 
-import logging
 from abc import abstractmethod
 from argparse import ArgumentParser
 from typing import Any
 
 from django.core.management import BaseCommand
 from winiutils.core.oop.mixins.mixin import ABCLoggingMixin
-
-logger = logging.getLogger(__name__)
 
 
 class ABCBaseCommand(ABCLoggingMixin, BaseCommand):

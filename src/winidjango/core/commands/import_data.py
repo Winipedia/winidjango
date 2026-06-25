@@ -17,7 +17,6 @@ Using this base class ensures a consistent import lifecycle and
 reduces duplicated boilerplate across different import implementations.
 """
 
-import logging
 from abc import abstractmethod
 from collections.abc import Iterable
 
@@ -27,8 +26,6 @@ from winiutils.core.data.dataframe.cleaning import CleaningDF
 
 from winidjango.core.commands.base.base import ABCBaseCommand
 from winidjango.core.db.bulk import bulk_create_bulks_in_steps
-
-logger = logging.getLogger(__name__)
 
 
 class ImportDataBaseCommand(ABCBaseCommand):

@@ -10,12 +10,13 @@ Utility methods: project info, dependencies, Python versions, license detection,
 classifiers.
 """
 
+from pathlib import Path
 from typing import Any
 
-from pyrig.core.introspection.packages import is_src_package
-from pyrig_dev.rig.configs.pyproject import (  # deptry: ignore[DEP004]
+from pyrig.rig.configs.pyproject import (  # deptry: ignore[DEP004]
     PyprojectConfigFile as BasePyprojectConfigFile,
 )
+from pyrig_runtime.core.strings import snake_to_kebab_case
 
 import winidjango
 
@@ -30,7 +31,7 @@ class PyprojectConfigFile(BasePyprojectConfigFile):
         return configs
 
 
-if is_src_package(winidjango):
+if Path.cwd().name == snake_to_kebab_case(winidjango.__name__):
     from pyrig_pypi.rig.configs.pyproject import (  # deptry: ignore[DEP004]
         PyprojectConfigFile as PyPIPyprojectConfigFile,
     )
