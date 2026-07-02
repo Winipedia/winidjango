@@ -1,17 +1,17 @@
 [project]
 name = "winidjango"
-version = "3.0.0"
+version = "3.1.0"
 description = "A utility package for django"
 license = "MIT"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "django",
-    "django-stubs-ext",
-    "polars>=1.41.2",
-    "pyrig-runtime",
-    "pyrig>=15.4.0",
-    "winiutils",
+    "django>=6.0.6",
+    "django-stubs-ext>=6.0.6",
+    "polars>=1.42.1",
+    "pyrig>=16.0.0",
+    "pyrig-runtime>=1.0.0",
+    "winiutils>=3.0.0",
 ]
 license-files = [
     "LICENSE",
@@ -48,27 +48,27 @@ Changelog = "https://github.com/Winipedia/winidjango/releases"
 
 [dependency-groups]
 dev = [
-    "bandit>=1.9.3",
+    "bandit>=1.9.4",
     "deptry>=0.25.1",
-    "django-stubs>=5.2.9",
-    "mkdocs-material>=9.7.1",
-    "mkdocs-mermaid2-plugin>=1.2.3",
+    "django-stubs>=6.0.6",
     "mkdocs>=1.6.1",
-    "mkdocstrings[python]>=1.0.3",
-    "pip-audit>=2.10.0",
-    "prek>=0.3.2",
-    "pyrig",
-    "pyrig-pypi>=1.0.0",
-    "pytest-cov>=7.0.0",
-    "pytest-django>=4.11.1",
+    "mkdocs-material>=9.7.6",
+    "mkdocs-mermaid2-plugin>=1.2.3",
+    "mkdocstrings[python]>=1.0.4",
+    "pip-audit>=2.10.1",
+    "prek>=0.4.6",
+    "pyrig>=16.0.0",
+    "pyrig-pypi>=2.0.0",
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "pytest-django>=4.12.0",
     "pytest-mock>=3.15.1",
-    "pytest>=9.0.2",
-    "ruff>=0.15.0",
-    "rumdl>=0.1.18",
-    "ty>=0.0.16",
-    "types-defusedxml>=0.7.0.20250822",
-    "types-tqdm>=4.67.3.20260205",
-    "typos>=1.47.2",
+    "ruff>=0.15.20",
+    "rumdl>=0.2.27",
+    "ty>=0.0.56",
+    "types-defusedxml>=0.7.0.20260504",
+    "types-tqdm>=4.68.0.20260608",
+    "typos>=1.48.0",
 ]
 
 [build-system]
