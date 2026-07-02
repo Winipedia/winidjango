@@ -1,6 +1,6 @@
 [project]
 name = "winidjango"
-version = "3.1.0"
+version = "3.1.1"
 description = "A utility package for django"
 license = "MIT"
 readme = "README.md"
