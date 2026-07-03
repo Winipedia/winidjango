@@ -1,6 +1,6 @@
 [project]
 name = "winidjango"
-version = "4.0.0"
+version = "4.0.1"
 description = "A utility package for django"
 license = "MIT"
 readme = "README.md"
@@ -9,9 +9,9 @@ dependencies = [
     "django>=6.0.6",
     "django-stubs-ext>=6.0.6",
     "polars>=1.42.1",
-    "pyrig>=16.0.0",
-    "pyrig-runtime>=1.0.0",
-    "winiutils>=3.0.0",
+    "pyrig>=17.0.0",
+    "pyrig-runtime>=2.0.0",
+    "winiutils>=4.0.0",
 ]
 license-files = [
     "LICENSE",
@@ -57,14 +57,14 @@ dev = [
     "mkdocstrings[python]>=1.0.4",
     "pip-audit>=2.10.1",
     "prek>=0.4.6",
-    "pyrig>=16.0.0",
-    "pyrig-pypi>=2.0.0",
+    "pyrig>=17.0.0",
+    "pyrig-pypi>=3.0.0",
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
     "pytest-django>=4.12.0",
     "pytest-mock>=3.15.1",
     "ruff>=0.15.20",
-    "rumdl>=0.2.27",
+    "rumdl>=0.2.28",
     "ty>=0.0.56",
     "types-defusedxml>=0.7.0.20260504",
     "types-tqdm>=4.68.0.20260608",
