@@ -6,9 +6,7 @@ from pathlib import Path
 import django
 import django_stubs_ext
 from django.conf import settings
-from pyrig.core.introspection.packages import (
-    import_package_with_dir_fallback,
-)
+from pyrig.core.introspection.modules import import_module_with_file_fallback
 from pyrig_runtime.core.strings import snake_to_kebab_case
 
 import winidjango
@@ -30,7 +28,7 @@ if not settings.configured:
         logger.info("Configuring minimal django settings for tests")
         # manual import needed bc tests is not a registered package
         if ProjectTester.I.tests_package_root().exists():
-            tests_package = import_package_with_dir_fallback(
+            tests_package = import_module_with_file_fallback(
                 path=ProjectTester.I.tests_package_root(),
                 name=ProjectTester.I.tests_package_name(),
             )
