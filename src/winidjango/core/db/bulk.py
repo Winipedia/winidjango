@@ -133,8 +133,6 @@ def bulk_method_in_steps[TModel: Model](
     mode: Literal["create"],
     **kwargs: Any,
 ) -> list[TModel]: ...
-
-
 @overload
 def bulk_method_in_steps[TModel: Model](
     model: type[TModel],
@@ -143,8 +141,6 @@ def bulk_method_in_steps[TModel: Model](
     mode: Literal["update"],
     **kwargs: Any,
 ) -> int: ...
-
-
 @overload
 def bulk_method_in_steps[TModel: Model](
     model: type[TModel],
@@ -153,8 +149,6 @@ def bulk_method_in_steps[TModel: Model](
     mode: Literal["delete"],
     **kwargs: Any,
 ) -> tuple[int, dict[str, int]]: ...
-
-
 def bulk_method_in_steps[TModel: Model](
     model: type[TModel],
     bulk: Iterable[TModel],
@@ -195,7 +189,6 @@ def bulk_method_in_steps[TModel: Model](
     )
 
 
-# Overloads for bulk_method_in_steps_atomic
 @overload
 @transaction.atomic
 def bulk_method_in_steps_atomic[TModel: Model](
@@ -205,8 +198,6 @@ def bulk_method_in_steps_atomic[TModel: Model](
     mode: Literal["create"],
     **kwargs: Any,
 ) -> list[TModel]: ...
-
-
 @overload
 @transaction.atomic
 def bulk_method_in_steps_atomic[TModel: Model](
@@ -216,8 +207,6 @@ def bulk_method_in_steps_atomic[TModel: Model](
     mode: Literal["update"],
     **kwargs: Any,
 ) -> int: ...
-
-
 @overload
 @transaction.atomic
 def bulk_method_in_steps_atomic[TModel: Model](
@@ -227,8 +216,6 @@ def bulk_method_in_steps_atomic[TModel: Model](
     mode: Literal["delete"],
     **kwargs: Any,
 ) -> tuple[int, dict[str, int]]: ...
-
-
 @transaction.atomic
 def bulk_method_in_steps_atomic[TModel: Model](
     model: type[TModel],
@@ -293,25 +280,18 @@ def get_step_chunks(
         yield (chunk,)  # bc concurrent_loop expects a tuple of args
 
 
-# Overloads for get_bulk_method
 @overload
 def get_bulk_method(
     model: type[Model], mode: Literal["create"], **kwargs: Any
 ) -> Callable[[list[Model]], list[Model]]: ...
-
-
 @overload
 def get_bulk_method(
     model: type[Model], mode: Literal["update"], **kwargs: Any
 ) -> Callable[[list[Model]], int]: ...
-
-
 @overload
 def get_bulk_method(
     model: type[Model], mode: Literal["delete"], **kwargs: Any
 ) -> Callable[[list[Model]], tuple[int, dict[str, int]]]: ...
-
-
 def get_bulk_method(
     model: type[Model], mode: MODE_TYPES, **kwargs: Any
 ) -> Callable[[list[Model]], list[Model] | int | tuple[int, dict[str, int]]]:
@@ -358,25 +338,18 @@ def get_bulk_method(
     return bulk_method
 
 
-# Overloads for flatten_bulk_in_steps_result
 @overload
 def flatten_bulk_in_steps_result[TModel: Model](
     result: list[list[TModel]], mode: Literal["create"]
 ) -> list[TModel]: ...
-
-
 @overload
 def flatten_bulk_in_steps_result[TModel: Model](
     result: list[int], mode: Literal["update"]
 ) -> int: ...
-
-
 @overload
 def flatten_bulk_in_steps_result[TModel: Model](
     result: list[tuple[int, dict[str, int]]], mode: Literal["delete"]
 ) -> tuple[int, dict[str, int]]: ...
-
-
 def flatten_bulk_in_steps_result[TModel: Model](
     result: list[int] | list[tuple[int, dict[str, int]]] | list[list[TModel]], mode: str
 ) -> int | tuple[int, dict[str, int]] | list[TModel]:
