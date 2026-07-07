@@ -27,10 +27,10 @@ if not settings.configured:
     if in_this_repo:
         logger.info("Configuring minimal django settings for tests")
         # manual import needed bc tests is not a registered package
-        if ProjectTester.I.tests_package_root().exists():
+        if ProjectTester.I.package_root().exists():
             tests_package = import_module_with_file_fallback(
-                path=ProjectTester.I.tests_package_root(),
-                name=ProjectTester.I.tests_package_name(),
+                path=ProjectTester.I.package_root(),
+                name=ProjectTester.I.package_name(),
             )
             installed_apps = [tests_package.__name__]
         else:
