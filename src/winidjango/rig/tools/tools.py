@@ -1,6 +1,6 @@
 """Override pyrig tools."""
 
-from pyrig.rig.tools.testers.project import ProjectTester as BaseProjectTester
+from pyrig.rig.tools.testing.project import ProjectTester as BaseProjectTester
 from winiutils.rig.tools.pyrigger import Pyrigger as BasePyrigger
 
 
