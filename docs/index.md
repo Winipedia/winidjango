@@ -1,4 +1,4 @@
-# winidjango Documentation
+# Home
 
 <!-- ci/cd -->
 [![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/winidjango/health_check.yml?label=CI&logo=github)](https://github.com/Winipedia/winidjango/actions/workflows/health_check.yml)
