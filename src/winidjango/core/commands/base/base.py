@@ -130,7 +130,7 @@ class ABCBaseCommand(ABCLoggingMixin, BaseCommand):
             parser (ArgumentParser): The argument parser passed by Django.
         """
 
-    def handle(self, *args: Any, **options: Any) -> None:
+    def handle(self, *args: Any, **options: Any) -> None:  # noqa: ANN401
         """Orchestrate command execution.
 
         Performs shared pre-processing by calling :meth:`base_handle` and
@@ -144,7 +144,7 @@ class ABCBaseCommand(ABCLoggingMixin, BaseCommand):
         self.base_handle(*args, **options)
         self.handle_command()
 
-    def base_handle(self, *args: Any, **options: Any) -> None:
+    def base_handle(self, *args: Any, **options: Any) -> None:  # noqa: ANN401
         """Perform common pre-processing for commands.
 
         Stores the incoming arguments and options on the instance for use
@@ -167,7 +167,7 @@ class ABCBaseCommand(ABCLoggingMixin, BaseCommand):
         :meth:`base_handle`.
         """
 
-    def get_option(self, option: str) -> Any:
+    def get_option(self, option: str) -> Any:  # noqa: ANN401
         """Retrieve a parsed command option by key.
 
         Args:

@@ -102,7 +102,7 @@ def import_data_command() -> type[ImportDataBaseCommand]:
                 {
                     "str_col_old": ["a", "b", "c"],
                     "int_col_old": [1, 2, 3],
-                }
+                },
             )
 
         def get_cleaning_df_cls(self) -> type[MyCleaningDF]:
@@ -110,7 +110,8 @@ def import_data_command() -> type[ImportDataBaseCommand]:
             return MyCleaningDF
 
         def get_bulks_by_model(
-            self, df: pl.DataFrame
+            self,
+            df: pl.DataFrame,
         ) -> dict[type[Model], Iterable[Model]]:
             """Required implementation."""
             bulk_a = [
@@ -131,7 +132,8 @@ class TestImportDataBaseCommand:
 
     @pytest.mark.django_db
     def test_handle_import(
-        self, import_data_command: type[ImportDataBaseCommand]
+        self,
+        import_data_command: type[ImportDataBaseCommand],
     ) -> None:
         """Test method for handle_import."""
         cmd = import_data_command()
@@ -141,7 +143,8 @@ class TestImportDataBaseCommand:
         assert isinstance(df, pl.DataFrame), f"Expected dataframe, got {type(df)}"
 
     def test_get_cleaning_df_cls(
-        self, import_data_command: type[ImportDataBaseCommand]
+        self,
+        import_data_command: type[ImportDataBaseCommand],
     ) -> None:
         """Test method for get_cleaning_df_cls."""
         cmd = import_data_command()
@@ -150,7 +153,8 @@ class TestImportDataBaseCommand:
         assert df_cls is MyCleaningDF, f"Expected MyCleaningDF, got {df_cls}"
 
     def test_get_bulks_by_model(
-        self, import_data_command: type[ImportDataBaseCommand]
+        self,
+        import_data_command: type[ImportDataBaseCommand],
     ) -> None:
         """Test method for get_bulks_by_model."""
         cmd = import_data_command()
@@ -159,8 +163,8 @@ class TestImportDataBaseCommand:
                 {
                     "str_col": ["a", "b", "c"],
                     "int_col": [1, 2, 3],
-                }
-            )
+                },
+            ),
         )
 
         assert set(bulk_by_model.keys()) == {ModelA, ModelB}, (
@@ -194,14 +198,16 @@ class TestImportDataBaseCommand:
                 {
                     "str_col_old": [],
                     "int_col_old": [],
-                }
+                },
             ),
         )
         cmd.handle_command()
 
     @pytest.mark.django_db
     def test_import_to_db(
-        self, import_data_command: type[ImportDataBaseCommand], mocker: MockerFixture
+        self,
+        import_data_command: type[ImportDataBaseCommand],
+        mocker: MockerFixture,
     ) -> None:
         """Test method for import_to_db."""
         cmd = import_data_command()

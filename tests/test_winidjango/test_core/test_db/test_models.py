@@ -46,10 +46,12 @@ def test_topological_sort_models() -> None:
 
         title: models.CharField[str, str] = models.CharField(max_length=200)
         author: models.ForeignKey[Author, Author] = models.ForeignKey(
-            Author, on_delete=models.CASCADE
+            Author,
+            on_delete=models.CASCADE,
         )
         publisher: models.ForeignKey[Publisher, Publisher] = models.ForeignKey(
-            Publisher, on_delete=models.CASCADE
+            Publisher,
+            on_delete=models.CASCADE,
         )
 
         class Meta:
@@ -62,7 +64,8 @@ def test_topological_sort_models() -> None:
         """Test model for topological sorting."""
 
         book: models.ForeignKey[Book, Book] = models.ForeignKey(
-            Book, on_delete=models.CASCADE
+            Book,
+            on_delete=models.CASCADE,
         )
         rating: models.IntegerField[int, int] = models.IntegerField()
 
@@ -172,7 +175,8 @@ def test_hash_model_instance() -> None:
     # Test that different field values produce different hash
     different_unsaved_instance = HashTestModel(name="different", value=42)
     different_unsaved_hash = hash_model_instance(
-        different_unsaved_instance, saved_fields
+        different_unsaved_instance,
+        saved_fields,
     )
     assert unsaved_hash != different_unsaved_hash, (
         "Expected instances with different field values to have different hash"

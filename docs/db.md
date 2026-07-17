@@ -111,8 +111,8 @@ for author in authors:
     author.name = author.name.upper()
 
 updated_count = bulk_update_in_steps(
-    Author, 
-    authors, 
+    Author,
+    authors,
     update_fields=['name'],
     step=1000
 )
@@ -281,7 +281,7 @@ from winidjango.core.db.fields import get_fields
 # Compare current database state with new data
 current_users = list(User.objects.all())
 new_users = [
-    User(username=f"user_{i}", email=f"user_{i}@example.com") 
+    User(username=f"user_{i}", email=f"user_{i}@example.com")
     for i in range(100)
     ]
 
@@ -923,7 +923,7 @@ class Book(BaseModel):
 # Create data with automatic dependency resolution
 authors = [Author(name=f"Author {i}") for i in range(100)]
 books = [
-    Book(title=f"Book {i}", author=authors[i % len(authors)]) 
+    Book(title=f"Book {i}", author=authors[i % len(authors)])
     for i in range(500)
 ]
 

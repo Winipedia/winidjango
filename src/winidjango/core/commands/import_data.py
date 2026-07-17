@@ -71,7 +71,8 @@ class ImportDataBaseCommand(ABCBaseCommand):
 
     @abstractmethod
     def get_bulks_by_model(
-        self, df: pl.DataFrame
+        self,
+        df: pl.DataFrame,
     ) -> dict[type[Model], Iterable[Model]]:
         """Map the cleaned DataFrame to model-instance bulks.
 

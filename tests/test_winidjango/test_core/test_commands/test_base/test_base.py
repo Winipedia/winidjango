@@ -23,7 +23,7 @@ class TestABCBaseCommand:
                 parser.add_argument("--custom", help="Custom argument")
 
             @final
-            def handle_command(self, *_args: Any, **_options: Any) -> None:
+            def handle_command(self, *_args: Any, **_options: Any) -> None:  # noqa: ANN401
                 """Required implementation."""
 
         # Test the template method pattern by checking arguments are added
@@ -51,7 +51,7 @@ class TestABCBaseCommand:
                 """Required implementation."""
 
             @final
-            def handle_command(self) -> None:
+            def handle_command(self, *_args: Any, **_options: Any) -> None:  # noqa: ANN401
                 """Required implementation."""
 
         command = TestCommand()
@@ -82,7 +82,9 @@ class TestABCBaseCommand:
         """Test method for add_command_arguments."""
         # Test that add_command_arguments is abstract and must be implemented
         abstract_methods: set[str] = getattr(
-            ABCBaseCommand, "__abstractmethods__", set()
+            ABCBaseCommand,
+            "__abstractmethods__",
+            set(),
         )
         assert "add_command_arguments" in abstract_methods, (
             "Expected add_command_arguments to be abstract"
@@ -170,7 +172,9 @@ class TestABCBaseCommand:
         """Test method for handle_command."""
         # Test that handle_command is abstract and must be implemented
         abstract_methods: set[str] = getattr(
-            ABCBaseCommand, "__abstractmethods__", set()
+            ABCBaseCommand,
+            "__abstractmethods__",
+            set(),
         )
         assert "handle_command" in abstract_methods, (
             "Expected handle_command to be abstract"
@@ -183,7 +187,7 @@ class TestABCBaseCommand:
                 """Required implementation."""
 
             @final
-            def handle_command(self, *_args: Any, **_options: Any) -> None:
+            def handle_command(self, *_args: Any, **_options: Any) -> None:  # noqa: ANN401
                 """Required implementation that will be logged."""
                 self.handle_command_called = True
 

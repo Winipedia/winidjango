@@ -16,7 +16,8 @@ from django.db import connection
 
 
 def execute_sql(
-    sql: str, params: dict[str, Any] | None = None
+    sql: str,
+    params: dict[str, Any] | None = None,
 ) -> tuple[list[str], list[tuple[Any, ...]]]:
     """Execute a SQL statement and return column names and rows.
 

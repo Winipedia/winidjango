@@ -90,13 +90,19 @@ def bulk_update_in_steps[TModel: Model](
     return cast(
         "int",
         bulk_method_in_steps(
-            model=model, bulk=bulk, step=step, mode=MODE_UPDATE, fields=update_fields
+            model=model,
+            bulk=bulk,
+            step=step,
+            mode=MODE_UPDATE,
+            fields=update_fields,
         ),
     )
 
 
 def bulk_delete_in_steps[TModel: Model](
-    model: type[TModel], bulk: Iterable[TModel], step: int = STANDARD_BULK_SIZE
+    model: type[TModel],
+    bulk: Iterable[TModel],
+    step: int = STANDARD_BULK_SIZE,
 ) -> tuple[int, dict[str, int]]:
     """Delete objects in batches and return deletion statistics.
 
@@ -131,7 +137,7 @@ def bulk_method_in_steps[TModel: Model](
     bulk: Iterable[TModel],
     step: int,
     mode: Literal["create"],
-    **kwargs: Any,
+    **kwargs: Any,  # noqa: ANN401
 ) -> list[TModel]: ...
 @overload
 def bulk_method_in_steps[TModel: Model](
@@ -139,7 +145,7 @@ def bulk_method_in_steps[TModel: Model](
     bulk: Iterable[TModel],
     step: int,
     mode: Literal["update"],
-    **kwargs: Any,
+    **kwargs: Any,  # noqa: ANN401
 ) -> int: ...
 @overload
 def bulk_method_in_steps[TModel: Model](
@@ -147,7 +153,7 @@ def bulk_method_in_steps[TModel: Model](
     bulk: Iterable[TModel],
     step: int,
     mode: Literal["delete"],
-    **kwargs: Any,
+    **kwargs: Any,  # noqa: ANN401
 ) -> tuple[int, dict[str, int]]: ...
 def bulk_method_in_steps[TModel: Model](
     model: type[TModel],
@@ -182,10 +188,14 @@ def bulk_method_in_steps[TModel: Model](
         logger.info(
             "BE CAREFUL USING BULK OPERATIONS INSIDE A BROADER TRANSACTION BLOCK. "
             "BULKING WITH BULKS THAT DEPEND ON EACH OTHER CAN CAUSE "
-            "INTEGRITY ERRORS OR POTENTIAL OTHER ISSUES."
+            "INTEGRITY ERRORS OR POTENTIAL OTHER ISSUES.",
         )
     return bulk_method_in_steps_atomic(
-        model=model, bulk=bulk, step=step, mode=mode, **kwargs
+        model=model,
+        bulk=bulk,
+        step=step,
+        mode=mode,
+        **kwargs,
     )
 
 
@@ -196,7 +206,7 @@ def bulk_method_in_steps_atomic[TModel: Model](
     bulk: Iterable[TModel],
     step: int,
     mode: Literal["create"],
-    **kwargs: Any,
+    **kwargs: Any,  # noqa: ANN401
 ) -> list[TModel]: ...
 @overload
 @transaction.atomic
@@ -205,7 +215,7 @@ def bulk_method_in_steps_atomic[TModel: Model](
     bulk: Iterable[TModel],
     step: int,
     mode: Literal["update"],
-    **kwargs: Any,
+    **kwargs: Any,  # noqa: ANN401
 ) -> int: ...
 @overload
 @transaction.atomic
@@ -214,7 +224,7 @@ def bulk_method_in_steps_atomic[TModel: Model](
     bulk: Iterable[TModel],
     step: int,
     mode: Literal["delete"],
-    **kwargs: Any,
+    **kwargs: Any,  # noqa: ANN401
 ) -> tuple[int, dict[str, int]]: ...
 @transaction.atomic
 def bulk_method_in_steps_atomic[TModel: Model](
@@ -257,7 +267,8 @@ def bulk_method_in_steps_atomic[TModel: Model](
 
 
 def get_step_chunks(
-    bulk: Iterable[Model], step: int
+    bulk: Iterable[Model],
+    step: int,
 ) -> Generator[tuple[list[Model]], None, None]:
     """Yield consecutive chunks of at most ``step`` items from ``bulk``.
 
@@ -282,18 +293,26 @@ def get_step_chunks(
 
 @overload
 def get_bulk_method(
-    model: type[Model], mode: Literal["create"], **kwargs: Any
+    model: type[Model],
+    mode: Literal["create"],
+    **kwargs: Any,  # noqa: ANN401
 ) -> Callable[[list[Model]], list[Model]]: ...
 @overload
 def get_bulk_method(
-    model: type[Model], mode: Literal["update"], **kwargs: Any
+    model: type[Model],
+    mode: Literal["update"],
+    **kwargs: Any,  # noqa: ANN401
 ) -> Callable[[list[Model]], int]: ...
 @overload
 def get_bulk_method(
-    model: type[Model], mode: Literal["delete"], **kwargs: Any
+    model: type[Model],
+    mode: Literal["delete"],
+    **kwargs: Any,  # noqa: ANN401
 ) -> Callable[[list[Model]], tuple[int, dict[str, int]]]: ...
 def get_bulk_method(
-    model: type[Model], mode: MODE_TYPES, **kwargs: Any
+    model: type[Model],
+    mode: MODE_TYPES,
+    **kwargs: Any,
 ) -> Callable[[list[Model]], list[Model] | int | tuple[int, dict[str, int]]]:
     """Return a callable that performs the requested bulk operation on a chunk.
 
@@ -340,18 +359,22 @@ def get_bulk_method(
 
 @overload
 def flatten_bulk_in_steps_result[TModel: Model](
-    result: list[list[TModel]], mode: Literal["create"]
+    result: list[list[TModel]],
+    mode: Literal["create"],
 ) -> list[TModel]: ...
 @overload
 def flatten_bulk_in_steps_result[TModel: Model](
-    result: list[int], mode: Literal["update"]
+    result: list[int],
+    mode: Literal["update"],
 ) -> int: ...
 @overload
 def flatten_bulk_in_steps_result[TModel: Model](
-    result: list[tuple[int, dict[str, int]]], mode: Literal["delete"]
+    result: list[tuple[int, dict[str, int]]],
+    mode: Literal["delete"],
 ) -> tuple[int, dict[str, int]]: ...
 def flatten_bulk_in_steps_result[TModel: Model](
-    result: list[int] | list[tuple[int, dict[str, int]]] | list[list[TModel]], mode: str
+    result: list[int] | list[tuple[int, dict[str, int]]] | list[list[TModel]],
+    mode: str,
 ) -> int | tuple[int, dict[str, int]] | list[TModel]:
     """Aggregate per-chunk results returned by concurrent bulk execution.
 
@@ -396,7 +419,9 @@ def flatten_bulk_in_steps_result[TModel: Model](
 
 
 def bulk_delete(
-    model: type[Model], objs: Iterable[Model], **_: Any
+    model: type[Model],
+    objs: Iterable[Model],
+    **_: Any,  # noqa: ANN401
 ) -> tuple[int, dict[str, int]]:
     """Delete the provided objects and return Django's delete summary.
 
@@ -521,7 +546,8 @@ def get_differences_between_bulks[TModel1: Model, TModel2: Model](
 
 
 def simulate_bulk_deletion[TModel: Model](
-    model_class: type[TModel], entries: list[TModel]
+    model_class: type[TModel],
+    entries: list[TModel],
 ) -> dict[type[Model], set[Model]]:
     """Simulate Django's delete cascade and return affected objects.
 

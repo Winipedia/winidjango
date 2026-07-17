@@ -562,7 +562,7 @@ python manage.py import_products --file products.csv --category-id 5 --dry_run
 
 Preview changes without executing them.
 
-**Type:** Boolean flag  
+**Type:** Boolean flag
 **Default:** False
 
 **Example:**
@@ -595,7 +595,7 @@ python manage.py mycommand --dry_run
 
 Configure batch processing size.
 
-**Type:** Integer  
+**Type:** Integer
 **Default:** None (use command's default)
 
 **Example:**
@@ -619,7 +619,7 @@ python manage.py mycommand --batch_size 500
 
 Control thread count for parallel processing.
 
-**Type:** Integer  
+**Type:** Integer
 **Default:** None (use system default)
 
 **Example:**
@@ -644,7 +644,7 @@ python manage.py mycommand --threads 8
 
 Force execution of actions (skip confirmations).
 
-**Type:** Boolean flag  
+**Type:** Boolean flag
 **Default:** False
 
 **Example:**
@@ -674,7 +674,7 @@ python manage.py mycommand --force
 
 Enable deletion operations.
 
-**Type:** Boolean flag  
+**Type:** Boolean flag
 **Default:** False
 
 **Example:**
@@ -701,7 +701,7 @@ python manage.py mycommand --delete
 
 Auto-confirm all prompts.
 
-**Type:** Boolean flag  
+**Type:** Boolean flag
 **Default:** False
 
 **Example:**
@@ -730,7 +730,7 @@ python manage.py mycommand --yes
 
 Set command timeout in seconds.
 
-**Type:** Integer  
+**Type:** Integer
 **Default:** None (no timeout)
 
 **Example:**
@@ -762,7 +762,7 @@ python manage.py mycommand --timeout 300  # 5 minutes
 
 Control process count for multiprocessing.
 
-**Type:** Integer  
+**Type:** Integer
 **Default:** None (use system default)
 
 **Example:**

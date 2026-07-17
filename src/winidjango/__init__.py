@@ -40,7 +40,7 @@ if not settings.configured:
                 "default": {
                     "ENGINE": "django.db.backends.sqlite3",
                     "NAME": ":memory:",
-                }
+                },
             },
             INSTALLED_APPS=installed_apps,
             USE_TZ=True,

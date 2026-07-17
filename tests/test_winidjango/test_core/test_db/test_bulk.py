@@ -78,7 +78,8 @@ def test_bulk_method_in_steps() -> None:
     # create some test data
     bulk = [ModelA(str_field=f"test_{i}", int_field=i) for i in range(1, 11)]
     created = cast(
-        "list[ModelA]", bulk_method_in_steps(ModelA, bulk, step=5, mode=MODE_CREATE)
+        "list[ModelA]",
+        bulk_method_in_steps(ModelA, bulk, step=5, mode=MODE_CREATE),
     )
     deleted = cast(
         "tuple[int, dict[str, int]]",
@@ -240,7 +241,7 @@ def test_bulk_delete() -> None:
             def delete(self) -> tuple[int, dict[str, int]]:
                 return (3, {"BulkDeleteTestModel": 3})
 
-        def mock_filter(**kwargs: Any) -> MockQuerySet:  # noqa: ARG001
+        def mock_filter(**kwargs: Any) -> MockQuerySet:  # noqa: ANN401, ARG001
             return MockQuerySet()
 
         m.setattr(BulkDeleteTestModel.objects, "filter", mock_filter)
@@ -365,7 +366,7 @@ def test_simulate_bulk_deletion() -> None:
     with pytest.MonkeyPatch().context() as m:
 
         class MockCollector:
-            def __init__(self, *_args: Any, **_kwargs: Any) -> None:
+            def __init__(self, *_args: Any, **_kwargs: Any) -> None:  # noqa: ANN401
                 self.data: defaultdict[type[models.Model], set[models.Model]] = (
                     defaultdict(set)
                 )
@@ -423,11 +424,12 @@ def test_multi_simulate_bulk_deletion() -> None:
     with pytest.MonkeyPatch().context() as m:
 
         def mock_simulate_bulk_deletion(
-            model_class: type[models.Model], entries: list[models.Model]
+            model_class: type[models.Model],
+            entries: list[models.Model],
         ) -> dict[type[models.Model], set[models.Model]]:
             # Return a mock result - use list instead of set to avoid hashing issues
             return {
-                model_class: set(entries[:1])
+                model_class: set(entries[:1]),
             }  # Only take first item to avoid hashing issues
 
         m.setattr(
