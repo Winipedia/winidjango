@@ -1,15 +1,6 @@
 """module."""
 
-from winidjango.rig.tools.tools import ProjectTester, Pyrigger
-
-
-class TestPyrigger:
-    """Test class."""
-
-    def test_dev_dependencies(self) -> None:
-        """Test method."""
-        result = Pyrigger().dev_dependencies()
-        assert "django-stubs" in result
+from winidjango.rig.tools.tools import ProjectTester
 
 
 class TestProjectTester:

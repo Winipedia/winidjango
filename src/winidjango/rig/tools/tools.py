@@ -1,15 +1,6 @@
 """Override pyrig tools."""
 
 from pyrig.rig.tools.testing.project import ProjectTester as BaseProjectTester
-from winiutils.rig.tools.pyrigger import Pyrigger as BasePyrigger
-
-
-class Pyrigger(BasePyrigger):
-    """Subclass of Pyrigger for customizing pyrig behavior."""
-
-    def dev_dependencies(self) -> tuple[str, ...]:
-        """Get the dev dependencies."""
-        return (*super().dev_dependencies(), "django-stubs")
 
 
 class ProjectTester(BaseProjectTester):
