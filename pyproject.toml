@@ -1,6 +1,6 @@
 [project]
 name = "winidjango"
-version = "4.14.4"
+version = "4.14.5"
 description = "A utility package for django"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -114,6 +114,9 @@ exclude = [
 docstring-code-format = true
 
 [tool.ruff.lint]
+ignore = [
+  "CPY001",
+]
 select = [
   "ALL",
 ]
