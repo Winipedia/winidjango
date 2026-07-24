@@ -7,7 +7,6 @@
 <!-- code-quality -->
 [![ByteOrderMarkerFormatter](https://img.shields.io/badge/BOM-fix--byte--order--marker-orange)](https://github.com/pre-commit/pre-commit-hooks)
 [![CaseConflictChecker](https://img.shields.io/badge/case--conflict-check--case--conflict-blue)](https://github.com/pre-commit/pre-commit-hooks)
-[![DependencyAuditor](https://img.shields.io/badge/security-pip--audit-blue?logo=python)](https://github.com/pypa/pip-audit)
 [![DependencyChecker](https://img.shields.io/badge/dependencies-deptry-blue)](https://github.com/osprey-oss/deptry)
 [![EndOfFileFormatter](https://img.shields.io/badge/EOF-end--of--file--fixer-orange)](https://github.com/pre-commit/pre-commit-hooks)
 [![EndOfLineFormatter](https://img.shields.io/badge/EOL-mixed--line--ending-orange)](https://github.com/pre-commit/pre-commit-hooks)
@@ -107,10 +106,12 @@ authors = [Author(name=f"Author {i}") for i in range(100)]
 books = [Book(title=f"Book {i}", author=authors[i]) for i in range(500)]
 
 # Automatic dependency resolution
-results = bulk_create_bulks_in_steps({
-    Book: books,      # Depends on Author
-    Author: authors,  # No dependencies
-})
+results = bulk_create_bulks_in_steps(
+    {
+        Book: books,  # Depends on Author
+        Author: authors,  # No dependencies
+    }
+)
 # Created in correct order: Author → Book
 ```
 
@@ -137,17 +138,18 @@ See **[Database Utilities](db.md)** for deletion simulation details.
 ```python
 from winidjango.core.commands.base.base import ABCBaseCommand
 
+
 class CleanupCommand(ABCBaseCommand):
     def add_command_arguments(self, parser):
-        parser.add_argument('--days', type=int, default=30)
+        parser.add_argument("--days", type=int, default=30)
 
     def handle_command(self):
-        days = self.get_option('days')
-        dry_run = self.get_option('dry_run')  # Built-in
+        days = self.get_option("days")
+        dry_run = self.get_option("dry_run")  # Built-in
 
         # Your logic here
         if dry_run:
-            self.stdout.write('Would delete X records')
+            self.stdout.write("Would delete X records")
         else:
             # Execute deletion
             pass
@@ -162,17 +164,16 @@ for complete command framework documentation.
 from winidjango.core.commands.import_data import ImportDataBaseCommand
 import polars as pl
 
+
 class ImportUsersCommand(ImportDataBaseCommand):
     def handle_import(self) -> pl.DataFrame:
-        return pl.read_csv(self.get_option('file'))
+        return pl.read_csv(self.get_option("file"))
 
     def get_cleaning_df_cls(self):
         return UserCleaningDF  # Your cleaning rules
 
     def get_bulks_by_model(self, df):
-        users = [
-            User(username=row["username"]) for row in df.iter_rows(named=True)
-        ]
+        users = [User(username=row["username"]) for row in df.iter_rows(named=True)]
         return {User: users}
 ```
 

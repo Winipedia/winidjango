@@ -7,7 +7,6 @@
 <!-- code-quality -->
 [![ByteOrderMarkerFormatter](https://img.shields.io/badge/BOM-fix--byte--order--marker-orange)](https://github.com/pre-commit/pre-commit-hooks)
 [![CaseConflictChecker](https://img.shields.io/badge/case--conflict-check--case--conflict-blue)](https://github.com/pre-commit/pre-commit-hooks)
-[![DependencyAuditor](https://img.shields.io/badge/security-pip--audit-blue?logo=python)](https://github.com/pypa/pip-audit)
 [![DependencyChecker](https://img.shields.io/badge/dependencies-deptry-blue)](https://github.com/osprey-oss/deptry)
 [![EndOfFileFormatter](https://img.shields.io/badge/EOF-end--of--file--fixer-orange)](https://github.com/pre-commit/pre-commit-hooks)
 [![EndOfLineFormatter](https://img.shields.io/badge/EOL-mixed--line--ending-orange)](https://github.com/pre-commit/pre-commit-hooks)
@@ -124,11 +123,13 @@ created = bulk_create_in_steps(Author, authors, step=1000)
 from winidjango.core.db.bulk import bulk_create_bulks_in_steps
 
 # Create related models in correct order automatically
-results = bulk_create_bulks_in_steps({
-    Author: authors,
-    Book: books,      # Created after Author
-    Review: reviews,  # Created after Book
-})
+results = bulk_create_bulks_in_steps(
+    {
+        Author: authors,
+        Book: books,  # Created after Author
+        Review: reviews,  # Created after Book
+    }
+)
 ```
 
 ### Deletion Simulation
@@ -148,16 +149,17 @@ print(f"Would cascade delete {len(deletion_preview[Book])} books")
 from winidjango.core.commands.base.base import ABCBaseCommand
 from argparse import ArgumentParser
 
+
 class MyCommand(ABCBaseCommand):
     def add_command_arguments(self, parser: ArgumentParser) -> None:
-        parser.add_argument('--input-file', type=str, required=True)
+        parser.add_argument("--input-file", type=str, required=True)
 
     def handle_command(self) -> None:
-        input_file = self.get_option('input_file')
-        dry_run = self.get_option('dry_run')  # Built-in
+        input_file = self.get_option("input_file")
+        dry_run = self.get_option("dry_run")  # Built-in
 
         if dry_run:
-            self.stdout.write('Dry run mode')
+            self.stdout.write("Dry run mode")
 
         # Your logic here
 ```
@@ -167,6 +169,7 @@ class MyCommand(ABCBaseCommand):
 ```python
 from winidjango.core.commands.import_data import ImportDataBaseCommand
 import polars as pl
+
 
 class ImportUsersCommand(ImportDataBaseCommand):
     def handle_import(self) -> pl.DataFrame:
