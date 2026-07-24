@@ -400,6 +400,7 @@ types = [
   "python",
 ]
 files = "^tests/"
+exclude = "^tests/models\\.py$"
 stages = [
   "pre-commit",
 ]
