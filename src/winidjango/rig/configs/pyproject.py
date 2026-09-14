@@ -3,8 +3,7 @@
 Handles metadata, dependencies, build config (uv), tool configs (ruff, ty, pytest,
 bandit, rumdl). Enforces opinionated defaults: all ruff rules (except D203, D213,
 COM812, ANN401), Google docstrings, strict ty, bandit security, coverage threshold.
-Validation uses subset checking (users can add extra configs). Priority 20 (created
-early for other configs to read).
+Validation uses subset checking (users can add extra configs).
 
 Utility methods: project info, dependencies, Python versions, license detection,
 classifiers.
