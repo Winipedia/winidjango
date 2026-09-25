@@ -31,8 +31,7 @@ def bulk_create_in_steps[TModel: Model](
     model: type[TModel],
     bulk: Iterable[TModel],
     step: int = 1000,
-) -> list[TModel]:
-    ...
+) -> list[TModel]: ...
 ```
 
 **Parameters:**
@@ -85,8 +84,7 @@ def bulk_update_in_steps[TModel: Model](
     bulk: Iterable[TModel],
     update_fields: list[str],
     step: int = 1000,
-) -> int:
-    ...
+) -> int: ...
 ```
 
 **Parameters:**
@@ -110,12 +108,7 @@ authors = Author.objects.all()
 for author in authors:
     author.name = author.name.upper()
 
-updated_count = bulk_update_in_steps(
-    Author,
-    authors,
-    update_fields=['name'],
-    step=1000
-)
+updated_count = bulk_update_in_steps(Author, authors, update_fields=["name"], step=1000)
 
 print(f"Updated {updated_count} authors")
 ```
@@ -139,8 +132,7 @@ def bulk_delete_in_steps[TModel: Model](
     model: type[TModel],
     bulk: Iterable[TModel],
     step: int = 1000,
-) -> tuple[int, dict[str, int]]:
-    ...
+) -> tuple[int, dict[str, int]]: ...
 ```
 
 **Parameters:**
@@ -186,8 +178,7 @@ Create multiple model types in correct dependency order automatically.
 def bulk_create_bulks_in_steps[TModel: Model](
     bulk_by_class: dict[type[TModel], Iterable[TModel]],
     step: int = 1000,
-) -> dict[type[TModel], list[TModel]]:
-    ...
+) -> dict[type[TModel], list[TModel]]: ...
 ```
 
 **Parameters:**
@@ -213,17 +204,17 @@ from winidjango.core.db.bulk import bulk_create_bulks_in_steps
 
 # Create related models - order doesn't matter!
 authors = [Author(name=f"Author {i}") for i in range(100)]
-books = [Book(title=f"Book {i}", author=authors[
-    i % len(authors)]) for i in range(500)
-]
+books = [Book(title=f"Book {i}", author=authors[i % len(authors)]) for i in range(500)]
 reviews = [Review(book=books[i % len(books)], rating=5) for i in range(1000)]
 
 # Provide in any order - library sorts by dependencies
-results = bulk_create_bulks_in_steps({
-    Review: reviews,      # Depends on Book
-    Book: books,          # Depends on Author
-    Author: authors,      # No dependencies
-})
+results = bulk_create_bulks_in_steps(
+    {
+        Review: reviews,  # Depends on Book
+        Book: books,  # Depends on Author
+        Author: authors,  # No dependencies
+    }
+)
 
 # Created in order: Author → Book → Review
 print(f"Created {len(results[Author])} authors")
@@ -254,8 +245,7 @@ def get_differences_between_bulks(
     bulk1: list[Model],
     bulk2: list[Model],
     fields: list[Field | ForeignObjectRel | GenericForeignKey],
-) -> tuple[list[Model], list[Model], list[Model], list[Model]]:
-    ...
+) -> tuple[list[Model], list[Model], list[Model], list[Model]]: ...
 ```
 
 **Parameters:**
@@ -327,8 +317,7 @@ Preview what objects would be deleted without actually deleting them.
 def simulate_bulk_deletion(
     model_class: type[Model],
     entries: list[Model],
-) -> dict[type[Model], set[Model]]:
-    ...
+) -> dict[type[Model], set[Model]]: ...
 ```
 
 **Parameters:**
@@ -362,7 +351,7 @@ for model, objects in deletion_preview.items():
 #   Review: 230 objects (cascade)
 
 # Confirm with user
-if input("Proceed? (y/n): ").lower() == 'y':
+if input("Proceed? (y/n): ").lower() == "y":
     total, by_model = bulk_delete_in_steps(Author, list(authors))
     print(f"Deleted {total} objects")
 ```
@@ -389,8 +378,7 @@ Simulate deletion for multiple model types and aggregate results.
 ```python
 def multi_simulate_bulk_deletion(
     entries: dict[type[Model], list[Model]],
-) -> dict[type[Model], set[Model]]:
-    ...
+) -> dict[type[Model], set[Model]]: ...
 ```
 
 **Parameters:**
@@ -407,10 +395,12 @@ def multi_simulate_bulk_deletion(
 from winidjango.core.db.bulk import multi_simulate_bulk_deletion
 
 # Simulate deletion of multiple model types
-deletion_preview = multi_simulate_bulk_deletion({
-    Author: list(Author.objects.filter(name__startswith="Test")),
-    Publisher: list(Publisher.objects.filter(active=False)),
-})
+deletion_preview = multi_simulate_bulk_deletion(
+    {
+        Author: list(Author.objects.filter(name__startswith="Test")),
+        Publisher: list(Publisher.objects.filter(active=False)),
+    }
+)
 
 # Aggregated results across all deletions
 for model, objects in deletion_preview.items():
@@ -509,8 +499,7 @@ Sort Django models by foreign key dependencies.
 ```python
 def topological_sort_models[TModel: Model](
     models: list[type[TModel]],
-) -> list[type[TModel]]:
-    ...
+) -> list[type[TModel]]: ...
 ```
 
 **Parameters:**
@@ -565,8 +554,7 @@ Generate a hash for a model instance based on its field values.
 def hash_model_instance(
     instance: Model,
     fields: list[Field | ForeignObjectRel | GenericForeignKey],
-) -> int:
-    ...
+) -> int: ...
 ```
 
 **Parameters:**
@@ -637,12 +625,14 @@ Abstract base model with common fields and utilities.
 from winidjango.core.db.models import BaseModel
 from django.db import models
 
+
 class Article(BaseModel):
     title = models.CharField(max_length=200)
     content = models.TextField()
 
     class Meta(BaseModel.Meta):
         db_table = "articles"
+
 
 # Automatically includes created_at and updated_at
 article = Article.objects.create(title="Hello", content="World")
@@ -686,8 +676,7 @@ Get all fields from a Django model including relationships.
 ```python
 def get_fields[TModel: Model](
     model: type[TModel],
-) -> list[Field | ForeignObjectRel | GenericForeignKey]:
-    ...
+) -> list[Field | ForeignObjectRel | GenericForeignKey]: ...
 ```
 
 **Parameters:**
@@ -709,7 +698,7 @@ from winidjango.core.db.fields import get_fields
 
 fields = get_fields(User)
 for field in fields:
-    if hasattr(field, 'name'):
+    if hasattr(field, "name"):
         print(f"{field.name}: {type(field).__name__}")
 
 # Output:
@@ -731,8 +720,7 @@ Extract field names from a list of field objects.
 ```python
 def get_field_names(
     fields: list[Field | ForeignObjectRel | GenericForeignKey],
-) -> list[str]:
-    ...
+) -> list[str]: ...
 ```
 
 **Parameters:**
@@ -763,8 +751,7 @@ Get the Django model metadata options object.
 **Signature:**
 
 ```python
-def get_model_meta(model: type[Model]) -> Options[Model]:
-    ...
+def get_model_meta(model: type[Model]) -> Options[Model]: ...
 ```
 
 **Parameters:**
@@ -813,8 +800,7 @@ Execute raw SQL query with safe parameter binding.
 def execute_sql(
     sql: str,
     params: dict[str, Any] | None = None,
-) -> tuple[list[str], list[Any]]:
-    ...
+) -> tuple[list[str], list[Any]]: ...
 ```
 
 **Parameters:**
@@ -842,7 +828,7 @@ for row in rows:
 # Query with parameters (safe from SQL injection)
 columns, rows = execute_sql(
     "SELECT id, username FROM auth_user WHERE is_active = %(active)s",
-    params={"active": True}
+    params={"active": True},
 )
 
 # Complex query
@@ -878,14 +864,13 @@ columns, rows = execute_sql(sql, params={"since": "2024-01-01"})
 
 ```python
 # DON'T do this (SQL injection risk)
-username = request.GET.get('username')
+username = request.GET.get("username")
 execute_sql(f"SELECT * FROM users WHERE username = '{username}'")
 
 # DO this (safe parameter binding)
-username = request.GET.get('username')
+username = request.GET.get("username")
 execute_sql(
-    "SELECT * FROM users WHERE username = %(username)s",
-    params={"username": username}
+    "SELECT * FROM users WHERE username = %(username)s", params={"username": username}
 )
 ```
 

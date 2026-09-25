@@ -40,6 +40,7 @@ logging and standardized argument handling.
 from winidjango.core.commands.base.base import ABCBaseCommand
 from argparse import ArgumentParser
 
+
 class MyCommand(ABCBaseCommand):
     """Your custom command."""
 
@@ -64,8 +65,7 @@ Add command-specific arguments to the argument parser.
 
 ```python
 @abstractmethod
-def add_command_arguments(self, parser: ArgumentParser) -> None:
-    ...
+def add_command_arguments(self, parser: ArgumentParser) -> None: ...
 ```
 
 **Parameters:**
@@ -77,21 +77,16 @@ def add_command_arguments(self, parser: ArgumentParser) -> None:
 ```python
 def add_command_arguments(self, parser: ArgumentParser) -> None:
     parser.add_argument(
-        '--input-file',
-        type=str,
-        required=True,
-        help='Path to input file'
+        "--input-file", type=str, required=True, help="Path to input file"
     )
     parser.add_argument(
-        '--output-format',
-        choices=['json', 'csv', 'xml'],
-        default='json',
-        help='Output format for results'
+        "--output-format",
+        choices=["json", "csv", "xml"],
+        default="json",
+        help="Output format for results",
     )
     parser.add_argument(
-        '--limit',
-        type=int,
-        help='Maximum number of records to process'
+        "--limit", type=int, help="Maximum number of records to process"
     )
 ```
 
@@ -105,8 +100,7 @@ Execute the command-specific logic.
 
 ```python
 @abstractmethod
-def handle_command(self) -> None:
-    ...
+def handle_command(self) -> None: ...
 ```
 
 **Parameters:**
@@ -118,16 +112,16 @@ def handle_command(self) -> None:
 ```python
 def handle_command(self) -> None:
     # Get command-specific arguments
-    input_file = self.get_option('input_file')
-    output_format = self.get_option('output_format')
-    limit = self.get_option('limit')
+    input_file = self.get_option("input_file")
+    output_format = self.get_option("output_format")
+    limit = self.get_option("limit")
 
     # Get built-in arguments
-    dry_run = self.get_option('dry_run')
-    batch_size = self.get_option('batch_size') or 1000
+    dry_run = self.get_option("dry_run")
+    batch_size = self.get_option("batch_size") or 1000
 
     if dry_run:
-        self.stdout.write(self.style.WARNING('DRY RUN MODE'))
+        self.stdout.write(self.style.WARNING("DRY RUN MODE"))
 
     # Your command logic
     data = self.load_data(input_file, limit)
@@ -144,8 +138,7 @@ Get an option value from parsed command-line arguments.
 **Signature:**
 
 ```python
-def get_option(self, option: str) -> Any:
-    ...
+def get_option(self, option: str) -> Any: ...
 ```
 
 **Parameters:**
@@ -162,12 +155,12 @@ def get_option(self, option: str) -> Any:
 def handle_command(self) -> None:
     # Command-line: --input-file data.csv
     # Access as: input_file (underscores)
-    input_file = self.get_option('input_file')
+    input_file = self.get_option("input_file")
 
     # Built-in options
-    dry_run = self.get_option('dry_run')  # bool
-    batch_size = self.get_option('batch_size')  # int | None
-    threads = self.get_option('threads')  # int | None
+    dry_run = self.get_option("dry_run")  # bool
+    batch_size = self.get_option("batch_size")  # int | None
+    threads = self.get_option("threads")  # int | None
 ```
 
 ### Execution Flow
@@ -218,47 +211,40 @@ from winidjango.core.commands.base.base import ABCBaseCommand
 from argparse import ArgumentParser
 from winidjango.core.db.bulk import bulk_create_in_steps
 
+
 class ImportProductsCommand(ABCBaseCommand):
     """Import products from CSV file."""
 
     def add_command_arguments(self, parser: ArgumentParser) -> None:
         parser.add_argument(
-            '--file',
+            "--file",
             type=str,
             required=True,
-            help='Path to CSV file'
+            help="Path to CSV file",
         )
-        parser.add_argument(
-            '--category',
-            type=str,
-            help='Filter by category'
-        )
+        parser.add_argument("--category", type=str, help="Filter by category")
 
     def handle_command(self) -> None:
-        file_path = self.get_option('file')
-        category = self.get_option('category')
-        dry_run = self.get_option('dry_run')
-        batch_size = self.get_option('batch_size') or 1000
+        file_path = self.get_option("file")
+        category = self.get_option("category")
+        dry_run = self.get_option("dry_run")
+        batch_size = self.get_option("batch_size") or 1000
 
-        self.stdout.write(f'Processing {file_path}')
+        self.stdout.write(f"Processing {file_path}")
 
         # Load data
         products = self.load_products(file_path, category)
-        self.stdout.write(f'Loaded {len(products)} products')
+        self.stdout.write(f"Loaded {len(products)} products")
 
         if dry_run:
-            self.stdout.write(self.style.WARNING('DRY RUN - No changes made'))
+            self.stdout.write(self.style.WARNING("DRY RUN - No changes made"))
             return
 
         # Create in database
         created = bulk_create_in_steps(Product, products, step=batch_size)
-        self.stdout.write(
-            self.style.SUCCESS(f'Created {len(created)} products')
-        )
+        self.stdout.write(self.style.SUCCESS(f"Created {len(created)} products"))
 
-    def load_products(
-        self, file_path: str, category: str | None
-    ) -> list[Product]:
+    def load_products(self, file_path: str, category: str | None) -> list[Product]:
         # Your loading logic
         pass
 ```
@@ -315,8 +301,7 @@ Fetch raw data from the source.
 
 ```python
 @abstractmethod
-def handle_import(self) -> pl.DataFrame:
-    ...
+def handle_import(self) -> pl.DataFrame: ...
 ```
 
 **Returns:**
@@ -328,8 +313,9 @@ def handle_import(self) -> pl.DataFrame:
 ```python
 import polars as pl
 
+
 def handle_import(self) -> pl.DataFrame:
-    file_path = self.get_option('file')
+    file_path = self.get_option("file")
 
     # From CSV
     return pl.read_csv(file_path)
@@ -355,8 +341,7 @@ Return the data cleaning class.
 
 ```python
 @abstractmethod
-def get_cleaning_df_cls(self) -> type[CleaningDF]:
-    ...
+def get_cleaning_df_cls(self) -> type[CleaningDF]: ...
 ```
 
 **Returns:**
@@ -368,6 +353,7 @@ def get_cleaning_df_cls(self) -> type[CleaningDF]:
 ```python
 from winiutils.core.data.dataframe.cleaning import CleaningDF
 import polars as pl
+
 
 class UserCleaningDF(CleaningDF):
     """Data cleaning rules for user import."""
@@ -403,6 +389,7 @@ class UserCleaningDF(CleaningDF):
         """Define uniqueness constraints."""
         return ((cls.USERNAME_COL,), (cls.EMAIL_COL,))
 
+
 def get_cleaning_df_cls(self) -> type[CleaningDF]:
     return UserCleaningDF
 ```
@@ -419,8 +406,7 @@ Convert cleaned DataFrame to Django model instances.
 @abstractmethod
 def get_bulks_by_model(
     self, df: pl.DataFrame
-) -> dict[type[Model], Iterable[Model]]:
-    ...
+) -> dict[type[Model], Iterable[Model]]: ...
 ```
 
 **Parameters:**
@@ -434,16 +420,10 @@ def get_bulks_by_model(
 **Example:**
 
 ```python
-def get_bulks_by_model(
-    self, df: pl.DataFrame
-) -> dict[type[Model], Iterable[Model]]:
+def get_bulks_by_model(self, df: pl.DataFrame) -> dict[type[Model], Iterable[Model]]:
     # Convert DataFrame rows to model instances
     users = [
-        User(
-            username=row["username"],
-            email=row["email"],
-            age=row["age"]
-        )
+        User(username=row["username"], email=row["email"], age=row["age"])
         for row in df.iter_rows(named=True)
     ]
 
@@ -466,8 +446,7 @@ Import cleaned data to database (called automatically).
 **Signature:**
 
 ```python
-def import_to_db(self) -> None:
-    ...
+def import_to_db(self) -> None: ...
 ```
 
 **Behavior:**
@@ -485,6 +464,7 @@ from winidjango.core.commands.import_data import ImportDataBaseCommand
 from winiutils.core.data.dataframe.cleaning import CleaningDF
 from argparse import ArgumentParser
 import polars as pl
+
 
 class ProductCleaningDF(CleaningDF):
     """Cleaning rules for product data."""
@@ -509,15 +489,16 @@ class ProductCleaningDF(CleaningDF):
     def get_unique_subsets(cls) -> tuple[tuple[str, ...], ...]:
         return ((cls.SKU_COL,),)
 
+
 class ImportProductsCommand(ImportDataBaseCommand):
     """Import products from CSV with automatic cleaning."""
 
     def add_command_arguments(self, parser: ArgumentParser) -> None:
-        parser.add_argument('--file', type=str, required=True)
-        parser.add_argument('--category-id', type=int, required=True)
+        parser.add_argument("--file", type=str, required=True)
+        parser.add_argument("--category-id", type=int, required=True)
 
     def handle_import(self) -> pl.DataFrame:
-        file_path = self.get_option('file')
+        file_path = self.get_option("file")
         return pl.read_csv(file_path)
 
     def get_cleaning_df_cls(self) -> type[CleaningDF]:
@@ -526,14 +507,14 @@ class ImportProductsCommand(ImportDataBaseCommand):
     def get_bulks_by_model(
         self, df: pl.DataFrame
     ) -> dict[type[Model], Iterable[Model]]:
-        category_id = self.get_option('category_id')
+        category_id = self.get_option("category_id")
 
         products = [
             Product(
                 name=row["name"],
                 price=row["price"],
                 sku=row["sku"],
-                category_id=category_id
+                category_id=category_id,
             )
             for row in df.iter_rows(named=True)
         ]
@@ -569,12 +550,14 @@ Preview changes without executing them.
 
 ```python
 def handle_command(self) -> None:
-    dry_run = self.get_option('dry_run')
+    dry_run = self.get_option("dry_run")
 
     if dry_run:
-        self.stdout.write(self.style.WARNING(
-            'DRY RUN MODE - No changes will be made'
-        ))
+        self.stdout.write(
+            self.style.WARNING(
+                "DRY RUN MODE - No changes will be made",
+            ),
+        )
         # Show what would happen
         self.preview_changes()
         return
@@ -602,7 +585,7 @@ Configure batch processing size.
 
 ```python
 def handle_command(self) -> None:
-    batch_size = self.get_option('batch_size') or 1000
+    batch_size = self.get_option("batch_size") or 1000
 
     bulk_create_in_steps(Model, objects, step=batch_size)
 ```
@@ -626,7 +609,7 @@ Control thread count for parallel processing.
 
 ```python
 def handle_command(self) -> None:
-    threads = self.get_option('threads') or 4
+    threads = self.get_option("threads") or 4
 
     with ThreadPoolExecutor(max_workers=threads) as executor:
         executor.map(process_item, items)
@@ -651,12 +634,12 @@ Force execution of actions (skip confirmations).
 
 ```python
 def handle_command(self) -> None:
-    force = self.get_option('force')
+    force = self.get_option("force")
 
     if not force:
-        confirm = input('Are you sure? (y/n): ')
-        if confirm.lower() != 'y':
-            self.stdout.write('Cancelled')
+        confirm = input("Are you sure? (y/n): ")
+        if confirm.lower() != "y":
+            self.stdout.write("Cancelled")
             return
 
     self.execute_dangerous_operation()
@@ -681,12 +664,12 @@ Enable deletion operations.
 
 ```python
 def handle_command(self) -> None:
-    delete = self.get_option('delete')
+    delete = self.get_option("delete")
 
     if delete:
         self.delete_old_records()
     else:
-        self.stdout.write('Skipping deletion (use --delete to enable)')
+        self.stdout.write("Skipping deletion (use --delete to enable)")
 ```
 
 **Usage:**
@@ -708,11 +691,11 @@ Auto-confirm all prompts.
 
 ```python
 def handle_command(self) -> None:
-    yes = self.get_option('yes')
+    yes = self.get_option("yes")
 
     if not yes:
-        confirm = input('Proceed? (y/n): ')
-        if confirm.lower() != 'y':
+        confirm = input("Proceed? (y/n): ")
+        if confirm.lower() != "y":
             return
 
     self.execute()
@@ -738,8 +721,9 @@ Set command timeout in seconds.
 ```python
 import signal
 
+
 def handle_command(self) -> None:
-    timeout = self.get_option('timeout')
+    timeout = self.get_option("timeout")
 
     if timeout:
         signal.alarm(timeout)
@@ -747,7 +731,7 @@ def handle_command(self) -> None:
     try:
         self.long_running_operation()
     except TimeoutError:
-        self.stdout.write(self.style.ERROR('Command timed out'))
+        self.stdout.write(self.style.ERROR("Command timed out"))
 ```
 
 **Usage:**
@@ -770,8 +754,9 @@ Control process count for multiprocessing.
 ```python
 from multiprocessing import Pool
 
+
 def handle_command(self) -> None:
-    processes = self.get_option('processes') or 4
+    processes = self.get_option("processes") or 4
 
     with Pool(processes=processes) as pool:
         results = pool.map(process_item, items)
@@ -791,12 +776,12 @@ python manage.py mycommand --processes 4
 
 ```python
 def handle_command(self) -> None:
-    dry_run = self.get_option('dry_run')
+    dry_run = self.get_option("dry_run")
 
     # Preview deletions
     if dry_run:
         preview = simulate_bulk_deletion(Model, objects)
-        self.stdout.write(f'Would delete {len(preview)} objects')
+        self.stdout.write(f"Would delete {len(preview)} objects")
         return
 
     # Actual deletion
@@ -813,9 +798,9 @@ def handle_command(self) -> None:
         self.process_item(item)
 
         if i % 100 == 0:
-            self.stdout.write(f'Processed {i}/{total} items')
+            self.stdout.write(f"Processed {i}/{total} items")
 
-    self.stdout.write(self.style.SUCCESS(f'Completed {total} items'))
+    self.stdout.write(self.style.SUCCESS(f"Completed {total} items"))
 ```
 
 ### 3. Handle Errors Gracefully
@@ -829,21 +814,19 @@ def handle_command(self) -> None:
             self.process_item(item)
         except Exception as e:
             errors.append((item, str(e)))
-            self.stdout.write(self.style.ERROR(f'Error processing {item}: {e}'))
+            self.stdout.write(self.style.ERROR(f"Error processing {item}: {e}"))
 
     if errors:
-        self.stdout.write(self.style.WARNING(f'{len(errors)} errors occurred'))
+        self.stdout.write(self.style.WARNING(f"{len(errors)} errors occurred"))
     else:
-        self.stdout.write(
-            self.style.SUCCESS('All items processed successfully')
-        )
+        self.stdout.write(self.style.SUCCESS("All items processed successfully"))
 ```
 
 ### 4. Use Batch Size Appropriately
 
 ```python
 def handle_command(self) -> None:
-    batch_size = self.get_option('batch_size')
+    batch_size = self.get_option("batch_size")
 
     # Adjust based on object complexity
     if not batch_size:
@@ -860,9 +843,9 @@ def handle_command(self) -> None:
 ```python
 def handle_command(self) -> None:
     # Combine multiple built-in arguments
-    dry_run = self.get_option('dry_run')
-    force = self.get_option('force')
-    batch_size = self.get_option('batch_size') or 1000
+    dry_run = self.get_option("dry_run")
+    force = self.get_option("force")
+    batch_size = self.get_option("batch_size") or 1000
 
     if dry_run:
         self.preview()
@@ -911,6 +894,7 @@ class MyCommand(ABCBaseCommand):
 from winidjango.core.commands.base.base import ABCBaseCommand
 from argparse import ArgumentParser
 
+
 class CleanupOldRecordsCommand(ABCBaseCommand):
     """Delete records older than specified days."""
 
@@ -918,26 +902,23 @@ class CleanupOldRecordsCommand(ABCBaseCommand):
 
     def add_command_arguments(self, parser: ArgumentParser) -> None:
         parser.add_argument(
-            '--days',
+            "--days",
             type=int,
             default=30,
-            help='Delete records older than this many days'
+            help="Delete records older than this many days",
         )
         parser.add_argument(
-            '--model',
-            type=str,
-            required=True,
-            help='Model name to clean up'
+            "--model", type=str, required=True, help="Model name to clean up"
         )
 
     def handle_command(self) -> None:
         from django.apps import apps
         from datetime import datetime, timedelta
 
-        days = self.get_option('days')
-        model_name = self.get_option('model')
-        dry_run = self.get_option('dry_run')
-        delete = self.get_option('delete')
+        days = self.get_option("days")
+        model_name = self.get_option("model")
+        dry_run = self.get_option("dry_run")
+        delete = self.get_option("delete")
 
         # Get model
         model = apps.get_model(model_name)
@@ -949,23 +930,23 @@ class CleanupOldRecordsCommand(ABCBaseCommand):
         old_records = model.objects.filter(created_at__lt=cutoff)
         count = old_records.count()
 
-        self.stdout.write(f'Found {count} records older than {days} days')
+        self.stdout.write(f"Found {count} records older than {days} days")
 
         if not delete:
             self.stdout.write(
-                self.style.WARNING('Use --delete to actually delete records')
+                self.style.WARNING("Use --delete to actually delete records")
             )
             return
 
         if dry_run:
             self.stdout.write(
-                self.style.WARNING(f'DRY RUN: Would delete {count} records')
+                self.style.WARNING(f"DRY RUN: Would delete {count} records")
             )
             return
 
         # Delete
         deleted, _ = old_records.delete()
-        self.stdout.write(self.style.SUCCESS(f'Deleted {deleted} records'))
+        self.stdout.write(self.style.SUCCESS(f"Deleted {deleted} records"))
 ```
 
 ### Example 2: Data Import with Validation
@@ -975,6 +956,7 @@ from winidjango.core.commands.import_data import ImportDataBaseCommand
 from winiutils.core.data.dataframe.cleaning import CleaningDF
 from argparse import ArgumentParser
 import polars as pl
+
 
 class OrderCleaningDF(CleaningDF):
     ORDER_ID_COL = "order_id"
@@ -993,15 +975,16 @@ class OrderCleaningDF(CleaningDF):
     def get_no_null_cols(cls) -> tuple[str, ...]:
         return (cls.ORDER_ID_COL, cls.CUSTOMER_ID_COL, cls.AMOUNT_COL)
 
+
 class ImportOrdersCommand(ImportDataBaseCommand):
     """Import orders with customer validation."""
 
     def add_command_arguments(self, parser: ArgumentParser) -> None:
-        parser.add_argument('--file', type=str, required=True)
-        parser.add_argument('--validate-customers', action='store_true')
+        parser.add_argument("--file", type=str, required=True)
+        parser.add_argument("--validate-customers", action="store_true")
 
     def handle_import(self) -> pl.DataFrame:
-        return pl.read_csv(self.get_option('file'))
+        return pl.read_csv(self.get_option("file"))
 
     def get_cleaning_df_cls(self) -> type[CleaningDF]:
         return OrderCleaningDF
@@ -1009,20 +992,20 @@ class ImportOrdersCommand(ImportDataBaseCommand):
     def get_bulks_by_model(
         self, df: pl.DataFrame
     ) -> dict[type[Model], Iterable[Model]]:
-        validate = self.get_option('validate_customers')
+        validate = self.get_option("validate_customers")
 
         # Validate customers exist
         if validate:
-            customer_ids = df['customer_id'].to_list()
-            existing = set(Customer.objects.filter(
-                id__in=customer_ids
-            ).values_list('id', flat=True))
+            customer_ids = df["customer_id"].to_list()
+            existing = set(
+                Customer.objects.filter(id__in=customer_ids).values_list(
+                    "id", flat=True
+                )
+            )
 
             missing = set(customer_ids) - existing
             if missing:
-                self.stdout.write(
-                    self.style.ERROR(f'Missing customers: {missing}')
-                )
+                self.stdout.write(self.style.ERROR(f"Missing customers: {missing}"))
                 return {}
 
         # Create orders
@@ -1030,7 +1013,7 @@ class ImportOrdersCommand(ImportDataBaseCommand):
             Order(
                 order_id=row["order_id"],
                 customer_id=row["customer_id"],
-                amount=row["amount"]
+                amount=row["amount"],
             )
             for row in df.iter_rows(named=True)
         ]
@@ -1045,6 +1028,7 @@ from winidjango.core.commands.import_data import ImportDataBaseCommand
 from winiutils.core.data.dataframe.cleaning import CleaningDF
 import polars as pl
 
+
 class StoreDataCleaningDF(CleaningDF):
     STORE_NAME_COL = "store_name"
     PRODUCT_NAME_COL = "product_name"
@@ -1058,14 +1042,15 @@ class StoreDataCleaningDF(CleaningDF):
             cls.PRICE_COL: pl.Float64,
         }
 
+
 class ImportStoreDataCommand(ImportDataBaseCommand):
     """Import stores and their products."""
 
     def add_command_arguments(self, parser: ArgumentParser) -> None:
-        parser.add_argument('--file', type=str, required=True)
+        parser.add_argument("--file", type=str, required=True)
 
     def handle_import(self) -> pl.DataFrame:
-        return pl.read_csv(self.get_option('file'))
+        return pl.read_csv(self.get_option("file"))
 
     def get_cleaning_df_cls(self) -> type[CleaningDF]:
         return StoreDataCleaningDF
@@ -1074,7 +1059,7 @@ class ImportStoreDataCommand(ImportDataBaseCommand):
         self, df: pl.DataFrame
     ) -> dict[type[Model], Iterable[Model]]:
         # Get unique stores
-        store_names = df['store_name'].unique().to_list()
+        store_names = df["store_name"].unique().to_list()
         stores = [Store(name=name) for name in store_names]
 
         # Create store name to instance mapping
@@ -1085,7 +1070,7 @@ class ImportStoreDataCommand(ImportDataBaseCommand):
             Product(
                 name=row["product_name"],
                 price=row["price"],
-                store=store_map[row["store_name"]]
+                store=store_map[row["store_name"]],
             )
             for row in df.iter_rows(named=True)
         ]
