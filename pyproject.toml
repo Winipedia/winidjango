@@ -1,6 +1,6 @@
 [project]
 name = "winidjango"
-version = "4.15.50"
+version = "4.15.52"
 description = "A utility package for django"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -56,7 +56,6 @@ dev = [
   "pre-commit-hooks>=6.0.0",
   "prek>=0.5.3",
   "pyflakes>=3.4.0",
-  "pyrig>=18.85.1",
   "pyrig-codeql>=1.0.0",
   "pyrig-public>=1.0.1",
   "pyrig-pypi>=3.20.28",
