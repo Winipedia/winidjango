@@ -209,7 +209,7 @@ class TestABCBaseCommand:
 
         # Test that get_option returns the correct value
         class TestCommand(ABCBaseCommand):
-            class Options(ABCBaseCommand.Options):
+            class Options(ABCBaseCommand.Options):  # ty:ignore[invalid-attribute-override]
                 EXTRA = "extra"
 
             def add_command_arguments(self, parser: ArgumentParser) -> None:

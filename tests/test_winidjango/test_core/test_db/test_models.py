@@ -218,7 +218,7 @@ class TestBaseModel:
             name: models.CharField[str, str] = models.CharField(max_length=100)
             value: models.IntegerField[int, int] = models.IntegerField()
 
-            class Meta(BaseModel.Meta):
+            class Meta(BaseModel.Meta):  # ty:ignore[invalid-attribute-override]
                 app_label = "test_app"
 
         test_instance = TestModel(name="test", value=42)
@@ -236,7 +236,7 @@ class TestBaseModel:
             name: models.CharField[str, str] = models.CharField(max_length=100)
             value: models.IntegerField[int, int] = models.IntegerField()
 
-            class Meta(BaseModel.Meta):
+            class Meta(BaseModel.Meta):  # ty:ignore[invalid-attribute-override]
                 app_label = "test_app"
 
         test_instance = TestModel2(name="test", value=42)
@@ -254,7 +254,7 @@ class TestBaseModel:
             name: models.CharField[str, str] = models.CharField(max_length=100)
             value: models.IntegerField[int, int] = models.IntegerField()
 
-            class Meta(BaseModel.Meta):
+            class Meta(BaseModel.Meta):  # ty:ignore[invalid-attribute-override]
                 app_label = "test_app"
 
         test_instance = TestModel3(name="test", value=42)
