@@ -1,6 +1,6 @@
 [project]
 name = "winidjango"
-version = "4.15.82"
+version = "4.15.85"
 description = "A utility package for django"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -30,8 +30,8 @@ dependencies = [
   "filelock>=4.1.1",
   "polars>=2.0.0",
   "pyrig>=18.108.0",
-  "pyrig-runtime>=3.25.0",
-  "winiutils>=4.14.117",
+  "pyrig-runtime>=3.26.0",
+  "winiutils>=4.14.120",
 ]
 
 [project.urls]
