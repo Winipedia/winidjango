@@ -1,12 +1,12 @@
 """__init__ module."""
 
 import logging
+import sys
 from pathlib import Path
 
 import django
 import django_stubs_ext
 from django.conf import settings
-from pyrig.core.introspection.modules import import_module_with_file_fallback
 from pyrig_runtime.core.strings import snake_to_kebab_case
 
 import winidjango
@@ -26,13 +26,9 @@ if not settings.configured:
     in_this_repo = Path.cwd().name == snake_to_kebab_case(winidjango.__name__)
     if in_this_repo:
         logger.info("Configuring minimal django settings for tests")
-        # manual import needed bc tests is not a registered package
         if ProjectTester.I.package_root().exists():
-            tests_package = import_module_with_file_fallback(
-                path=ProjectTester.I.package_root(),
-                name=ProjectTester.I.package_name(),
-            )
-            installed_apps = [tests_package.__name__]
+            sys.path.insert(0, str(ProjectTester.I.source_root()))
+            installed_apps = [ProjectTester.I.package_name()]
         else:
             installed_apps = []
         settings.configure(
