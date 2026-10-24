@@ -14,78 +14,6 @@ from tests.models import ModelA, ModelB
 from winidjango.core.commands.import_data import ImportDataBaseCommand
 
 
-class MyCleaningDF(CleaningDF):
-    """Concrete implementation of CleaningDF for testing."""
-
-    STR_COL = "str_col"
-    INT_COL = "int_col"
-
-    @classmethod
-    def get_rename_map(cls) -> dict[str, str]:
-        """Test implementation of rename_map."""
-        return {
-            cls.STR_COL: "str_col_old",
-            cls.INT_COL: "int_col_old",
-        }
-
-    @classmethod
-    def get_col_dtype_map(cls) -> dict[str, type[pl.DataType]]:
-        """Test implementation of col_cls_map."""
-        return {
-            cls.STR_COL: pl.Utf8,
-            cls.INT_COL: pl.Int64,
-        }
-
-    @classmethod
-    def get_drop_null_subsets(cls) -> tuple[tuple[str, ...], ...]:
-        """Test implementation of drop_null_subsets."""
-        return ((cls.STR_COL, cls.INT_COL),)
-
-    @classmethod
-    def get_fill_null_map(cls) -> dict[str, Any]:
-        """Test implementation of fill_null_map."""
-        return {
-            cls.STR_COL: "",
-            cls.INT_COL: 0,
-        }
-
-    @classmethod
-    def get_sort_cols(cls) -> tuple[tuple[str, bool], ...]:
-        """Test implementation of sort_cols."""
-        return ((cls.INT_COL, False), (cls.STR_COL, True))
-
-    @classmethod
-    def get_unique_subsets(cls) -> tuple[tuple[str, ...], ...]:
-        """Test implementation of unique_subsets."""
-        return ((cls.STR_COL, cls.INT_COL),)
-
-    @classmethod
-    def get_no_null_cols(cls) -> tuple[str, ...]:
-        """Test implementation of not_null_cols."""
-        return (cls.STR_COL, cls.INT_COL)
-
-    @classmethod
-    def get_col_converter_map(
-        cls,
-    ) -> dict[str, Callable[[pl.Series], pl.Series]]:
-        """Test implementation of col_converter_map."""
-        # lets add 1 to the int_col
-        return {
-            cls.INT_COL: cls.skip_col_converter,
-            cls.STR_COL: cls.skip_col_converter,
-        }
-
-    @classmethod
-    def get_add_on_duplicate_cols(cls) -> tuple[str, ...]:
-        """Test implementation of add_on_duplicate_cols."""
-        return ()
-
-    @classmethod
-    def get_col_precision_map(cls) -> dict[str, int]:
-        """Test implementation of col_precision_map."""
-        return {}
-
-
 @pytest.fixture
 def import_data_command() -> type[ImportDataBaseCommand]:
     """Fixture for ImportDataBaseCommand."""
@@ -223,3 +151,75 @@ class TestImportDataBaseCommand:
         assert ModelB.objects.count() == expected_num, (
             f"Expected {expected_num} ModelB objects, got {ModelB.objects.count()}"
         )
+
+
+class MyCleaningDF(CleaningDF):
+    """Concrete implementation of CleaningDF for testing."""
+
+    STR_COL = "str_col"
+    INT_COL = "int_col"
+
+    @classmethod
+    def get_rename_map(cls) -> dict[str, str]:
+        """Test implementation of rename_map."""
+        return {
+            cls.STR_COL: "str_col_old",
+            cls.INT_COL: "int_col_old",
+        }
+
+    @classmethod
+    def get_col_dtype_map(cls) -> dict[str, type[pl.DataType]]:
+        """Test implementation of col_cls_map."""
+        return {
+            cls.STR_COL: pl.Utf8,
+            cls.INT_COL: pl.Int64,
+        }
+
+    @classmethod
+    def get_drop_null_subsets(cls) -> tuple[tuple[str, ...], ...]:
+        """Test implementation of drop_null_subsets."""
+        return ((cls.STR_COL, cls.INT_COL),)
+
+    @classmethod
+    def get_fill_null_map(cls) -> dict[str, Any]:
+        """Test implementation of fill_null_map."""
+        return {
+            cls.STR_COL: "",
+            cls.INT_COL: 0,
+        }
+
+    @classmethod
+    def get_sort_cols(cls) -> tuple[tuple[str, bool], ...]:
+        """Test implementation of sort_cols."""
+        return ((cls.INT_COL, False), (cls.STR_COL, True))
+
+    @classmethod
+    def get_unique_subsets(cls) -> tuple[tuple[str, ...], ...]:
+        """Test implementation of unique_subsets."""
+        return ((cls.STR_COL, cls.INT_COL),)
+
+    @classmethod
+    def get_no_null_cols(cls) -> tuple[str, ...]:
+        """Test implementation of not_null_cols."""
+        return (cls.STR_COL, cls.INT_COL)
+
+    @classmethod
+    def get_col_converter_map(
+        cls,
+    ) -> dict[str, Callable[[pl.Series], pl.Series]]:
+        """Test implementation of col_converter_map."""
+        # lets add 1 to the int_col
+        return {
+            cls.INT_COL: cls.skip_col_converter,
+            cls.STR_COL: cls.skip_col_converter,
+        }
+
+    @classmethod
+    def get_add_on_duplicate_cols(cls) -> tuple[str, ...]:
+        """Test implementation of add_on_duplicate_cols."""
+        return ()
+
+    @classmethod
+    def get_col_precision_map(cls) -> dict[str, int]:
+        """Test implementation of col_precision_map."""
+        return {}

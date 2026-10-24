@@ -5,115 +5,6 @@ from django.db import models
 from winidjango.core.db.fields import get_field_names, get_fields, get_model_meta
 
 
-class CustomContentType(models.Model):
-    """Custom model to replace ContentType for testing."""
-
-    app_label: models.CharField[str, str] = models.CharField(max_length=100)
-    model: models.CharField[str, str] = models.CharField(max_length=100)
-
-    class Meta:
-        """Meta class for CustomContentType."""
-
-        app_label = "test_app"
-        db_table = "custom_content_type"
-
-    def __str__(self) -> str:
-        """String representation of CustomContentType."""
-        return f"{self.app_label}.{self.model}"
-
-
-def test_get_model_meta() -> None:
-    """Test func for get_model_meta."""
-
-    # Create a test model since Django auth models aren't available
-    class MetaTestModel(models.Model):
-        """Test model for get_model_meta."""
-
-        name: models.CharField[str, str] = models.CharField(max_length=100)
-
-        class Meta:
-            app_label = "test_app"
-
-        def __str__(self) -> str:
-            return self.name
-
-    # Test that get_model_meta returns the _meta attribute
-    meta = get_model_meta(MetaTestModel)
-    assert meta is MetaTestModel._meta, (  # noqa: SLF001
-        "Expected get_model_meta to return the model's _meta attribute"
-    )
-
-    # Test that the meta object has expected attributes
-    assert hasattr(meta, "db_table"), "Expected meta object to have db_table attribute"
-    assert hasattr(meta, "get_fields"), "Expected meta object to have get_fields method"
-    assert hasattr(meta, "app_label"), (
-        "Expected meta object to have app_label attribute"
-    )
-
-    # Test with CustomContentType model
-    meta_ct = get_model_meta(CustomContentType)
-    assert meta_ct is CustomContentType._meta, (  # noqa: SLF001
-        "Expected get_model_meta to work with CustomContentType model"
-    )
-    assert meta_ct.db_table == "custom_content_type", (
-        f"Expected CustomContentType db_table to be 'custom_content_type', "
-        f"got {meta_ct.db_table}"
-    )
-
-    # Test that different models return different meta objects
-    assert meta is not meta_ct, (
-        "Expected different models to have different meta objects"
-    )
-
-
-def test_get_fields() -> None:
-    """Test func for get_fields."""
-
-    # Create test models for testing
-    class FieldsTestModel(models.Model):
-        name: models.CharField[str, str] = models.CharField(max_length=100)
-        value: models.IntegerField[int, int] = models.IntegerField()
-
-        class Meta:
-            app_label = "test_app"
-
-        def __str__(self) -> str:
-            return self.name
-
-    # Test with our test model
-    fields = get_fields(FieldsTestModel)
-
-    # Test that we get a list of field objects
-    assert len(fields) > 0, "Expected TestModel to have fields"
-
-    # Test that we can find expected fields
-    field_names = [f.name for f in fields if hasattr(f, "name")]
-    expected_fields = {"id", "name", "value"}
-
-    for expected_field in expected_fields:
-        assert expected_field in field_names, (
-            f"Expected field '{expected_field}' to be in TestModel fields, "
-            f"got {field_names}"
-        )
-
-    # Test with CustomContentType model to check for relationships
-    ct_fields = get_fields(CustomContentType)
-    ct_field_names = [f.name for f in ct_fields if hasattr(f, "name")]
-
-    # CustomContentType model should have basic fields
-    expected_ct_fields = {"id", "app_label", "model"}
-    for expected_field in expected_ct_fields:
-        assert expected_field in ct_field_names, (
-            f"Expected field '{expected_field}' to be in CustomContentType fields, "
-            f"got {ct_field_names}"
-        )
-
-    # Test that different models return different field lists
-    assert set(field_names) != set(ct_field_names), (
-        "Expected different models to have different field names"
-    )
-
-
 def test_get_field_names() -> None:
     """Test func for get_field_names."""
 
@@ -166,3 +57,112 @@ def test_get_field_names() -> None:
     assert empty_field_names == [], (
         "Expected get_field_names with empty list to return empty list"
     )
+
+
+def test_get_fields() -> None:
+    """Test func for get_fields."""
+
+    # Create test models for testing
+    class FieldsTestModel(models.Model):
+        name: models.CharField[str, str] = models.CharField(max_length=100)
+        value: models.IntegerField[int, int] = models.IntegerField()
+
+        class Meta:
+            app_label = "test_app"
+
+        def __str__(self) -> str:
+            return self.name
+
+    # Test with our test model
+    fields = get_fields(FieldsTestModel)
+
+    # Test that we get a list of field objects
+    assert len(fields) > 0, "Expected TestModel to have fields"
+
+    # Test that we can find expected fields
+    field_names = [f.name for f in fields if hasattr(f, "name")]
+    expected_fields = {"id", "name", "value"}
+
+    for expected_field in expected_fields:
+        assert expected_field in field_names, (
+            f"Expected field '{expected_field}' to be in TestModel fields, "
+            f"got {field_names}"
+        )
+
+    # Test with CustomContentType model to check for relationships
+    ct_fields = get_fields(CustomContentType)
+    ct_field_names = [f.name for f in ct_fields if hasattr(f, "name")]
+
+    # CustomContentType model should have basic fields
+    expected_ct_fields = {"id", "app_label", "model"}
+    for expected_field in expected_ct_fields:
+        assert expected_field in ct_field_names, (
+            f"Expected field '{expected_field}' to be in CustomContentType fields, "
+            f"got {ct_field_names}"
+        )
+
+    # Test that different models return different field lists
+    assert set(field_names) != set(ct_field_names), (
+        "Expected different models to have different field names"
+    )
+
+
+def test_get_model_meta() -> None:
+    """Test func for get_model_meta."""
+
+    # Create a test model since Django auth models aren't available
+    class MetaTestModel(models.Model):
+        """Test model for get_model_meta."""
+
+        name: models.CharField[str, str] = models.CharField(max_length=100)
+
+        class Meta:
+            app_label = "test_app"
+
+        def __str__(self) -> str:
+            return self.name
+
+    # Test that get_model_meta returns the _meta attribute
+    meta = get_model_meta(MetaTestModel)
+    assert meta is MetaTestModel._meta, (  # noqa: SLF001
+        "Expected get_model_meta to return the model's _meta attribute"
+    )
+
+    # Test that the meta object has expected attributes
+    assert hasattr(meta, "db_table"), "Expected meta object to have db_table attribute"
+    assert hasattr(meta, "get_fields"), "Expected meta object to have get_fields method"
+    assert hasattr(meta, "app_label"), (
+        "Expected meta object to have app_label attribute"
+    )
+
+    # Test with CustomContentType model
+    meta_ct = get_model_meta(CustomContentType)
+    assert meta_ct is CustomContentType._meta, (  # noqa: SLF001
+        "Expected get_model_meta to work with CustomContentType model"
+    )
+    assert meta_ct.db_table == "custom_content_type", (
+        f"Expected CustomContentType db_table to be 'custom_content_type', "
+        f"got {meta_ct.db_table}"
+    )
+
+    # Test that different models return different meta objects
+    assert meta is not meta_ct, (
+        "Expected different models to have different meta objects"
+    )
+
+
+class CustomContentType(models.Model):
+    """Custom model to replace ContentType for testing."""
+
+    app_label: models.CharField[str, str] = models.CharField(max_length=100)
+    model: models.CharField[str, str] = models.CharField(max_length=100)
+
+    class Meta:
+        """Meta class for CustomContentType."""
+
+        app_label = "test_app"
+        db_table = "custom_content_type"
+
+    def __str__(self) -> str:
+        """String representation of CustomContentType."""
+        return f"{self.app_label}.{self.model}"

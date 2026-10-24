@@ -44,28 +44,66 @@ MODE_DELETE = MODES[2]
 STANDARD_BULK_SIZE = 1000
 
 
-def bulk_create_in_steps[TModel: Model](
+def bulk_create_bulks_in_steps(
+    bulk_by_class: dict[type[Model], Iterable[Model]],
+    step: int = STANDARD_BULK_SIZE,
+) -> dict[type[Model], list[Model]]:
+    """Create multiple model-type bulks in dependency order.
+
+    The function topologically sorts the provided model classes so that
+    models referenced by foreign keys are created before models that
+    reference them. Each class' instances are created in batches using
+    :func:`bulk_create_in_steps`.
+
+    Args:
+        bulk_by_class: Mapping from model class to iterable of instances to create.
+        step: Chunk size for each model's batched creation.
+
+    Returns:
+        Mapping from model class to list of created instances.
+    """
+    # order the bulks in order of creation depending how they depend on each other
+    models_ = list(bulk_by_class.keys())
+    ordered_models = topological_sort_models(models=models_)
+
+    results: dict[type[Model], list[Model]] = {}
+    for model_ in ordered_models:
+        bulk = bulk_by_class[model_]
+        result = bulk_create_in_steps(model=model_, bulk=bulk, step=step)
+        results[model_] = result
+
+    return results
+
+
+def bulk_delete_in_steps[TModel: Model](
     model: type[TModel],
     bulk: Iterable[TModel],
     step: int = STANDARD_BULK_SIZE,
-) -> list[TModel]:
-    """Create objects in batches and return created instances.
+) -> tuple[int, dict[str, int]]:
+    """Delete objects in batches and return deletion statistics.
 
-    Breaks ``bulk`` into chunks of size ``step`` and calls the project's
-    batched bulk-create helper for each chunk. Execution is performed
-    using the concurrent utility where configured for throughput.
+    Each chunk is deleted using Django's QuerySet ``delete`` which
+    returns a (count, per-model-counts) tuple. Results are aggregated
+    across chunks and returned as a consolidated tuple.
 
     Args:
-        model: Django model class to create instances for.
-        bulk: Iterable of unsaved model instances.
-        step: Number of instances to create per chunk.
+        model: Django model class.
+        bulk: Iterable of model instances to delete.
+        step: Chunk size for deletions.
 
     Returns:
-        List of created model instances (flattened across chunks).
+        A tuple containing the total number of deleted objects and a
+        mapping from model label to deleted count (including cascaded
+        deletions).
     """
     return cast(
-        "list[TModel]",
-        bulk_method_in_steps(model=model, bulk=bulk, step=step, mode=MODE_CREATE),
+        "tuple[int, dict[str, int]]",
+        bulk_method_in_steps(
+            model=model,
+            bulk=bulk,
+            step=step,
+            mode=MODE_DELETE,
+        ),
     )
 
 
@@ -99,36 +137,171 @@ def bulk_update_in_steps[TModel: Model](
     )
 
 
-def bulk_delete_in_steps[TModel: Model](
+def get_differences_between_bulks[TModel1: Model, TModel2: Model](
+    bulk1: list[TModel1],
+    bulk2: list[TModel2],
+    fields: "list[Field[Any, Any] | ForeignObjectRel | GenericForeignKey]",
+) -> tuple[list[TModel1], list[TModel2], list[TModel1], list[TModel2]]:
+    """Return differences and intersections between two bulks of the same model.
+
+    Instances are compared using :func:`hash_model_instance` over the
+    provided ``fields``. The function maintains the original ordering
+    for returned lists so that callers can preserve deterministic
+    ordering when applying diffs.
+
+    Args:
+        bulk1: First list of model instances.
+        bulk2: Second list of model instances.
+        fields: Fields to include when hashing instances.
+
+    Raises:
+        ValueError: If bulks are empty or contain different model types.
+
+    Returns:
+        Four lists in the order:
+            (in_1_not_2, in_2_not_1, in_both_from_1, in_both_from_2).
+    """
+    if not bulk1 or not bulk2:
+        return bulk1, bulk2, [], []
+
+    if type(bulk1[0]) is not type(bulk2[0]):
+        msg = "Both bulks must be of the same model type."
+        raise ValueError(msg)
+
+    hash_model_instance_with_fields = partial(
+        hash_model_instance,
+        fields=fields,
+    )
+    # Precompute hashes and map them directly to models in a single pass for both bulks
+    hashes1 = list(map(hash_model_instance_with_fields, bulk1))
+    hashes2 = list(map(hash_model_instance_with_fields, bulk2))
+
+    # Convert keys to sets for difference operations
+    set1, set2 = set(hashes1), set(hashes2)
+
+    # Calculate differences between sets
+    # Find differences and intersection with original order preserved
+    # Important, we need to return the original objects that are the same in memory,
+    # so in_1_not_2 and in_2_not_1
+    in_1_not_2 = set1 - set2
+    in_1_not_2_list = [
+        model
+        for model, hash_ in zip(bulk1, hashes1, strict=False)
+        if hash_ in in_1_not_2
+    ]
+
+    in_2_not_1 = set2 - set1
+    in_2_not_1_list = [
+        model
+        for model, hash_ in zip(bulk2, hashes2, strict=False)
+        if hash_ in in_2_not_1
+    ]
+
+    in_1_and_2 = set1 & set2
+    in_1_and_2_from_1 = [
+        model
+        for model, hash_ in zip(bulk1, hashes1, strict=False)
+        if hash_ in in_1_and_2
+    ]
+    in_1_and_2_from_2 = [
+        model
+        for model, hash_ in zip(bulk2, hashes2, strict=False)
+        if hash_ in in_1_and_2
+    ]
+
+    return in_1_not_2_list, in_2_not_1_list, in_1_and_2_from_1, in_1_and_2_from_2
+
+
+def multi_simulate_bulk_deletion(
+    entries: dict[type[Model], list[Model]],
+) -> dict[type[Model], set[Model]]:
+    """Simulate deletions for multiple model classes and merge results.
+
+    Runs :func:`simulate_bulk_deletion` for each provided model and
+    returns a unified mapping of all models that would be deleted.
+
+    Args:
+        entries: Mapping from model class to list of instances to simulate.
+
+    Returns:
+        Mapping from model class to set of instances that would be deleted.
+    """
+    deletion_summaries = [
+        simulate_bulk_deletion(model, entry) for model, entry in entries.items()
+    ]
+    # join the dicts to get the total count of deleted objects
+    joined_deletion_summary: defaultdict[type[Model], set[Model]] = defaultdict(set)
+    for deletion_summary in deletion_summaries:
+        for model, objects in deletion_summary.items():
+            joined_deletion_summary[model].update(objects)
+
+    return dict(joined_deletion_summary)
+
+
+def bulk_create_in_steps[TModel: Model](
     model: type[TModel],
     bulk: Iterable[TModel],
     step: int = STANDARD_BULK_SIZE,
-) -> tuple[int, dict[str, int]]:
-    """Delete objects in batches and return deletion statistics.
+) -> list[TModel]:
+    """Create objects in batches and return created instances.
 
-    Each chunk is deleted using Django's QuerySet ``delete`` which
-    returns a (count, per-model-counts) tuple. Results are aggregated
-    across chunks and returned as a consolidated tuple.
+    Breaks ``bulk`` into chunks of size ``step`` and calls the project's
+    batched bulk-create helper for each chunk. Execution is performed
+    using the concurrent utility where configured for throughput.
 
     Args:
-        model: Django model class.
-        bulk: Iterable of model instances to delete.
-        step: Chunk size for deletions.
+        model: Django model class to create instances for.
+        bulk: Iterable of unsaved model instances.
+        step: Number of instances to create per chunk.
 
     Returns:
-        A tuple containing the total number of deleted objects and a
-        mapping from model label to deleted count (including cascaded
-        deletions).
+        List of created model instances (flattened across chunks).
     """
     return cast(
-        "tuple[int, dict[str, int]]",
-        bulk_method_in_steps(
-            model=model,
-            bulk=bulk,
-            step=step,
-            mode=MODE_DELETE,
-        ),
+        "list[TModel]",
+        bulk_method_in_steps(model=model, bulk=bulk, step=step, mode=MODE_CREATE),
     )
+
+
+def simulate_bulk_deletion[TModel: Model](
+    model_class: type[TModel],
+    entries: list[TModel],
+) -> dict[type[Model], set[Model]]:
+    """Simulate Django's delete cascade and return affected objects.
+
+    Uses :class:`django.db.models.deletion.Collector` to determine which
+    objects (including cascaded related objects) would be removed if the
+    provided entries were deleted. No database writes are performed.
+
+    Args:
+        model_class: Model class of the provided entries.
+        entries: Instances to simulate deletion for.
+
+    Returns:
+        Mapping from model class to set of instances that would be deleted.
+    """
+    if not entries:
+        return {}
+
+    # Initialize the Collector
+    using = router.db_for_write(model_class)
+    collector = Collector(using)
+
+    # Collect deletion cascade for all entries
+    collector.collect(entries)  # ty:ignore[invalid-argument-type]
+
+    # Prepare the result dictionary
+    deletion_summary: defaultdict[type[Model], set[Model]] = defaultdict(set)
+
+    # Add normal deletes
+    for model, objects in collector.data.items():
+        deletion_summary[model].update(objects)  # objects is already iterable
+
+    # Add fast deletes (explicitly expand querysets)
+    for queryset in collector.fast_deletes:
+        deletion_summary[queryset.model].update(list(queryset))
+
+    return deletion_summary
 
 
 @overload
@@ -207,7 +380,9 @@ def bulk_method_in_steps_atomic[TModel: Model](
     step: int,
     mode: Literal["create"],
     **kwargs: Any,  # noqa: ANN401
-) -> list[TModel]: ...
+) -> list[TModel]: ...  # bc concurrent_loop expects a tuple of args
+
+
 @overload
 @transaction.atomic
 def bulk_method_in_steps_atomic[TModel: Model](
@@ -266,102 +441,13 @@ def bulk_method_in_steps_atomic[TModel: Model](
     return flatten_bulk_in_steps_result(result=result, mode=mode)
 
 
-def get_step_chunks(
-    bulk: Iterable[Model],
-    step: int,
-) -> Generator[tuple[list[Model]], None, None]:
-    """Yield consecutive chunks of at most ``step`` items from ``bulk``.
-
-    The function yields a single-tuple containing the chunk (a list of
-    model instances) because the concurrent execution helper expects a
-    tuple of positional arguments for the target function.
-
-    Args:
-        bulk: Iterable of model instances.
-        step: Maximum number of instances per yielded chunk.
-
-    Yields:
-        Tuples where the first element is a list of model instances.
-    """
-    bulk = iter(bulk)
-    while True:
-        chunk = list(islice(bulk, step))
-        if not chunk:
-            break
-        yield (chunk,)  # bc concurrent_loop expects a tuple of args
-
-
-@overload
-def get_bulk_method(
-    model: type[Model],
-    mode: Literal["create"],
-    **kwargs: Any,  # noqa: ANN401
-) -> Callable[[list[Model]], list[Model]]: ...
-@overload
-def get_bulk_method(
-    model: type[Model],
-    mode: Literal["update"],
-    **kwargs: Any,  # noqa: ANN401
-) -> Callable[[list[Model]], int]: ...
-@overload
-def get_bulk_method(
-    model: type[Model],
-    mode: Literal["delete"],
-    **kwargs: Any,  # noqa: ANN401
-) -> Callable[[list[Model]], tuple[int, dict[str, int]]]: ...
-def get_bulk_method(
-    model: type[Model],
-    mode: MODE_TYPES,
-    **kwargs: Any,
-) -> Callable[[list[Model]], list[Model] | int | tuple[int, dict[str, int]]]:
-    """Return a callable that performs the requested bulk operation on a chunk.
-
-    The returned function accepts a single argument (a list of model
-    instances) and returns the per-chunk result for the chosen mode.
-
-    Args:
-        model: Django model class.
-        mode: One of ``'create'``, ``'update'`` or ``'delete'``.
-        **kwargs: Forwarded to the underlying ORM bulk methods.
-
-    Raises:
-        ValueError: If ``mode`` is invalid.
-
-    Returns:
-        Callable that accepts a list of model instances and returns the
-        result for that chunk.
-    """
-    bulk_method: Callable[[list[Model]], list[Model] | int | tuple[int, dict[str, int]]]
-    if mode == MODE_CREATE:
-
-        def bulk_create_chunk(chunk: list[Model]) -> list[Model]:
-            return model.objects.bulk_create(objs=chunk, **kwargs)
-
-        bulk_method = bulk_create_chunk
-    elif mode == MODE_UPDATE:
-
-        def bulk_update_chunk(chunk: list[Model]) -> int:
-            return model.objects.bulk_update(objs=chunk, **kwargs)
-
-        bulk_method = bulk_update_chunk
-    elif mode == MODE_DELETE:
-
-        def bulk_delete_chunk(chunk: list[Model]) -> tuple[int, dict[str, int]]:
-            return bulk_delete(model=model, objs=chunk, **kwargs)
-
-        bulk_method = bulk_delete_chunk
-    else:
-        msg = f"Invalid method. Must be one of {MODES}"
-        raise ValueError(msg)
-
-    return bulk_method
-
-
 @overload
 def flatten_bulk_in_steps_result[TModel: Model](
     result: list[list[TModel]],
     mode: Literal["create"],
 ) -> list[TModel]: ...
+
+
 @overload
 def flatten_bulk_in_steps_result[TModel: Model](
     result: list[int],
@@ -418,6 +504,103 @@ def flatten_bulk_in_steps_result[TModel: Model](
     raise ValueError(msg)
 
 
+@overload
+def get_bulk_method(
+    model: type[Model],
+    mode: Literal["create"],
+    **kwargs: Any,  # noqa: ANN401
+) -> Callable[[list[Model]], list[Model]]: ...
+
+
+@overload
+def get_bulk_method(
+    model: type[Model],
+    mode: Literal["update"],
+    **kwargs: Any,  # noqa: ANN401
+) -> Callable[[list[Model]], int]: ...
+
+
+@overload
+def get_bulk_method(
+    model: type[Model],
+    mode: Literal["delete"],
+    **kwargs: Any,  # noqa: ANN401
+) -> Callable[[list[Model]], tuple[int, dict[str, int]]]: ...
+
+
+def get_bulk_method(
+    model: type[Model],
+    mode: MODE_TYPES,
+    **kwargs: Any,
+) -> Callable[[list[Model]], list[Model] | int | tuple[int, dict[str, int]]]:
+    """Return a callable that performs the requested bulk operation on a chunk.
+
+    The returned function accepts a single argument (a list of model
+    instances) and returns the per-chunk result for the chosen mode.
+
+    Args:
+        model: Django model class.
+        mode: One of ``'create'``, ``'update'`` or ``'delete'``.
+        **kwargs: Forwarded to the underlying ORM bulk methods.
+
+    Raises:
+        ValueError: If ``mode`` is invalid.
+
+    Returns:
+        Callable that accepts a list of model instances and returns the
+        result for that chunk.
+    """
+    bulk_method: Callable[[list[Model]], list[Model] | int | tuple[int, dict[str, int]]]
+    if mode == MODE_CREATE:
+
+        def bulk_create_chunk(chunk: list[Model]) -> list[Model]:
+            return model.objects.bulk_create(objs=chunk, **kwargs)
+
+        bulk_method = bulk_create_chunk
+    elif mode == MODE_UPDATE:
+
+        def bulk_update_chunk(chunk: list[Model]) -> int:
+            return model.objects.bulk_update(objs=chunk, **kwargs)
+
+        bulk_method = bulk_update_chunk
+    elif mode == MODE_DELETE:
+
+        def bulk_delete_chunk(chunk: list[Model]) -> tuple[int, dict[str, int]]:
+            return bulk_delete(model=model, objs=chunk, **kwargs)
+
+        bulk_method = bulk_delete_chunk
+    else:
+        msg = f"Invalid method. Must be one of {MODES}"
+        raise ValueError(msg)
+
+    return bulk_method
+
+
+def get_step_chunks(
+    bulk: Iterable[Model],
+    step: int,
+) -> Generator[tuple[list[Model]], None, None]:
+    """Yield consecutive chunks of at most ``step`` items from ``bulk``.
+
+    The function yields a single-tuple containing the chunk (a list of
+    model instances) because the concurrent execution helper expects a
+    tuple of positional arguments for the target function.
+
+    Args:
+        bulk: Iterable of model instances.
+        step: Maximum number of instances per yielded chunk.
+
+    Yields:
+        Tuples where the first element is a list of model instances.
+    """
+    bulk = iter(bulk)
+    while True:
+        chunk = list(islice(bulk, step))
+        if not chunk:
+            break
+        yield (chunk,)
+
+
 def bulk_delete(
     model: type[Model],
     objs: Iterable[Model],
@@ -437,176 +620,3 @@ def bulk_delete(
         Tuple(total_deleted, per_model_counts) as returned by ``delete()``.
     """
     return model.objects.filter(pk__in=(obj.pk for obj in objs)).delete()
-
-
-def bulk_create_bulks_in_steps(
-    bulk_by_class: dict[type[Model], Iterable[Model]],
-    step: int = STANDARD_BULK_SIZE,
-) -> dict[type[Model], list[Model]]:
-    """Create multiple model-type bulks in dependency order.
-
-    The function topologically sorts the provided model classes so that
-    models referenced by foreign keys are created before models that
-    reference them. Each class' instances are created in batches using
-    :func:`bulk_create_in_steps`.
-
-    Args:
-        bulk_by_class: Mapping from model class to iterable of instances to create.
-        step: Chunk size for each model's batched creation.
-
-    Returns:
-        Mapping from model class to list of created instances.
-    """
-    # order the bulks in order of creation depending how they depend on each other
-    models_ = list(bulk_by_class.keys())
-    ordered_models = topological_sort_models(models=models_)
-
-    results: dict[type[Model], list[Model]] = {}
-    for model_ in ordered_models:
-        bulk = bulk_by_class[model_]
-        result = bulk_create_in_steps(model=model_, bulk=bulk, step=step)
-        results[model_] = result
-
-    return results
-
-
-def get_differences_between_bulks[TModel1: Model, TModel2: Model](
-    bulk1: list[TModel1],
-    bulk2: list[TModel2],
-    fields: "list[Field[Any, Any] | ForeignObjectRel | GenericForeignKey]",
-) -> tuple[list[TModel1], list[TModel2], list[TModel1], list[TModel2]]:
-    """Return differences and intersections between two bulks of the same model.
-
-    Instances are compared using :func:`hash_model_instance` over the
-    provided ``fields``. The function maintains the original ordering
-    for returned lists so that callers can preserve deterministic
-    ordering when applying diffs.
-
-    Args:
-        bulk1: First list of model instances.
-        bulk2: Second list of model instances.
-        fields: Fields to include when hashing instances.
-
-    Raises:
-        ValueError: If bulks are empty or contain different model types.
-
-    Returns:
-        Four lists in the order:
-            (in_1_not_2, in_2_not_1, in_both_from_1, in_both_from_2).
-    """
-    if not bulk1 or not bulk2:
-        return bulk1, bulk2, [], []
-
-    if type(bulk1[0]) is not type(bulk2[0]):
-        msg = "Both bulks must be of the same model type."
-        raise ValueError(msg)
-
-    hash_model_instance_with_fields = partial(
-        hash_model_instance,
-        fields=fields,
-    )
-    # Precompute hashes and map them directly to models in a single pass for both bulks
-    hashes1 = list(map(hash_model_instance_with_fields, bulk1))
-    hashes2 = list(map(hash_model_instance_with_fields, bulk2))
-
-    # Convert keys to sets for difference operations
-    set1, set2 = set(hashes1), set(hashes2)
-
-    # Calculate differences between sets
-    # Find differences and intersection with original order preserved
-    # Important, we need to return the original objects that are the same in memory,
-    # so in_1_not_2 and in_2_not_1
-    in_1_not_2 = set1 - set2
-    in_1_not_2_list = [
-        model
-        for model, hash_ in zip(bulk1, hashes1, strict=False)
-        if hash_ in in_1_not_2
-    ]
-
-    in_2_not_1 = set2 - set1
-    in_2_not_1_list = [
-        model
-        for model, hash_ in zip(bulk2, hashes2, strict=False)
-        if hash_ in in_2_not_1
-    ]
-
-    in_1_and_2 = set1 & set2
-    in_1_and_2_from_1 = [
-        model
-        for model, hash_ in zip(bulk1, hashes1, strict=False)
-        if hash_ in in_1_and_2
-    ]
-    in_1_and_2_from_2 = [
-        model
-        for model, hash_ in zip(bulk2, hashes2, strict=False)
-        if hash_ in in_1_and_2
-    ]
-
-    return in_1_not_2_list, in_2_not_1_list, in_1_and_2_from_1, in_1_and_2_from_2
-
-
-def simulate_bulk_deletion[TModel: Model](
-    model_class: type[TModel],
-    entries: list[TModel],
-) -> dict[type[Model], set[Model]]:
-    """Simulate Django's delete cascade and return affected objects.
-
-    Uses :class:`django.db.models.deletion.Collector` to determine which
-    objects (including cascaded related objects) would be removed if the
-    provided entries were deleted. No database writes are performed.
-
-    Args:
-        model_class: Model class of the provided entries.
-        entries: Instances to simulate deletion for.
-
-    Returns:
-        Mapping from model class to set of instances that would be deleted.
-    """
-    if not entries:
-        return {}
-
-    # Initialize the Collector
-    using = router.db_for_write(model_class)
-    collector = Collector(using)
-
-    # Collect deletion cascade for all entries
-    collector.collect(entries)  # ty:ignore[invalid-argument-type]
-
-    # Prepare the result dictionary
-    deletion_summary: defaultdict[type[Model], set[Model]] = defaultdict(set)
-
-    # Add normal deletes
-    for model, objects in collector.data.items():
-        deletion_summary[model].update(objects)  # objects is already iterable
-
-    # Add fast deletes (explicitly expand querysets)
-    for queryset in collector.fast_deletes:
-        deletion_summary[queryset.model].update(list(queryset))
-
-    return deletion_summary
-
-
-def multi_simulate_bulk_deletion(
-    entries: dict[type[Model], list[Model]],
-) -> dict[type[Model], set[Model]]:
-    """Simulate deletions for multiple model classes and merge results.
-
-    Runs :func:`simulate_bulk_deletion` for each provided model and
-    returns a unified mapping of all models that would be deleted.
-
-    Args:
-        entries: Mapping from model class to list of instances to simulate.
-
-    Returns:
-        Mapping from model class to set of instances that would be deleted.
-    """
-    deletion_summaries = [
-        simulate_bulk_deletion(model, entry) for model, entry in entries.items()
-    ]
-    # join the dicts to get the total count of deleted objects
-    joined_deletion_summary: defaultdict[type[Model], set[Model]] = defaultdict(set)
-    for deletion_summary in deletion_summaries:
-        for model, objects in deletion_summary.items():
-            joined_deletion_summary[model].update(objects)
-
-    return dict(joined_deletion_summary)

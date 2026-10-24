@@ -21,6 +21,41 @@ if TYPE_CHECKING:
     from django.db.models.options import Options
 
 
+def hash_model_instance(
+    instance: Model,
+    fields: "list[Field[Any, Any] | ForeignObjectRel | GenericForeignKey]",
+) -> int:
+    """Compute a deterministic hash for a model instance.
+
+    The function returns a hash suitable for comparing unsaved model
+    instances by their field values. If the instance has a primary key
+    (``instance.pk``) that key is hashed and returned immediately; this
+    keeps comparisons cheap for persisted objects.
+
+    Args:
+        instance (Model): The Django model instance to hash.
+        fields (list[Field | ForeignObjectRel | GenericForeignKey]):
+            Field objects that should be included when computing the hash.
+
+    Returns:
+        int: Deterministic integer hash of the instance. For persisted
+            instances this is ``hash(instance.pk)``.
+
+    Notes:
+        - The returned hash is intended for heuristic comparisons (e.g.
+          deduplication in import pipelines) and is not cryptographically
+          secure. Use with care when relying on absolute uniqueness.
+    """
+    if instance.pk:
+        return hash(instance.pk)
+
+    field_names = get_field_names(fields)
+    model_dict = model_to_dict(instance, fields=field_names)
+    sorted_dict = dict(sorted(model_dict.items()))
+    values = (type(instance), tuple(sorted_dict.items()))
+    return hash(values)
+
+
 def topological_sort_models(
     models: list[type[Model]],
 ) -> list[type[Model]]:
@@ -75,41 +110,6 @@ def topological_sort_models(
         ts.add(model, *deps)
 
     return list(ts.static_order())
-
-
-def hash_model_instance(
-    instance: Model,
-    fields: "list[Field[Any, Any] | ForeignObjectRel | GenericForeignKey]",
-) -> int:
-    """Compute a deterministic hash for a model instance.
-
-    The function returns a hash suitable for comparing unsaved model
-    instances by their field values. If the instance has a primary key
-    (``instance.pk``) that key is hashed and returned immediately; this
-    keeps comparisons cheap for persisted objects.
-
-    Args:
-        instance (Model): The Django model instance to hash.
-        fields (list[Field | ForeignObjectRel | GenericForeignKey]):
-            Field objects that should be included when computing the hash.
-
-    Returns:
-        int: Deterministic integer hash of the instance. For persisted
-            instances this is ``hash(instance.pk)``.
-
-    Notes:
-        - The returned hash is intended for heuristic comparisons (e.g.
-          deduplication in import pipelines) and is not cryptographically
-          secure. Use with care when relying on absolute uniqueness.
-    """
-    if instance.pk:
-        return hash(instance.pk)
-
-    field_names = get_field_names(fields)
-    model_dict = model_to_dict(instance, fields=field_names)
-    sorted_dict = dict(sorted(model_dict.items()))
-    values = (type(instance), tuple(sorted_dict.items()))
-    return hash(values)
 
 
 class BaseModel(Model):

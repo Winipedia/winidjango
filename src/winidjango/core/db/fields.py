@@ -31,21 +31,6 @@ def get_field_names(
     return [field.name for field in fields]
 
 
-def get_model_meta(model: type[Model]) -> "Options[Model]":
-    """Return a model class' ``_meta`` options object.
-
-    This small wrapper exists to make typing clearer at call sites where
-    the code needs the model Options object.
-
-    Args:
-        model (type[Model]): Django model class.
-
-    Returns:
-        Options: The model's ``_meta`` options object.
-    """
-    return model._meta  # noqa: SLF001
-
-
 def get_fields[TModel: Model](
     model: type[TModel],
 ) -> "list[Field[Any, Any] | ForeignObjectRel | GenericForeignKey]":
@@ -63,3 +48,18 @@ def get_fields[TModel: Model](
             objects associated with the model.
     """
     return get_model_meta(model).get_fields()
+
+
+def get_model_meta(model: type[Model]) -> "Options[Model]":
+    """Return a model class' ``_meta`` options object.
+
+    This small wrapper exists to make typing clearer at call sites where
+    the code needs the model Options object.
+
+    Args:
+        model (type[Model]): Django model class.
+
+    Returns:
+        Options: The model's ``_meta`` options object.
+    """
+    return model._meta  # noqa: SLF001

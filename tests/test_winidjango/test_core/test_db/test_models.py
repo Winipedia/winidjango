@@ -15,6 +15,86 @@ if TYPE_CHECKING:
     from django.db.models import Model
 
 
+def test_hash_model_instance() -> None:
+    """Test func for hash_model_instance."""
+
+    # Create a test model for hashing
+    class HashTestModel(models.Model):
+        """Test model for hash_model_instance."""
+
+        name: models.CharField[str, str] = models.CharField(max_length=100)
+        value: models.IntegerField[int, int] = models.IntegerField()
+
+        class Meta:
+            app_label = "test_app"
+
+        def __str__(self) -> str:
+            return self.name
+
+    # Test hashing with saved instance (has pk)
+    saved_instance = HashTestModel(pk=1, name="test", value=42)
+    saved_fields = get_fields(HashTestModel)
+    saved_hash = hash_model_instance(saved_instance, saved_fields)
+
+    # Test that hash is based on pk for saved instances
+    assert type(saved_hash) is int, f"Expected hash to be int, got {type(saved_hash)}"
+
+    # Test that same pk produces same hash
+    another_saved_instance = HashTestModel(pk=1, name="different", value=99)
+    another_saved_hash = hash_model_instance(another_saved_instance, saved_fields)
+    assert saved_hash == another_saved_hash, (
+        "Expected instances with same pk to have same hash"
+    )
+
+    # Test hashing with unsaved instance (no pk)
+    unsaved_instance = HashTestModel(name="test", value=42)
+    unsaved_hash = hash_model_instance(unsaved_instance, saved_fields)
+
+    assert type(unsaved_hash) is int, (
+        f"Expected hash to be int, got {type(unsaved_hash)}"
+    )
+
+    # Test that same field values produce same hash for unsaved instances
+    same_unsaved_instance = HashTestModel(name="test", value=42)
+    same_unsaved_hash = hash_model_instance(same_unsaved_instance, saved_fields)
+    assert unsaved_hash == same_unsaved_hash, (
+        "Expected instances with same field values to have same hash"
+    )
+
+    # Test that different field values produce different hash
+    different_unsaved_instance = HashTestModel(name="different", value=42)
+    different_unsaved_hash = hash_model_instance(
+        different_unsaved_instance,
+        saved_fields,
+    )
+    assert unsaved_hash != different_unsaved_hash, (
+        "Expected instances with different field values to have different hash"
+    )
+
+    # Test with subset of fields
+    name_field = next(
+        f for f in saved_fields if hasattr(f, "name") and f.name == "name"
+    )
+    subset_fields = [name_field]
+    subset_hash1 = hash_model_instance(unsaved_instance, subset_fields)
+    subset_hash2 = hash_model_instance(same_unsaved_instance, subset_fields)
+
+    assert subset_hash1 == subset_hash2, (
+        "Expected instances with same subset field values to have same hash"
+    )
+
+    # Test that saved and unsaved instances with same pk have different hashes
+    # (saved uses pk, unsaved uses field values)
+    unsaved_with_pk = HashTestModel(pk=1, name="test", value=42)
+    unsaved_with_pk.pk = None  # Force it to be treated as unsaved
+    unsaved_pk_hash = hash_model_instance(unsaved_with_pk, saved_fields)
+
+    # This should be different from saved_hash because one uses pk, other uses fields
+    assert saved_hash != unsaved_pk_hash, (
+        "Expected saved and unsaved instances to have different hash methods"
+    )
+
+
 def test_topological_sort_models() -> None:
     """Test func for topological_sort_models."""
 
@@ -124,86 +204,6 @@ def test_topological_sort_models() -> None:
     # Test with empty list
     empty_result: list[type[models.Model]] = topological_sort_models([])
     assert empty_result == [], "Expected empty list to return empty list"
-
-
-def test_hash_model_instance() -> None:
-    """Test func for hash_model_instance."""
-
-    # Create a test model for hashing
-    class HashTestModel(models.Model):
-        """Test model for hash_model_instance."""
-
-        name: models.CharField[str, str] = models.CharField(max_length=100)
-        value: models.IntegerField[int, int] = models.IntegerField()
-
-        class Meta:
-            app_label = "test_app"
-
-        def __str__(self) -> str:
-            return self.name
-
-    # Test hashing with saved instance (has pk)
-    saved_instance = HashTestModel(pk=1, name="test", value=42)
-    saved_fields = get_fields(HashTestModel)
-    saved_hash = hash_model_instance(saved_instance, saved_fields)
-
-    # Test that hash is based on pk for saved instances
-    assert type(saved_hash) is int, f"Expected hash to be int, got {type(saved_hash)}"
-
-    # Test that same pk produces same hash
-    another_saved_instance = HashTestModel(pk=1, name="different", value=99)
-    another_saved_hash = hash_model_instance(another_saved_instance, saved_fields)
-    assert saved_hash == another_saved_hash, (
-        "Expected instances with same pk to have same hash"
-    )
-
-    # Test hashing with unsaved instance (no pk)
-    unsaved_instance = HashTestModel(name="test", value=42)
-    unsaved_hash = hash_model_instance(unsaved_instance, saved_fields)
-
-    assert type(unsaved_hash) is int, (
-        f"Expected hash to be int, got {type(unsaved_hash)}"
-    )
-
-    # Test that same field values produce same hash for unsaved instances
-    same_unsaved_instance = HashTestModel(name="test", value=42)
-    same_unsaved_hash = hash_model_instance(same_unsaved_instance, saved_fields)
-    assert unsaved_hash == same_unsaved_hash, (
-        "Expected instances with same field values to have same hash"
-    )
-
-    # Test that different field values produce different hash
-    different_unsaved_instance = HashTestModel(name="different", value=42)
-    different_unsaved_hash = hash_model_instance(
-        different_unsaved_instance,
-        saved_fields,
-    )
-    assert unsaved_hash != different_unsaved_hash, (
-        "Expected instances with different field values to have different hash"
-    )
-
-    # Test with subset of fields
-    name_field = next(
-        f for f in saved_fields if hasattr(f, "name") and f.name == "name"
-    )
-    subset_fields = [name_field]
-    subset_hash1 = hash_model_instance(unsaved_instance, subset_fields)
-    subset_hash2 = hash_model_instance(same_unsaved_instance, subset_fields)
-
-    assert subset_hash1 == subset_hash2, (
-        "Expected instances with same subset field values to have same hash"
-    )
-
-    # Test that saved and unsaved instances with same pk have different hashes
-    # (saved uses pk, unsaved uses field values)
-    unsaved_with_pk = HashTestModel(pk=1, name="test", value=42)
-    unsaved_with_pk.pk = None  # Force it to be treated as unsaved
-    unsaved_pk_hash = hash_model_instance(unsaved_with_pk, saved_fields)
-
-    # This should be different from saved_hash because one uses pk, other uses fields
-    assert saved_hash != unsaved_pk_hash, (
-        "Expected saved and unsaved instances to have different hash methods"
-    )
 
 
 class TestBaseModel:

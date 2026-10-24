@@ -35,6 +35,27 @@ if TYPE_CHECKING:
 
 
 @pytest.mark.django_db
+def test_bulk_create_bulks_in_steps() -> None:
+    """Test func for bulk_create_bulks_in_steps."""
+    # bulk a
+    bulk_a = [ModelA(str_field=f"test_{i}", int_field=i) for i in range(1, 11)]
+    bulk_b = [ModelB(model_a=model_a) for model_a in bulk_a]
+    bulk_by_class: dict[type[Model], Iterable[Model]] = {
+        ModelA: bulk_a,
+        ModelB: bulk_b,
+    }
+    results = bulk_create_bulks_in_steps(bulk_by_class)
+    assert results == bulk_by_class, f"Expected {bulk_by_class}, got {results}"
+    results_b: list[ModelB] = cast("list[ModelB]", (results[ModelB]))
+    # assert b has as with pks after
+    for model_b in results_b:
+        assert model_b.pk is not None, f"Expected pk for {model_b}, got None"
+        assert model_b.model_a.pk is not None, (
+            f"Expected pk for {model_b.model_a}, got None"
+        )
+
+
+@pytest.mark.django_db
 def test_bulk_create_in_steps() -> None:
     """Test func for bulk_create_in_steps."""
     bulk = [ModelA(str_field=f"test_{i}", int_field=i) for i in range(1, 11)]
@@ -47,17 +68,41 @@ def test_bulk_create_in_steps() -> None:
     )
 
 
-@pytest.mark.django_db
-def test_bulk_update_in_steps() -> None:
-    """Test func for bulk_update_in_steps."""
-    # create some test data
-    bulk = [ModelA(str_field=f"test_{i}", int_field=i) for i in range(1, 11)]
-    created: list[ModelA] = bulk_create_in_steps(ModelA, bulk, step=5)
-    # update the int_field to a new value
-    for obj in created:
-        obj.int_field = obj.int_field + 1
-    updated = bulk_update_in_steps(ModelA, created, ["int_field"], step=5)
-    assert updated == len(created), f"Expected {len(created)} updated, got {updated}"
+def test_bulk_delete() -> None:
+    """Test func for bulk_delete."""
+
+    # Create test model
+    class BulkDeleteTestModel(models.Model):
+        """Test model for bulk_delete."""
+
+        name: models.CharField[str, str] = models.CharField(max_length=100)
+
+        class Meta:
+            app_label = "test_bulk_delete"
+
+        def __str__(self) -> str:
+            return self.name
+
+    # Test with non-empty list (empty list has a bug in the actual function)
+    test_instances = [BulkDeleteTestModel(pk=i, name=f"test_{i}") for i in range(1, 4)]
+
+    # Mock the model's objects manager
+    with pytest.MonkeyPatch().context() as m:
+
+        class MockQuerySet:
+            def delete(self) -> tuple[int, dict[str, int]]:
+                return (3, {"BulkDeleteTestModel": 3})
+
+        def mock_filter(**kwargs: Any) -> MockQuerySet:  # noqa: ANN401, ARG001
+            return MockQuerySet()
+
+        m.setattr(BulkDeleteTestModel.objects, "filter", mock_filter)
+
+        result = bulk_delete(BulkDeleteTestModel, test_instances)
+
+        assert result == (3, {"BulkDeleteTestModel": 3}), (
+            f"Expected (3, {{'BulkDeleteTestModel': 3}}), got {result}"
+        )
 
 
 @pytest.mark.django_db
@@ -108,58 +153,17 @@ def test_bulk_method_in_steps_atomic() -> None:
     )
 
 
-def test_get_step_chunks() -> None:
-    """Test func for get_step_chunks."""
-    # Test with empty bulk
-    empty_chunks = list(get_step_chunks([], 5))
-    assert empty_chunks == [], "Expected empty chunks for empty bulk"
-
-    # Test with bulk smaller than step size
-    small_bulk = [ModelA(str_field=f"test_{i}", int_field=i) for i in range(1, 3)]
-    small_chunks = list(get_step_chunks(small_bulk, 5))
-
-    assert small_chunks == [(small_bulk,)], f"Expected one chunk, got {small_chunks}"
-
-    # Test with bulk larger than step size
-    large_bulk = [ModelA(str_field=f"test_{i}", int_field=i) for i in range(7)]
-    large_chunks = list(get_step_chunks(large_bulk, 3))
-
-    expected_large_chunks = [
-        (large_bulk[:3],),
-        (large_bulk[3:6],),
-        (large_bulk[6:],),
-    ]
-    assert large_chunks == expected_large_chunks, (
-        f"Expected {expected_large_chunks}, got {large_chunks}"
-    )
-
-
-def test_get_bulk_method() -> None:
-    """Test func for get_bulk_method."""
-
-    # Create test model
-    class BulkMethodTestModel(models.Model):
-        """Test model for get_bulk_method."""
-
-        name: models.CharField[str, str] = models.CharField(max_length=100)
-
-        class Meta:
-            app_label = "test_get_bulk_method"
-
-        def __str__(self) -> str:
-            return self.name
-
-    # Test create method
-    create_method = get_bulk_method(BulkMethodTestModel, MODE_CREATE)
-    assert callable(create_method), "Expected create method to be callable"
-
-    # Test update method
-    update_method = get_bulk_method(BulkMethodTestModel, MODE_UPDATE, fields=["name"])
-    assert callable(update_method), "Expected update method to be callable"
-
-    # Test delete method
-    delete_method = get_bulk_method(BulkMethodTestModel, MODE_DELETE)
-    assert callable(delete_method), "Expected delete method to be callable"
+@pytest.mark.django_db
+def test_bulk_update_in_steps() -> None:
+    """Test func for bulk_update_in_steps."""
+    # create some test data
+    bulk = [ModelA(str_field=f"test_{i}", int_field=i) for i in range(1, 11)]
+    created: list[ModelA] = bulk_create_in_steps(ModelA, bulk, step=5)
+    # update the int_field to a new value
+    for obj in created:
+        obj.int_field = obj.int_field + 1
+    updated = bulk_update_in_steps(ModelA, created, ["int_field"], step=5)
+    assert updated == len(created), f"Expected {len(created)} updated, got {updated}"
 
 
 def test_flatten_bulk_in_steps_result() -> None:
@@ -216,62 +220,32 @@ def test_flatten_bulk_in_steps_result() -> None:
     )
 
 
-def test_bulk_delete() -> None:
-    """Test func for bulk_delete."""
+def test_get_bulk_method() -> None:
+    """Test func for get_bulk_method."""
 
     # Create test model
-    class BulkDeleteTestModel(models.Model):
-        """Test model for bulk_delete."""
+    class BulkMethodTestModel(models.Model):
+        """Test model for get_bulk_method."""
 
         name: models.CharField[str, str] = models.CharField(max_length=100)
 
         class Meta:
-            app_label = "test_bulk_delete"
+            app_label = "test_get_bulk_method"
 
         def __str__(self) -> str:
             return self.name
 
-    # Test with non-empty list (empty list has a bug in the actual function)
-    test_instances = [BulkDeleteTestModel(pk=i, name=f"test_{i}") for i in range(1, 4)]
+    # Test create method
+    create_method = get_bulk_method(BulkMethodTestModel, MODE_CREATE)
+    assert callable(create_method), "Expected create method to be callable"
 
-    # Mock the model's objects manager
-    with pytest.MonkeyPatch().context() as m:
+    # Test update method
+    update_method = get_bulk_method(BulkMethodTestModel, MODE_UPDATE, fields=["name"])
+    assert callable(update_method), "Expected update method to be callable"
 
-        class MockQuerySet:
-            def delete(self) -> tuple[int, dict[str, int]]:
-                return (3, {"BulkDeleteTestModel": 3})
-
-        def mock_filter(**kwargs: Any) -> MockQuerySet:  # noqa: ANN401, ARG001
-            return MockQuerySet()
-
-        m.setattr(BulkDeleteTestModel.objects, "filter", mock_filter)
-
-        result = bulk_delete(BulkDeleteTestModel, test_instances)
-
-        assert result == (3, {"BulkDeleteTestModel": 3}), (
-            f"Expected (3, {{'BulkDeleteTestModel': 3}}), got {result}"
-        )
-
-
-@pytest.mark.django_db
-def test_bulk_create_bulks_in_steps() -> None:
-    """Test func for bulk_create_bulks_in_steps."""
-    # bulk a
-    bulk_a = [ModelA(str_field=f"test_{i}", int_field=i) for i in range(1, 11)]
-    bulk_b = [ModelB(model_a=model_a) for model_a in bulk_a]
-    bulk_by_class: dict[type[Model], Iterable[Model]] = {
-        ModelA: bulk_a,
-        ModelB: bulk_b,
-    }
-    results = bulk_create_bulks_in_steps(bulk_by_class)
-    assert results == bulk_by_class, f"Expected {bulk_by_class}, got {results}"
-    results_b: list[ModelB] = cast("list[ModelB]", (results[ModelB]))
-    # assert b has as with pks after
-    for model_b in results_b:
-        assert model_b.pk is not None, f"Expected pk for {model_b}, got None"
-        assert model_b.model_a.pk is not None, (
-            f"Expected pk for {model_b.model_a}, got None"
-        )
+    # Test delete method
+    delete_method = get_bulk_method(BulkMethodTestModel, MODE_DELETE)
+    assert callable(delete_method), "Expected delete method to be callable"
 
 
 def test_get_differences_between_bulks() -> None:
@@ -338,56 +312,30 @@ def test_get_differences_between_bulks() -> None:
         get_differences_between_bulks(bulk1, other_bulk, fields)
 
 
-def test_simulate_bulk_deletion() -> None:
-    """Test func for simulate_bulk_deletion."""
+def test_get_step_chunks() -> None:
+    """Test func for get_step_chunks."""
+    # Test with empty bulk
+    empty_chunks = list(get_step_chunks([], 5))
+    assert empty_chunks == [], "Expected empty chunks for empty bulk"
 
-    # Create test model
-    class SimulateDeleteTestModel(models.Model):
-        """Test model for simulate_bulk_deletion."""
+    # Test with bulk smaller than step size
+    small_bulk = [ModelA(str_field=f"test_{i}", int_field=i) for i in range(1, 3)]
+    small_chunks = list(get_step_chunks(small_bulk, 5))
 
-        name: models.CharField[str, str] = models.CharField(max_length=100)
+    assert small_chunks == [(small_bulk,)], f"Expected one chunk, got {small_chunks}"
 
-        class Meta:
-            app_label = "test_simulate_delete"
+    # Test with bulk larger than step size
+    large_bulk = [ModelA(str_field=f"test_{i}", int_field=i) for i in range(7)]
+    large_chunks = list(get_step_chunks(large_bulk, 3))
 
-        def __str__(self) -> str:
-            return self.name
-
-    # Test with empty entries
-    empty_result = simulate_bulk_deletion(SimulateDeleteTestModel, [])
-    assert empty_result == {}, "Expected empty result for empty entries"
-
-    # Test with mock entries
-    test_instances: list[models.Model] = [
-        SimulateDeleteTestModel(pk=i, name=f"test_{i}") for i in range(1, 4)
+    expected_large_chunks = [
+        (large_bulk[:3],),
+        (large_bulk[3:6],),
+        (large_bulk[6:],),
     ]
-
-    # Mock the Collector to avoid actual database operations
-    with pytest.MonkeyPatch().context() as m:
-
-        class MockCollector:
-            def __init__(self, *_args: Any, **_kwargs: Any) -> None:  # noqa: ANN401
-                self.data: defaultdict[type[models.Model], set[models.Model]] = (
-                    defaultdict(set)
-                )
-                self.fast_deletes: list[Any] = []
-
-            def collect(self, entries: list[models.Model]) -> None:
-                # Simulate collecting the entries
-                for entry in entries:
-                    self.data[entry.__class__].add(entry)
-
-        m.setattr(bulk.__name__ + ".Collector", MockCollector)
-
-        result = simulate_bulk_deletion(SimulateDeleteTestModel, test_instances)
-
-        assert SimulateDeleteTestModel in result, (
-            "Expected SimulateDeleteTestModel in result"
-        )
-        assert len(result[SimulateDeleteTestModel]) == len(test_instances), (
-            f"Expected {len(test_instances)} instances, "
-            f"got {len(result[SimulateDeleteTestModel])}"
-        )
+    assert large_chunks == expected_large_chunks, (
+        f"Expected {expected_large_chunks}, got {large_chunks}"
+    )
 
 
 def test_multi_simulate_bulk_deletion() -> None:
@@ -459,4 +407,56 @@ def test_multi_simulate_bulk_deletion() -> None:
         }, (
             f"Expected {{MultiDeleteModel1: {model1_instances[:1]}, "
             f"MultiDeleteModel2: {model2_instances[:1]}}}, got {result}"
+        )
+
+
+def test_simulate_bulk_deletion() -> None:
+    """Test func for simulate_bulk_deletion."""
+
+    # Create test model
+    class SimulateDeleteTestModel(models.Model):
+        """Test model for simulate_bulk_deletion."""
+
+        name: models.CharField[str, str] = models.CharField(max_length=100)
+
+        class Meta:
+            app_label = "test_simulate_delete"
+
+        def __str__(self) -> str:
+            return self.name
+
+    # Test with empty entries
+    empty_result = simulate_bulk_deletion(SimulateDeleteTestModel, [])
+    assert empty_result == {}, "Expected empty result for empty entries"
+
+    # Test with mock entries
+    test_instances: list[models.Model] = [
+        SimulateDeleteTestModel(pk=i, name=f"test_{i}") for i in range(1, 4)
+    ]
+
+    # Mock the Collector to avoid actual database operations
+    with pytest.MonkeyPatch().context() as m:
+
+        class MockCollector:
+            def __init__(self, *_args: Any, **_kwargs: Any) -> None:  # noqa: ANN401
+                self.data: defaultdict[type[models.Model], set[models.Model]] = (
+                    defaultdict(set)
+                )
+                self.fast_deletes: list[Any] = []
+
+            def collect(self, entries: list[models.Model]) -> None:
+                # Simulate collecting the entries
+                for entry in entries:
+                    self.data[entry.__class__].add(entry)
+
+        m.setattr(bulk.__name__ + ".Collector", MockCollector)
+
+        result = simulate_bulk_deletion(SimulateDeleteTestModel, test_instances)
+
+        assert SimulateDeleteTestModel in result, (
+            "Expected SimulateDeleteTestModel in result"
+        )
+        assert len(result[SimulateDeleteTestModel]) == len(test_instances), (
+            f"Expected {len(test_instances)} instances, "
+            f"got {len(result[SimulateDeleteTestModel])}"
         )
