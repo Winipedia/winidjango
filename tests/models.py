@@ -15,11 +15,11 @@ class ModelA(BaseModel):
 class ModelB(BaseModel):
     """Test model for ImportDataBaseCommand."""
 
-    model_a: ForeignKey["ModelA", "ModelA"] = ForeignKey("ModelA", on_delete=CASCADE)
+    model_a: ForeignKey[ModelA, ModelA] = ForeignKey(ModelA, on_delete=CASCADE)
 
 
 class ModelC(BaseModel):
     """Test model for ImportDataBaseCommand."""
 
-    model_b: ForeignKey["ModelB", "ModelB"] = ForeignKey("ModelB", on_delete=CASCADE)
+    model_b: ForeignKey[ModelB, ModelB] = ForeignKey(ModelB, on_delete=CASCADE)
     bool_field: BooleanField[bool, bool] = BooleanField()

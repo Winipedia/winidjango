@@ -14,47 +14,6 @@ from tests.models import ModelA, ModelB
 from winidjango.core.commands.import_data import ImportDataBaseCommand
 
 
-@pytest.fixture
-def import_data_command() -> type[ImportDataBaseCommand]:
-    """Fixture for ImportDataBaseCommand."""
-
-    class TestImportDataCommand(ImportDataBaseCommand):
-        """Test class for ImportDataBaseCommand."""
-
-        def add_command_arguments(self, parser: ArgumentParser) -> None:
-            """Required implementation."""
-
-        def handle_import(self) -> pl.DataFrame:
-            """Required implementation."""
-            return pl.DataFrame(
-                {
-                    "str_col_old": ["a", "b", "c"],
-                    "int_col_old": [1, 2, 3],
-                },
-            )
-
-        def get_cleaning_df_cls(self) -> type[MyCleaningDF]:
-            """Required implementation."""
-            return MyCleaningDF
-
-        def get_bulks_by_model(
-            self,
-            df: pl.DataFrame,
-        ) -> dict[type[Model], Iterable[Model]]:
-            """Required implementation."""
-            bulk_a = [
-                ModelA(str_field=r["str_col"], int_field=r["int_col"])
-                for r in df.iter_rows(named=True)
-            ]
-            bulk_b = [ModelB(model_a=model_a) for model_a in bulk_a]
-            return {
-                ModelA: bulk_a,
-                ModelB: bulk_b,
-            }
-
-    return TestImportDataCommand
-
-
 class TestImportDataBaseCommand:
     """Test class for ImportDataBaseCommand."""
 
@@ -151,6 +110,47 @@ class TestImportDataBaseCommand:
         assert ModelB.objects.count() == expected_num, (
             f"Expected {expected_num} ModelB objects, got {ModelB.objects.count()}"
         )
+
+
+@pytest.fixture
+def import_data_command() -> type[ImportDataBaseCommand]:
+    """Fixture for ImportDataBaseCommand."""
+
+    class TestImportDataCommand(ImportDataBaseCommand):
+        """Test class for ImportDataBaseCommand."""
+
+        def add_command_arguments(self, parser: ArgumentParser) -> None:
+            """Required implementation."""
+
+        def handle_import(self) -> pl.DataFrame:
+            """Required implementation."""
+            return pl.DataFrame(
+                {
+                    "str_col_old": ["a", "b", "c"],
+                    "int_col_old": [1, 2, 3],
+                },
+            )
+
+        def get_cleaning_df_cls(self) -> type[MyCleaningDF]:
+            """Required implementation."""
+            return MyCleaningDF
+
+        def get_bulks_by_model(
+            self,
+            df: pl.DataFrame,
+        ) -> dict[type[Model], Iterable[Model]]:
+            """Required implementation."""
+            bulk_a = [
+                ModelA(str_field=r["str_col"], int_field=r["int_col"])
+                for r in df.iter_rows(named=True)
+            ]
+            bulk_b = [ModelB(model_a=model_a) for model_a in bulk_a]
+            return {
+                ModelA: bulk_a,
+                ModelB: bulk_b,
+            }
+
+    return TestImportDataCommand
 
 
 class MyCleaningDF(CleaningDF):
