@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 
-def test_initialization_without_repository_on_sys_path() -> None:
+def test_initialization_without_repo_on_sys_path() -> None:
     """Configure the local tests app even when Python excludes the working directory."""
     result = subprocess.run(
         [
