@@ -209,24 +209,6 @@ def test_topological_sort_models() -> None:
 class TestBaseModel:
     """Test class for BaseModel."""
 
-    def test___str__(self) -> None:
-        """Test method for __str__."""
-
-        class TestModel(BaseModel):
-            """Test model for __str__."""
-
-            name: models.CharField[str, str] = models.CharField(max_length=100)
-            value: models.IntegerField[int, int] = models.IntegerField()
-
-            class Meta(BaseModel.Meta):  # ty:ignore[invalid-attribute-override]
-                app_label = "test_app"
-
-        test_instance = TestModel(name="test", value=42)
-        expected = "TestModel(None)"
-        assert str(test_instance) == expected, (
-            f"Expected '{expected}', got {test_instance}"
-        )
-
     def test___repr__(self) -> None:
         """Test method for __repr__."""
 
@@ -236,12 +218,30 @@ class TestBaseModel:
             name: models.CharField[str, str] = models.CharField(max_length=100)
             value: models.IntegerField[int, int] = models.IntegerField()
 
-            class Meta(BaseModel.Meta):  # ty:ignore[invalid-attribute-override]
+            class Meta(BaseModel.Meta):
                 app_label = "test_app"
 
         test_instance = TestModel2(name="test", value=42)
         expected = "TestModel2(None)"
         assert repr(test_instance) == expected, (
+            f"Expected '{expected}', got {test_instance}"
+        )
+
+    def test___str__(self) -> None:
+        """Test method for __str__."""
+
+        class TestModel(BaseModel):
+            """Test model for __str__."""
+
+            name: models.CharField[str, str] = models.CharField(max_length=100)
+            value: models.IntegerField[int, int] = models.IntegerField()
+
+            class Meta(BaseModel.Meta):
+                app_label = "test_app"
+
+        test_instance = TestModel(name="test", value=42)
+        expected = "TestModel(None)"
+        assert str(test_instance) == expected, (
             f"Expected '{expected}', got {test_instance}"
         )
 
@@ -254,7 +254,7 @@ class TestBaseModel:
             name: models.CharField[str, str] = models.CharField(max_length=100)
             value: models.IntegerField[int, int] = models.IntegerField()
 
-            class Meta(BaseModel.Meta):  # ty:ignore[invalid-attribute-override]
+            class Meta(BaseModel.Meta):
                 app_label = "test_app"
 
         test_instance = TestModel3(name="test", value=42)

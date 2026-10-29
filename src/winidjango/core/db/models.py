@@ -129,6 +129,10 @@ class BaseModel(Model):
         # abstract does not inherit in children
         abstract = True
 
+    def __repr__(self) -> str:
+        """Base representation of a model."""
+        return str(self)
+
     def __str__(self) -> str:
         """Return a concise human-readable representation.
 
@@ -139,10 +143,6 @@ class BaseModel(Model):
             str: Short representation, e.g. ``MyModel(123)``.
         """
         return f"{self.__class__.__name__}({self.pk})"
-
-    def __repr__(self) -> str:
-        """Base representation of a model."""
-        return str(self)
 
     @property
     def meta(self) -> "Options[Self]":

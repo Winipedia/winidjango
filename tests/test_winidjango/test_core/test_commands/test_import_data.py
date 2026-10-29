@@ -2,7 +2,7 @@
 
 from argparse import ArgumentParser
 from collections.abc import Callable, Iterable
-from typing import Any
+from typing import Any, override
 
 import polars as pl
 import pytest
@@ -16,28 +16,6 @@ from winidjango.core.commands.import_data import ImportDataBaseCommand
 
 class TestImportDataBaseCommand:
     """Test class for ImportDataBaseCommand."""
-
-    @pytest.mark.django_db
-    def test_handle_import(
-        self,
-        import_data_command: type[ImportDataBaseCommand],
-    ) -> None:
-        """Test method for handle_import."""
-        cmd = import_data_command()
-        df = cmd.handle_import()
-
-        # just assert that it returns a dataframe
-        assert isinstance(df, pl.DataFrame), f"Expected dataframe, got {type(df)}"
-
-    def test_get_cleaning_df_cls(
-        self,
-        import_data_command: type[ImportDataBaseCommand],
-    ) -> None:
-        """Test method for get_cleaning_df_cls."""
-        cmd = import_data_command()
-        df_cls = cmd.get_cleaning_df_cls()
-
-        assert df_cls is MyCleaningDF, f"Expected MyCleaningDF, got {df_cls}"
 
     def test_get_bulks_by_model(
         self,
@@ -67,6 +45,16 @@ class TestImportDataBaseCommand:
             f"Expected 3 items in bulk_b, got {len(bulk_b)}"
         )
 
+    def test_get_cleaning_df_cls(
+        self,
+        import_data_command: type[ImportDataBaseCommand],
+    ) -> None:
+        """Test method for get_cleaning_df_cls."""
+        cmd = import_data_command()
+        df_cls = cmd.get_cleaning_df_cls()
+
+        assert df_cls is MyCleaningDF, f"Expected MyCleaningDF, got {df_cls}"
+
     @pytest.mark.django_db
     def test_handle_command(
         self,
@@ -89,6 +77,18 @@ class TestImportDataBaseCommand:
             ),
         )
         cmd.handle_command()
+
+    @pytest.mark.django_db
+    def test_handle_import(
+        self,
+        import_data_command: type[ImportDataBaseCommand],
+    ) -> None:
+        """Test method for handle_import."""
+        cmd = import_data_command()
+        df = cmd.handle_import()
+
+        # just assert that it returns a dataframe
+        assert isinstance(df, pl.DataFrame), f"Expected dataframe, got {type(df)}"
 
     @pytest.mark.django_db
     def test_import_to_db(
@@ -119,9 +119,11 @@ def import_data_command() -> type[ImportDataBaseCommand]:
     class TestImportDataCommand(ImportDataBaseCommand):
         """Test class for ImportDataBaseCommand."""
 
+        @override
         def add_command_arguments(self, parser: ArgumentParser) -> None:
             """Required implementation."""
 
+        @override
         def handle_import(self) -> pl.DataFrame:
             """Required implementation."""
             return pl.DataFrame(
@@ -131,10 +133,12 @@ def import_data_command() -> type[ImportDataBaseCommand]:
                 },
             )
 
+        @override
         def get_cleaning_df_cls(self) -> type[MyCleaningDF]:
             """Required implementation."""
             return MyCleaningDF
 
+        @override
         def get_bulks_by_model(
             self,
             df: pl.DataFrame,
@@ -160,50 +164,13 @@ class MyCleaningDF(CleaningDF):
     INT_COL = "int_col"
 
     @classmethod
-    def get_rename_map(cls) -> dict[str, str]:
-        """Test implementation of rename_map."""
-        return {
-            cls.STR_COL: "str_col_old",
-            cls.INT_COL: "int_col_old",
-        }
+    @override
+    def get_add_on_duplicate_cols(cls) -> tuple[str, ...]:
+        """Test implementation of add_on_duplicate_cols."""
+        return ()
 
     @classmethod
-    def get_col_dtype_map(cls) -> dict[str, type[pl.DataType]]:
-        """Test implementation of col_cls_map."""
-        return {
-            cls.STR_COL: pl.Utf8,
-            cls.INT_COL: pl.Int64,
-        }
-
-    @classmethod
-    def get_drop_null_subsets(cls) -> tuple[tuple[str, ...], ...]:
-        """Test implementation of drop_null_subsets."""
-        return ((cls.STR_COL, cls.INT_COL),)
-
-    @classmethod
-    def get_fill_null_map(cls) -> dict[str, Any]:
-        """Test implementation of fill_null_map."""
-        return {
-            cls.STR_COL: "",
-            cls.INT_COL: 0,
-        }
-
-    @classmethod
-    def get_sort_cols(cls) -> tuple[tuple[str, bool], ...]:
-        """Test implementation of sort_cols."""
-        return ((cls.INT_COL, False), (cls.STR_COL, True))
-
-    @classmethod
-    def get_unique_subsets(cls) -> tuple[tuple[str, ...], ...]:
-        """Test implementation of unique_subsets."""
-        return ((cls.STR_COL, cls.INT_COL),)
-
-    @classmethod
-    def get_no_null_cols(cls) -> tuple[str, ...]:
-        """Test implementation of not_null_cols."""
-        return (cls.STR_COL, cls.INT_COL)
-
-    @classmethod
+    @override
     def get_col_converter_map(
         cls,
     ) -> dict[str, Callable[[pl.Series], pl.Series]]:
@@ -215,11 +182,58 @@ class MyCleaningDF(CleaningDF):
         }
 
     @classmethod
-    def get_add_on_duplicate_cols(cls) -> tuple[str, ...]:
-        """Test implementation of add_on_duplicate_cols."""
-        return ()
+    @override
+    def get_col_dtype_map(cls) -> dict[str, type[pl.DataType]]:
+        """Test implementation of col_cls_map."""
+        return {
+            cls.STR_COL: pl.Utf8,
+            cls.INT_COL: pl.Int64,
+        }
 
     @classmethod
+    @override
     def get_col_precision_map(cls) -> dict[str, int]:
         """Test implementation of col_precision_map."""
         return {}
+
+    @classmethod
+    @override
+    def get_drop_null_subsets(cls) -> tuple[tuple[str, ...], ...]:
+        """Test implementation of drop_null_subsets."""
+        return ((cls.STR_COL, cls.INT_COL),)
+
+    @classmethod
+    @override
+    def get_fill_null_map(cls) -> dict[str, Any]:
+        """Test implementation of fill_null_map."""
+        return {
+            cls.STR_COL: "",
+            cls.INT_COL: 0,
+        }
+
+    @classmethod
+    @override
+    def get_no_null_cols(cls) -> tuple[str, ...]:
+        """Test implementation of not_null_cols."""
+        return (cls.STR_COL, cls.INT_COL)
+
+    @classmethod
+    @override
+    def get_rename_map(cls) -> dict[str, str]:
+        """Test implementation of rename_map."""
+        return {
+            cls.STR_COL: "str_col_old",
+            cls.INT_COL: "int_col_old",
+        }
+
+    @classmethod
+    @override
+    def get_sort_cols(cls) -> tuple[tuple[str, bool], ...]:
+        """Test implementation of sort_cols."""
+        return ((cls.INT_COL, False), (cls.STR_COL, True))
+
+    @classmethod
+    @override
+    def get_unique_subsets(cls) -> tuple[tuple[str, ...], ...]:
+        """Test implementation of unique_subsets."""
+        return ((cls.STR_COL, cls.INT_COL),)

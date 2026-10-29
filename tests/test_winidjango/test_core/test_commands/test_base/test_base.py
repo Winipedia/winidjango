@@ -1,7 +1,7 @@
 """Tests for winidjango.command module."""
 
 from argparse import ArgumentParser
-from typing import Any, final
+from typing import Any, final, override
 
 from django.core.management import call_command
 
@@ -17,13 +17,15 @@ class TestABCBaseCommand:
         # Test that add_arguments follows template method pattern correctly
         class TestCommand(ABCBaseCommand):
             @final
+            @override
             def add_command_arguments(self, parser: ArgumentParser) -> None:
                 """Track that this method was called."""
                 self.add_command_arguments_called = True
                 parser.add_argument("--custom", help="Custom argument")
 
             @final
-            def handle_command(self, *_args: Any, **_options: Any) -> None:  # noqa: ANN401
+            @override
+            def handle_command(self, *_args: Any, **_options: Any) -> None:
                 """Required implementation."""
 
         # Test the template method pattern by checking arguments are added
@@ -41,17 +43,64 @@ class TestABCBaseCommand:
             "Expected add_command_arguments to be called"
         )
 
+    def test_add_command_arguments(self) -> None:
+        """Test method for add_command_arguments."""
+        # Test that add_command_arguments is abstract and must be implemented
+        abstract_methods: set[str] = getattr(
+            ABCBaseCommand,
+            "__abstractmethods__",
+            set(),
+        )
+        assert "add_command_arguments" in abstract_methods, (
+            "Expected add_command_arguments to be abstract"
+        )
+
+        # Test that concrete implementation works correctly
+        class ConcreteTestCommand(ABCBaseCommand):
+            @final
+            @override
+            def add_command_arguments(self, parser: ArgumentParser) -> None:
+                """Add test-specific arguments."""
+                parser.add_argument("--test-arg", help="Test argument")
+
+            @final
+            @override
+            def handle_command(self) -> None:
+                """Handle test command execution."""
+
+        # Test that concrete implementation can be instantiated
+        command = ConcreteTestCommand()
+        assert command.__class__.__bases__[0] is ABCBaseCommand, (
+            "Expected concrete command to inherit from ABCBaseCommand"
+        )
+
+        # Test that the method can add custom arguments
+        parser = ArgumentParser()
+        command.add_command_arguments(parser)
+
+        # Check that custom argument was added
+        added_arguments: set[str] = set()
+        for action in parser._actions:  # noqa: SLF001
+            if action.option_strings:
+                added_arguments.update(action.option_strings)
+
+        assert "--test-arg" in added_arguments, (
+            "Expected custom argument --test-arg to be added"
+        )
+
     def test_base_add_arguments(self) -> None:
         """Test method for _add_arguments."""
 
         # Test that _add_arguments adds all expected common arguments
         class TestCommand(ABCBaseCommand):
             @final
+            @override
             def add_command_arguments(self, parser: ArgumentParser) -> None:
                 """Required implementation."""
 
             @final
-            def handle_command(self, *_args: Any, **_options: Any) -> None:  # noqa: ANN401
+            @override
+            def handle_command(self, *_args: Any, **_options: Any) -> None:
                 """Required implementation."""
 
         command = TestCommand()
@@ -78,82 +127,18 @@ class TestABCBaseCommand:
                 f"Expected argument {expected_arg} to be added, got {added_arguments}"
             )
 
-    def test_add_command_arguments(self) -> None:
-        """Test method for add_command_arguments."""
-        # Test that add_command_arguments is abstract and must be implemented
-        abstract_methods: set[str] = getattr(
-            ABCBaseCommand,
-            "__abstractmethods__",
-            set(),
-        )
-        assert "add_command_arguments" in abstract_methods, (
-            "Expected add_command_arguments to be abstract"
-        )
-
-        # Test that concrete implementation works correctly
-        class ConcreteTestCommand(ABCBaseCommand):
-            @final
-            def add_command_arguments(self, parser: ArgumentParser) -> None:
-                """Add test-specific arguments."""
-                parser.add_argument("--test-arg", help="Test argument")
-
-            @final
-            def handle_command(self) -> None:
-                """Handle test command execution."""
-
-        # Test that concrete implementation can be instantiated
-        command = ConcreteTestCommand()
-        assert command.__class__.__bases__[0] is ABCBaseCommand, (
-            "Expected concrete command to inherit from ABCBaseCommand"
-        )
-
-        # Test that the method can add custom arguments
-        parser = ArgumentParser()
-        command.add_command_arguments(parser)
-
-        # Check that custom argument was added
-        added_arguments: set[str] = set()
-        for action in parser._actions:  # noqa: SLF001
-            if action.option_strings:
-                added_arguments.update(action.option_strings)
-
-        assert "--test-arg" in added_arguments, (
-            "Expected custom argument --test-arg to be added"
-        )
-
-    def test_handle(self) -> None:
-        """Test method for handle."""
-
-        # Test that handle follows template method pattern correctly
-        class TestCommand(ABCBaseCommand):
-            @final
-            def add_command_arguments(self, parser: ArgumentParser) -> None:
-                """Required implementation."""
-
-            @final
-            def handle_command(self) -> None:
-                """Track that this method was called."""
-                self.handle_command_called = True
-
-        command = TestCommand()
-
-        # Test the template method pattern
-        command.handle()
-
-        assert command.handle_command_called, (
-            "Expected handle_command to be called by handle"
-        )
-
     def test_base_handle(self) -> None:
         """Test method for _handle."""
 
         # Test that _handle logs all command options correctly
         class TestCommand(ABCBaseCommand):
             @final
+            @override
             def add_command_arguments(self, parser: ArgumentParser) -> None:
                 """Required implementation."""
 
             @final
+            @override
             def handle_command(self) -> None:
                 """Required implementation."""
 
@@ -166,6 +151,59 @@ class TestABCBaseCommand:
         assert command.args == args, f"Expected args to be {args}, got {command.args}"
         assert command.options == options, (
             f"Expected options to be {options}, got {command.options}"
+        )
+
+    def test_get_option(self) -> None:
+        """Test method for get_option."""
+
+        # Test that get_option returns the correct value
+        class TestCommand(ABCBaseCommand):
+            class Options(ABCBaseCommand.Options):  # ty:ignore[invalid-attribute-override]
+                EXTRA = "extra"
+
+            @override
+            def add_command_arguments(self, parser: ArgumentParser) -> None:
+                """Required implementation."""
+                parser.add_argument(
+                    f"--{self.Options.EXTRA}",
+                    help="Extra option",
+                )
+
+            @override
+            def handle_command(self) -> None:
+                """Required implementation."""
+                self.extra_option = self.get_option(self.Options.EXTRA)
+
+        # call the command with djangos call_command
+        cmd = TestCommand()
+        call_command(cmd, extra="test")
+        assert cmd.extra_option == "test", (
+            f"Expected extra_option to be 'test', got {cmd.extra_option}"
+        )
+
+    def test_handle(self) -> None:
+        """Test method for handle."""
+
+        # Test that handle follows template method pattern correctly
+        class TestCommand(ABCBaseCommand):
+            @final
+            @override
+            def add_command_arguments(self, parser: ArgumentParser) -> None:
+                """Required implementation."""
+
+            @final
+            @override
+            def handle_command(self) -> None:
+                """Track that this method was called."""
+                self.handle_command_called = True
+
+        command = TestCommand()
+
+        # Test the template method pattern
+        command.handle()
+
+        assert command.handle_command_called, (
+            "Expected handle_command to be called by handle"
         )
 
     def test_handle_command(self) -> None:
@@ -183,11 +221,13 @@ class TestABCBaseCommand:
         # Test that concrete implementation works correctly
         class ConcreteTestCommand(ABCBaseCommand):
             @final
+            @override
             def add_command_arguments(self, parser: ArgumentParser) -> None:
                 """Required implementation."""
 
             @final
-            def handle_command(self, *_args: Any, **_options: Any) -> None:  # noqa: ANN401
+            @override
+            def handle_command(self, *_args: Any, **_options: Any) -> None:
                 """Required implementation that will be logged."""
                 self.handle_command_called = True
 
@@ -202,30 +242,4 @@ class TestABCBaseCommand:
         command.handle()
         assert command.handle_command_called, (
             "Expected handle_command to be called by handle"
-        )
-
-    def test_get_option(self) -> None:
-        """Test method for get_option."""
-
-        # Test that get_option returns the correct value
-        class TestCommand(ABCBaseCommand):
-            class Options(ABCBaseCommand.Options):  # ty:ignore[invalid-attribute-override]
-                EXTRA = "extra"
-
-            def add_command_arguments(self, parser: ArgumentParser) -> None:
-                """Required implementation."""
-                parser.add_argument(
-                    f"--{self.Options.EXTRA}",
-                    help="Extra option",
-                )
-
-            def handle_command(self) -> None:
-                """Required implementation."""
-                self.extra_option = self.get_option(self.Options.EXTRA)
-
-        # call the command with djangos call_command
-        cmd = TestCommand()
-        call_command(cmd, extra="test")
-        assert cmd.extra_option == "test", (
-            f"Expected extra_option to be 'test', got {cmd.extra_option}"
         )

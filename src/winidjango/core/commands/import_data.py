@@ -19,6 +19,7 @@ reduces duplicated boilerplate across different import implementations.
 
 from abc import abstractmethod
 from collections.abc import Iterable
+from typing import override
 
 import polars as pl
 from django.db.models import Model
@@ -41,6 +42,20 @@ class ImportDataBaseCommand(ABCBaseCommand):
     """
 
     @abstractmethod
+    def get_cleaning_df_cls(self) -> type[CleaningDF]:
+        """Return the `CleaningDF` subclass used to normalize the data.
+
+        The returned class will be instantiated with the raw DataFrame
+        returned from :meth:`handle_import` and must provide the
+        transformations required to prepare data for mapping into model
+        instances.
+
+        Returns:
+            type[CleaningDF]: A subclass of ``CleaningDF`` that performs
+                the necessary normalization and validation.
+        """
+
+    @abstractmethod
     def handle_import(self) -> pl.DataFrame:
         """Read raw data from the import source.
 
@@ -53,20 +68,6 @@ class ImportDataBaseCommand(ABCBaseCommand):
         Returns:
             pl.DataFrame: Raw (uncleaned) tabular data to be cleaned and
                 mapped to model instances.
-        """
-
-    @abstractmethod
-    def get_cleaning_df_cls(self) -> type[CleaningDF]:
-        """Return the `CleaningDF` subclass used to normalize the data.
-
-        The returned class will be instantiated with the raw DataFrame
-        returned from :meth:`handle_import` and must provide the
-        transformations required to prepare data for mapping into model
-        instances.
-
-        Returns:
-            type[CleaningDF]: A subclass of ``CleaningDF`` that performs
-                the necessary normalization and validation.
         """
 
     @abstractmethod
@@ -89,6 +90,7 @@ class ImportDataBaseCommand(ABCBaseCommand):
                 to iterables of instances that should be created.
         """
 
+    @override
     def handle_command(self) -> None:
         """Execute the full import lifecycle.
 

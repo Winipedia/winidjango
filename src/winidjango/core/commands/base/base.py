@@ -10,7 +10,7 @@ business logic.
 
 from abc import abstractmethod
 from argparse import ArgumentParser
-from typing import Any
+from typing import Any, override
 
 from django.core.management import BaseCommand
 from winiutils.core.oop.mixins.mixin import ABCLoggingMixin
@@ -44,6 +44,28 @@ class ABCBaseCommand(ABCLoggingMixin, BaseCommand):
         THREADS = "threads"
         PROCESSES = "processes"
 
+    @abstractmethod
+    def add_command_arguments(self, parser: ArgumentParser) -> None:
+        """Define command-specific arguments.
+
+        Implement this hook to add options and positional arguments that are
+        specific to the concrete management command.
+
+        Args:
+            parser (ArgumentParser): The argument parser passed by Django.
+        """
+
+    @abstractmethod
+    def handle_command(self) -> None:
+        """Run the command-specific behavior.
+
+        This abstract hook should be implemented by concrete commands to
+        perform the command's main work. Implementations should read
+        ``self.args`` and ``self.options`` which were set in
+        :meth:`base_handle`.
+        """
+
+    @override
     def add_arguments(self, parser: ArgumentParser) -> None:
         """Configure command-line arguments for the command.
 
@@ -59,6 +81,34 @@ class ABCBaseCommand(ABCLoggingMixin, BaseCommand):
 
         # add additional args that are specific to the command
         self.add_command_arguments(parser)
+
+    @override
+    def handle(self, *args: Any, **options: Any) -> None:
+        """Orchestrate command execution.
+
+        Performs shared pre-processing by calling :meth:`base_handle` and
+        then delegates to :meth:`handle_command` which must be implemented
+        by subclasses.
+
+        Args:
+            *args: Positional arguments forwarded from Django.
+            **options: Parsed command-line options.
+        """
+        self.base_handle(*args, **options)
+        self.handle_command()
+
+    def get_option(self, option: str) -> Any:  # noqa: ANN401
+        """Retrieve a parsed command option by key.
+
+        Args:
+            option (str): The option key to retrieve from ``self.options``.
+
+        Returns:
+            Any: The value for the requested option. If the option is not
+                present a ``KeyError`` will be raised (matching how Django
+                exposes options in management commands).
+        """
+        return self.options[option]
 
     def base_add_arguments(self, parser: ArgumentParser) -> None:
         """Add the project's standard command-line arguments to ``parser``.
@@ -119,31 +169,6 @@ class ABCBaseCommand(ABCLoggingMixin, BaseCommand):
             help="Number of processes to use for processing",
         )
 
-    @abstractmethod
-    def add_command_arguments(self, parser: ArgumentParser) -> None:
-        """Define command-specific arguments.
-
-        Implement this hook to add options and positional arguments that are
-        specific to the concrete management command.
-
-        Args:
-            parser (ArgumentParser): The argument parser passed by Django.
-        """
-
-    def handle(self, *args: Any, **options: Any) -> None:  # noqa: ANN401
-        """Orchestrate command execution.
-
-        Performs shared pre-processing by calling :meth:`base_handle` and
-        then delegates to :meth:`handle_command` which must be implemented
-        by subclasses.
-
-        Args:
-            *args: Positional arguments forwarded from Django.
-            **options: Parsed command-line options.
-        """
-        self.base_handle(*args, **options)
-        self.handle_command()
-
     def base_handle(self, *args: Any, **options: Any) -> None:  # noqa: ANN401
         """Perform common pre-processing for commands.
 
@@ -156,26 +181,3 @@ class ABCBaseCommand(ABCLoggingMixin, BaseCommand):
         """
         self.args = args
         self.options = options
-
-    @abstractmethod
-    def handle_command(self) -> None:
-        """Run the command-specific behavior.
-
-        This abstract hook should be implemented by concrete commands to
-        perform the command's main work. Implementations should read
-        ``self.args`` and ``self.options`` which were set in
-        :meth:`base_handle`.
-        """
-
-    def get_option(self, option: str) -> Any:  # noqa: ANN401
-        """Retrieve a parsed command option by key.
-
-        Args:
-            option (str): The option key to retrieve from ``self.options``.
-
-        Returns:
-            Any: The value for the requested option. If the option is not
-                present a ``KeyError`` will be raised (matching how Django
-                exposes options in management commands).
-        """
-        return self.options[option]

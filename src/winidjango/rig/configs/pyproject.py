@@ -10,7 +10,7 @@ classifiers.
 """
 
 from pathlib import Path
-from typing import Any
+from typing import Any, override
 
 from pyrig.rig.configs.pyproject import (  # deptry: ignore[DEP004]
     PyprojectConfigFile as BasePyprojectConfigFile,
@@ -23,6 +23,7 @@ import winidjango
 class PyprojectConfigFile(BasePyprojectConfigFile):
     """You can override methods from the base class to customize behavior."""
 
+    @override
     def _configs(self) -> dict[str, Any]:
         configs = super()._configs()
 
