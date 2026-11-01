@@ -1,6 +1,6 @@
 [project]
 name = "winidjango"
-version = "4.16.34"
+version = "4.16.35"
 description = "A utility package for django"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -142,6 +142,7 @@ strict = true
 [tool.ryl.lint.rules]
 ALL = "enable"
 key-ordering = "disable"
+yaml-directive = "disable"
 
 [tool.vulture]
 paths = [
