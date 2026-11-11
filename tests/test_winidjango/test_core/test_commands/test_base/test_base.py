@@ -158,7 +158,7 @@ class TestABCBaseCommand:
 
         # Test that get_option returns the correct value
         class TestCommand(ABCBaseCommand):
-            class Options(ABCBaseCommand.Options):  # ty:ignore[invalid-attribute-override]
+            class Options(ABCBaseCommand.Options):  # ty:ignore[incompatible-attribute-override]
                 EXTRA = "extra"
 
             @override
