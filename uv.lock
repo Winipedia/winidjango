@@ -1597,7 +1597,7 @@ wheels = [
 
 [[package]]
 name = "pyrig"
-version = "19.34.3"
+version = "19.36.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "inquirerpy" },
@@ -1608,9 +1608,9 @@ dependencies = [
     { name = "tomli-w" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/90/ca/4dc7dc19dd62ef3f461fc3bc9caee66db2777547d6148a9b240f9c4909a9/pyrig-19.34.3.tar.gz", hash = "sha256:7896073970382169eb43b7a2eb75598c2ddcb02e55171f2a0dc848b624b96a5d", size = 115139, upload-time = "2026-11-13T23:44:12.318Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/eb/f1/9a3494073a8a548f08186afd94697556920031c7fa4b892f375024dba530/pyrig-19.36.0.tar.gz", hash = "sha256:ff28e480f73d4ea905d726c23916f6893387fb9b517b7cd2228276d423351a31", size = 115198, upload-time = "2026-11-14T19:38:29.343Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f8/eb/da4eb66e3b572a1a23939480a4e2df6ab83b304dcfa6f2b317593ec3d5c8/pyrig-19.34.3-py3-none-any.whl", hash = "sha256:f741e45c7d5ae80fd78cf6812086d8fe3628cfb7496f970fb8a3e235b56317ef", size = 175352, upload-time = "2026-11-13T23:44:10.2Z" },
+    { url = "https://files.pythonhosted.org/packages/95/d9/3655ff19a99b14dcf04ab0c82478d9980c214efed71ea9124bf77e1a6df9/pyrig-19.36.0-py3-none-any.whl", hash = "sha256:98ee9da5b5d981cfbe95a762d4d77be9af7cc8d60718727f8c5ac17f93d417f7", size = 175409, upload-time = "2026-11-14T19:38:27.188Z" },
 ]
 
 [[package]]
@@ -2423,7 +2423,7 @@ wheels = [
 
 [[package]]
 name = "winidjango"
-version = "4.16.89"
+version = "4.16.90"
 source = { editable = "." }
 dependencies = [
     { name = "django" },
