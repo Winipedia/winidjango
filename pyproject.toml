@@ -1,6 +1,6 @@
 [project]
 name = "winidjango"
-version = "4.16.91"
+version = "4.16.92"
 description = "A utility package for django"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -145,6 +145,13 @@ strict = true
 ALL = "enable"
 key-ordering = "disable"
 yaml-directive = "disable"
+
+[tool.typos.default]
+extend-ignore-re = [
+  "(?m)^.*spellchecker:disable-line.*$",
+  "(?m)^.*spellchecker:disable-next-line.*\n.*",
+]
+locale = "en-us"
 
 [tool.vulture]
 paths = [
