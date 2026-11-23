@@ -7,10 +7,10 @@ from pathlib import Path
 import django
 import django_stubs_ext
 from django.conf import settings
+from pyrig.rig.tools.testing.project import ProjectTester
 from pyrig_runtime.core.strings import snake_to_kebab_case
 
 import winidjango
-from winidjango.rig.tools.tools import ProjectTester
 
 logger = logging.getLogger(__name__)
 
