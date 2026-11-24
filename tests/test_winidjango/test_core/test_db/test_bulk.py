@@ -1,7 +1,7 @@
 """Tests for winidjango.bulk module."""
 
 from collections import defaultdict
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, cast, override
 
 import pytest
 from django.db import models
@@ -46,7 +46,7 @@ def test_bulk_create_bulks_in_steps() -> None:
     }
     results = bulk_create_bulks_in_steps(bulk_by_class)
     assert results == bulk_by_class, f"Expected {bulk_by_class}, got {results}"
-    results_b: list[ModelB] = cast("list[ModelB]", (results[ModelB]))
+    results_b = [model for model in results[ModelB] if isinstance(model, ModelB)]
     # assert b has as with pks after
     for model_b in results_b:
         assert model_b.pk is not None, f"Expected pk for {model_b}, got None"
@@ -80,6 +80,8 @@ def test_bulk_delete() -> None:
         class Meta:
             app_label = "test_bulk_delete"
 
+        @override
+        @override
         def __str__(self) -> str:
             return self.name
 
@@ -178,6 +180,7 @@ def test_flatten_bulk_in_steps_result() -> None:
         class Meta:
             app_label = "test_flatten"
 
+        @override
         def __str__(self) -> str:
             return self.name
 
@@ -232,6 +235,7 @@ def test_get_bulk_method() -> None:
         class Meta:
             app_label = "test_get_bulk_method"
 
+        @override
         def __str__(self) -> str:
             return self.name
 
@@ -261,6 +265,7 @@ def test_get_differences_between_bulks() -> None:
         class Meta:
             app_label = "test_differences"
 
+        @override
         def __str__(self) -> str:
             return self.name
 
@@ -303,6 +308,7 @@ def test_get_differences_between_bulks() -> None:
         class Meta:
             app_label = "test_differences_other"
 
+        @override
         def __str__(self) -> str:
             return self.name
 
@@ -350,6 +356,7 @@ def test_multi_simulate_bulk_deletion() -> None:
         class Meta:
             app_label = "test_multi_delete_1"
 
+        @override
         def __str__(self) -> str:
             return self.name
 
@@ -361,6 +368,8 @@ def test_multi_simulate_bulk_deletion() -> None:
         class Meta:
             app_label = "test_multi_delete_2"
 
+        @override
+        @override
         def __str__(self) -> str:
             return self.name
 
@@ -422,6 +431,7 @@ def test_simulate_bulk_deletion() -> None:
         class Meta:
             app_label = "test_simulate_delete"
 
+        @override
         def __str__(self) -> str:
             return self.name
 

@@ -11,7 +11,9 @@ from winidjango.core.commands.base.base import ABCBaseCommand
 from winidjango.core.commands.import_data import ImportDataBaseCommand
 from winidjango.core.db import bulk, setup, sql
 from winidjango.core.db.models import BaseModel
-from winidjango.rig.configs.pyproject import DjangoPyprojectConfigFile
+from winidjango.rig.configs.pyproject import (
+    DjangoPyprojectConfigFile,  # ty: ignore[possibly-missing-import]
+)
 
 _COMMAND_OVERRIDES = (
     ABCBaseCommand.get_option,

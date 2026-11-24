@@ -1,6 +1,6 @@
 [project]
 name = "winidjango"
-version = "4.16.99"
+version = "4.16.105"
 description = "A utility package for django"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -145,6 +145,9 @@ strict = true
 ALL = "enable"
 key-ordering = "disable"
 yaml-directive = "disable"
+
+[tool.ty.rules]
+all = "error"
 
 [tool.typos.default]
 extend-ignore-re = [

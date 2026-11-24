@@ -1,7 +1,7 @@
 """Tests for winidjango.command module."""
 
 from argparse import ArgumentParser
-from typing import Any, final, override
+from typing import Any, cast, final, override
 
 from django.core.management import call_command
 
@@ -46,10 +46,13 @@ class TestABCBaseCommand:
     def test_add_command_arguments(self) -> None:
         """Test method for add_command_arguments."""
         # Test that add_command_arguments is abstract and must be implemented
-        abstract_methods: set[str] = getattr(
-            ABCBaseCommand,
-            "__abstractmethods__",
-            set(),
+        abstract_methods = cast(
+            "set[str]",
+            getattr(
+                ABCBaseCommand,
+                "__abstractmethods__",
+                set(),
+            ),
         )
         assert "add_command_arguments" in abstract_methods, (
             "Expected add_command_arguments to be abstract"
@@ -209,10 +212,13 @@ class TestABCBaseCommand:
     def test_handle_command(self) -> None:
         """Test method for handle_command."""
         # Test that handle_command is abstract and must be implemented
-        abstract_methods: set[str] = getattr(
-            ABCBaseCommand,
-            "__abstractmethods__",
-            set(),
+        abstract_methods = cast(
+            "set[str]",
+            getattr(
+                ABCBaseCommand,
+                "__abstractmethods__",
+                set(),
+            ),
         )
         assert "handle_command" in abstract_methods, (
             "Expected handle_command to be abstract"

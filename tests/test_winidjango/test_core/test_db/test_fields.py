@@ -1,5 +1,7 @@
 """Tests module."""
 
+from typing import override
+
 from django.db import models
 
 from winidjango.core.db.fields import get_field_names, get_fields, get_model_meta
@@ -18,6 +20,7 @@ def test_get_field_names() -> None:
         class Meta:
             app_label = "test_app"
 
+        @override
         def __str__(self) -> str:
             return self.name
 
@@ -70,6 +73,7 @@ def test_get_fields() -> None:
         class Meta:
             app_label = "test_app"
 
+        @override
         def __str__(self) -> str:
             return self.name
 
@@ -119,6 +123,7 @@ def test_get_model_meta() -> None:
         class Meta:
             app_label = "test_app"
 
+        @override
         def __str__(self) -> str:
             return self.name
 
@@ -163,6 +168,7 @@ class CustomContentType(models.Model):
         app_label = "test_app"
         db_table = "custom_content_type"
 
+    @override
     def __str__(self) -> str:
         """String representation of CustomContentType."""
         return f"{self.app_label}.{self.model}"

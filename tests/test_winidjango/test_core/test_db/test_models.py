@@ -1,6 +1,6 @@
 """Tests for winidjango.database module."""
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 from django.db import models
 
@@ -28,6 +28,7 @@ def test_hash_model_instance() -> None:
         class Meta:
             app_label = "test_app"
 
+        @override
         def __str__(self) -> str:
             return self.name
 
@@ -107,6 +108,7 @@ def test_topological_sort_models() -> None:
         class Meta:
             app_label = "test_app"
 
+        @override
         def __str__(self) -> str:
             return self.name
 
@@ -118,6 +120,7 @@ def test_topological_sort_models() -> None:
         class Meta:
             app_label = "test_app"
 
+        @override
         def __str__(self) -> str:
             return self.name
 
@@ -137,6 +140,7 @@ def test_topological_sort_models() -> None:
         class Meta:
             app_label = "test_app"
 
+        @override
         def __str__(self) -> str:
             return self.title
 
@@ -152,6 +156,7 @@ def test_topological_sort_models() -> None:
         class Meta:
             app_label = "test_app"
 
+        @override
         def __str__(self) -> str:
             return f"Review of {self.book}"
 

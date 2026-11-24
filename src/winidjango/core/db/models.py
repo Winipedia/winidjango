@@ -8,7 +8,7 @@ deterministic hash for unsaved instances, and a project-wide
 
 from datetime import datetime
 from graphlib import TopologicalSorter
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Any, Self, override
 
 from django.db.models import DateTimeField, Field, Model
 from django.db.models.fields.related import ForeignKey, ForeignObjectRel
@@ -129,10 +129,12 @@ class BaseModel(Model):
         # abstract does not inherit in children
         abstract = True
 
+    @override
     def __repr__(self) -> str:
         """Base representation of a model."""
         return str(self)
 
+    @override
     def __str__(self) -> str:
         """Return a concise human-readable representation.
 
