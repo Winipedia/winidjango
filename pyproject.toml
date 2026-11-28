@@ -1,6 +1,6 @@
 [project]
 name = "winidjango"
-version = "4.16.114"
+version = "4.16.118"
 description = "A utility package for django"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -27,11 +27,11 @@ classifiers = [
 dependencies = [
   "django>=6.1.3",
   "django-stubs-ext>=6.1.2",
-  "filelock>=4.3.1",
+  "filelock>=4.3.2",
   "polars>=2.2.0",
-  "pyrig>=19.50.6",
-  "pyrig-runtime>=3.27.113",
-  "winiutils>=4.15.112",
+  "pyrig>=19.51.0",
+  "pyrig-runtime>=3.27.115",
+  "winiutils>=4.15.114",
 ]
 
 [project.urls]
@@ -52,15 +52,15 @@ dev = [
   "detect-secrets>=1.5.0",
   "django-stubs>=6.1.2",
   "hypofuzz>=25.11.1",
-  "hypothesis>=6.170.22",
+  "hypothesis>=6.170.23",
   "mkdocstrings[python]>=1.0.8",
   "pre-commit-hooks>=6.0.0",
   "prek>=0.5.12",
   "pyflakes>=4.1.0",
-  "pyorder>=1.0.79",
-  "pyrig-codeql>=3.1.51",
-  "pyrig-public>=1.5.2",
-  "pyrig-pypi>=4.1.2",
+  "pyorder>=1.0.81",
+  "pyrig-codeql>=3.2.0",
+  "pyrig-public>=1.5.4",
+  "pyrig-pypi>=4.1.4",
   "pytest>=9.2.0",
   "pytest-cov>=7.1.0",
   "pytest-django>=4.14.0",
